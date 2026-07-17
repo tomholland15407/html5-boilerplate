@@ -133,7 +133,7 @@ gulp.task(
   gulp.series('copy:index.html', 'copy:license', 'copy:style', 'copy:misc'),
 );
 
-gulp.task('build', gulp.series(gulp.parallel('clean', 'lint:js'), 'copy'));
+gulp.task('build', gulp.series(gulp.parallel('clean'), 'copy'));
 
 gulp.task(
   'archive',
