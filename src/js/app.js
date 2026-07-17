@@ -371,15 +371,15 @@ function dispatchLogicEngine(text) {
     if (lower.includes('máy lạnh') || lower.includes('điều hòa') || lower.includes('đh')) {
       sessionState.category = 'ac';
       sessionState.stage = 'PROBING';
-      updateActiveSessionTitle('❄️ Tư vấn mua Máy Lạnh', 'ac');
+      updateActiveSessionTitle('Tư vấn mua Máy Lạnh', 'ac');
     } else if (lower.includes('tủ lạnh') || lower.includes('tl')) {
       sessionState.category = 'fridge';
       sessionState.stage = 'PROBING';
-      updateActiveSessionTitle('🥦 Tư vấn mua Tủ Lạnh', 'fridge');
+      updateActiveSessionTitle('Tư vấn mua Tủ Lạnh', 'fridge');
     } else if (lower.includes('laptop') || lower.includes('máy tính')) {
       sessionState.category = 'laptop';
       sessionState.stage = 'PROBING';
-      updateActiveSessionTitle('💻 Tư vấn mua Laptop', 'laptop');
+      updateActiveSessionTitle('Tư vấn mua Laptop', 'laptop');
     } else {
       appendAssistantMessage('<p class="text-sm">Dạ, em có thể hỗ trợ tư vấn chuyên sâu về <strong>Máy lạnh, Tủ lạnh, Laptop</strong>. Anh/chị đang muốn sắm sản phẩm nào ạ?</p>');
       return;
@@ -420,7 +420,7 @@ function dispatchLogicEngine(text) {
             <span class="px-2 py-0.5 text-[10px] font-bold bg-brand-electric/10 text-brand-electric rounded">Gợi ý ${idx+1}</span>
             <h3 class="font-bold text-xs text-slate-900 dark:text-white mt-1">${p.name}</h3>
             <div class="text-sm font-extrabold text-blue-600 dark:text-brand-electric mt-1">${formatVND(p.price)}</div>
-            <p class="text-[11px] text-slate-500 mt-2">🎁 Quà khuyến mãi: ${promo}</p>
+            <p class="text-[11px] text-slate-500 mt-2">Quà khuyến mãi: ${promo}</p>
           </div>
           <div class="bg-amber-50 dark:bg-amber-950/20 p-2 rounded text-[11px] text-amber-700 dark:text-amber-400 border border-amber-200/50">
             <strong>Cân nhắc:</strong> Dòng này bán chạy nên đôi khi xảy ra tình trạng thiếu hàng cục bộ, cần đặt trước.
@@ -442,7 +442,7 @@ function dispatchLogicEngine(text) {
 window.resetConversation = function() {
   const chatBox = document.getElementById('chat-box');
   if (chatBox) {
-    chatBox.innerHTML = `<div class="flex items-start space-x-3"><div class="w-10 h-10 rounded-xl bg-white border flex items-center justify-center shrink-0"><img src="img/mascot.png" class="p-0.5 object-contain"></div><div class="max-w-[80%] bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl px-4 py-3 border border-slate-200 dark:border-brand-border text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! ✨</div></div>`;
+    chatBox.innerHTML = `<div class="flex items-start space-x-3"><div class="w-10 h-10 rounded-xl bg-white border flex items-center justify-center shrink-0"><img src="img/mascot.png" class="p-0.5 object-contain"></div><div class="max-w-[80%] bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl px-4 py-3 border border-slate-200 dark:border-brand-border text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ!</div></div>`;
   }
   sessionState.stage = 'INIT';
   sessionState.category = null;
