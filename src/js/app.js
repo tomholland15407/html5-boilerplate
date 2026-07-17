@@ -174,14 +174,12 @@ function injectJiggleStyles() {
 }
 
 function triggerMascotJiggle() {
-  // Quét chọn TẤT CẢ các thẻ img có đường dẫn hoặc thuộc tính liên quan đến mascot
   const allMascots = document.querySelectorAll('img[src*="mascot"]');
 
   allMascots.forEach(mascot => {
     mascot.classList.add('animate-jiggle-vivid');
   });
 
-  // Gỡ class sau khi chạy xong animation (0.6 giây) để có thể kích hoạt lại lần sau
   setTimeout(() => {
     allMascots.forEach(mascot => {
       mascot.classList.remove('animate-jiggle-vivid');
@@ -354,9 +352,30 @@ function renderChatHistoryUI() {
   });
 }
 
+// Sửa lỗi 1: Cho phép chuyển đổi và tải lại giao diện chào mừng khi bấm vào session rỗng
 function restoreSessionMessages(session) {
   const chatBox = document.getElementById('chat-box');
-  if (!chatBox || session.messages.length === 0) return;
+  if (!chatBox) return;
+
+  if (!session.messages || session.messages.length === 0) {
+    chatBox.innerHTML = `
+      <div class="flex items-start space-x-3 message-fade-in">
+        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+          <img src="img/mascot.png" alt="Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+        </div>
+        <div class="space-y-1 max-w-[85%] w-full">
+          <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border">
+            <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ!</p>
+          </div>
+        </div>
+      </div>`;
+    sessionState.stage = 'INIT';
+    sessionState.category = null;
+    sessionState.collectedData = { roomSize: null, familySize: null };
+    scrollChatToBottom();
+    return;
+  }
+
   chatBox.innerHTML = '';
   session.messages.forEach(msg => {
     if (msg.role === 'user') {
@@ -473,7 +492,15 @@ function dispatchLogicEngine(text) {
   }
 }
 
+// Sửa lỗi 2: Bấm nút New Chat khi đang ở hội thoại trống thì không làm gì cả
 window.resetConversation = function() {
+  if (activeSessionId) {
+    const currentSession = consumerChatSessions.find(item => item.id === activeSessionId);
+    if (currentSession && (!currentSession.messages || currentSession.messages.length === 0)) {
+      return;
+    }
+  }
+
   const chatBox = document.getElementById('chat-box');
   if (chatBox) {
     chatBox.innerHTML = `
