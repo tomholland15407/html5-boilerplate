@@ -9,221 +9,224 @@
 const MOCK_CATALOG = {
   ac: [
     {
-      id: "ac-pana-01",
-      name: "Panasonic Inverter 1 HP CU/CS-XPU9XKH-8",
+      id: 'ac-pana-01',
+      name: 'Panasonic Inverter 1 HP CU/CS-XPU9XKH-8',
       price: 11490000,
-      brand: "Panasonic",
+      brand: 'Panasonic',
       hp: 1,
       btu: 9000,
       inverter: true,
-      noise: "19dB - siêu êm",
-      room_size: "Dưới 15m²",
-      saving: "5 sao (Tiết kiệm điện vượt trội)",
+      noise: '19dB - siêu êm',
+      room_size: 'Dưới 15m²',
+      saving: '5 sao (Tiết kiệm điện vượt trội)',
       stock: 12,
       raw_specs: {
-        wattage: "800W",
-        gas: "R32",
-        filter: "Nanoe-G kháng khuẩn"
-      }
+        wattage: '800W',
+        gas: 'R32',
+        filter: 'Nanoe-G kháng khuẩn',
+      },
     },
     {
-      id: "ac-daikin-02",
-      name: "Daikin Inverter 1.5 HP FTKB35WAVMV",
+      id: 'ac-daikin-02',
+      name: 'Daikin Inverter 1.5 HP FTKB35WAVMV',
       price: 13990000,
-      brand: "Daikin",
+      brand: 'Daikin',
       hp: 1.5,
       btu: 12000,
       inverter: true,
-      noise: "22dB - rất yên tĩnh",
-      room_size: "Từ 15 đến 20m²",
-      saving: "5 sao (Công nghệ Inverter mới tiết kiệm 40% điện)",
+      noise: '22dB - rất yên tĩnh',
+      room_size: 'Từ 15 đến 20m²',
+      saving: '5 sao (Công nghệ Inverter mới tiết kiệm 40% điện)',
       stock: 8,
       raw_specs: {
-        wattage: "1100W",
-        gas: "R32",
-        filter: "Phin lọc Enzyme Blue"
-      }
+        wattage: '1100W',
+        gas: 'R32',
+        filter: 'Phin lọc Enzyme Blue',
+      },
     },
     {
-      id: "ac-casper-03",
-      name: "Casper Inverter 1 HP TC-09IS35",
+      id: 'ac-casper-03',
+      name: 'Casper Inverter 1 HP TC-09IS35',
       price: 5890000,
-      brand: "Casper",
+      brand: 'Casper',
       hp: 1,
       btu: 9000,
       inverter: true,
-      noise: "28dB - trung bình",
-      room_size: "Dưới 15m²",
-      saving: "3 sao (Tiết kiệm điện khá tốt)",
+      noise: '28dB - trung bình',
+      room_size: 'Dưới 15m²',
+      saving: '3 sao (Tiết kiệm điện khá tốt)',
       stock: 25,
       raw_specs: {
-        wattage: "850W",
-        gas: "R32",
-        filter: "Lọc bụi thô cơ bản"
-      }
-    }
+        wattage: '850W',
+        gas: 'R32',
+        filter: 'Lọc bụi thô cơ bản',
+      },
+    },
   ],
   fridge: [
     {
-      id: "fridge-samsung-01",
-      name: "Tủ lạnh Samsung Inverter 236 lít RT22M4032BY/SV",
+      id: 'fridge-samsung-01',
+      name: 'Tủ lạnh Samsung Inverter 236 lít RT22M4032BY/SV',
       price: 6490000,
-      brand: "Samsung",
+      brand: 'Samsung',
       liters: 236,
-      family_size: "2 - 4 người",
+      family_size: '2 - 4 người',
       inverter: true,
-      cooling: "Chế độ đông mềm Optimal Fresh Zone tiện lợi",
-      saving: "Tiết kiệm điện hiệu quả với động cơ Digital Inverter",
+      cooling: 'Chế độ đông mềm Optimal Fresh Zone tiện lợi',
+      saving: 'Tiết kiệm điện hiệu quả với động cơ Digital Inverter',
       stock: 5,
       raw_specs: {
-        shelves: "Kính cường lực",
-        design: "Ngăn đá trên truyền thống"
-      }
+        shelves: 'Kính cường lực',
+        design: 'Ngăn đá trên truyền thống',
+      },
     },
     {
-      id: "fridge-lg-02",
-      name: "Tủ lạnh LG Inverter 315 lít GN-D312PS",
+      id: 'fridge-lg-02',
+      name: 'Tủ lạnh LG Inverter 315 lít GN-D312PS',
       price: 8890000,
-      brand: "LG",
+      brand: 'LG',
       liters: 315,
-      family_size: "3 - 5 người",
+      family_size: '3 - 5 người',
       inverter: true,
-      cooling: "Hệ thống làm lạnh đa chiều Door Cooling tỏa đều",
-      saving: "Smart Inverter tiết kiệm 36% năng lượng điện tiêu thụ",
+      cooling: 'Hệ thống làm lạnh đa chiều Door Cooling tỏa đều',
+      saving: 'Smart Inverter tiết kiệm 36% năng lượng điện tiêu thụ',
       stock: 15,
       raw_specs: {
-        shelves: "Kính cường lực chịu tải cao",
-        design: "Có khay lấy nước ngoài tiện lợi"
-      }
+        shelves: 'Kính cường lực chịu tải cao',
+        design: 'Có khay lấy nước ngoài tiện lợi',
+      },
     },
     {
-      id: "fridge-aqua-03",
-      name: "Tủ lạnh Aqua 90 lít AQR-D99FA",
+      id: 'fridge-aqua-03',
+      name: 'Tủ lạnh Aqua 90 lít AQR-D99FA',
       price: 2790000,
-      brand: "Aqua",
+      brand: 'Aqua',
       liters: 90,
-      family_size: "1 - 2 người (Sinh viên/Phòng đơn)",
+      family_size: '1 - 2 người (Sinh viên/Phòng đơn)',
       inverter: false,
-      cooling: "Làm lạnh trực tiếp bằng mạch khí",
-      saving: "Không có Inverter, điện năng tiêu tốn nhiều nếu mở liên tục",
+      cooling: 'Làm lạnh trực tiếp bằng mạch khí',
+      saving: 'Không có Inverter, điện năng tiêu tốn nhiều nếu mở liên tục',
       stock: 0, // Hết hàng để kiểm nghiệm Anti-Hallucination
       raw_specs: {
-        shelves: "Nhựa cứng",
-        design: "Mini gọn nhẹ"
-      }
-    }
+        shelves: 'Nhựa cứng',
+        design: 'Mini gọn nhẹ',
+      },
+    },
   ],
   laptop: [
     {
-      id: "laptop-hp-01",
-      name: "HP Pavilion 14-dv2073TU (Core i5 1235U / 8GB RAM / 512GB SSD)",
+      id: 'laptop-hp-01',
+      name: 'HP Pavilion 14-dv2073TU (Core i5 1235U / 8GB RAM / 512GB SSD)',
       price: 14500000,
-      brand: "HP",
-      weight: "1.4kg",
-      screen: "14 inch Full HD",
-      usage: "Học tập, làm việc văn phòng, xử lý dữ liệu Excel",
-      battery: "4 - 5 tiếng dùng liên tục",
+      brand: 'HP',
+      weight: '1.4kg',
+      screen: '14 inch Full HD',
+      usage: 'Học tập, làm việc văn phòng, xử lý dữ liệu Excel',
+      battery: '4 - 5 tiếng dùng liên tục',
       stock: 9,
       raw_specs: {
-        cpu: "Intel Core i5 Gen 12",
-        ram: "8GB DDR4",
-        storage: "512GB NVMe SSD"
-      }
+        cpu: 'Intel Core i5 Gen 12',
+        ram: '8GB DDR4',
+        storage: '512GB NVMe SSD',
+      },
     },
     {
-      id: "laptop-asus-02",
-      name: "Asus Vivobook 14 OLED A1405VA (Core i5 13500H / 8GB RAM / 512GB SSD)",
+      id: 'laptop-asus-02',
+      name: 'Asus Vivobook 14 OLED A1405VA (Core i5 13500H / 8GB RAM / 512GB SSD)',
       price: 15200000,
-      brand: "Asus",
-      weight: "1.6kg",
-      screen: "14 inch OLED siêu sắc nét, bảo vệ mắt học đêm tốt",
-      usage: "Làm slide thiết kế đẹp, giải trí xem phim màu rực rỡ, lập trình",
-      battery: "5 - 6 tiếng dùng liên tục",
+      brand: 'Asus',
+      weight: '1.6kg',
+      screen: '14 inch OLED siêu sắc nét, bảo vệ mắt học đêm tốt',
+      usage: 'Làm slide thiết kế đẹp, giải trí xem phim màu rực rỡ, lập trình',
+      battery: '5 - 6 tiếng dùng liên tục',
       stock: 14,
       raw_specs: {
-        cpu: "Intel Core i5 Gen 13 Hiệu năng cao",
-        ram: "8GB DDR4",
-        storage: "512GB PCIe SSD"
-      }
+        cpu: 'Intel Core i5 Gen 13 Hiệu năng cao',
+        ram: '8GB DDR4',
+        storage: '512GB PCIe SSD',
+      },
     },
     {
-      id: "laptop-lenovo-03",
-      name: "Lenovo IdeaPad Slim 3 14IAH8 (Core i5 12450H / 16GB RAM / 512GB SSD)",
+      id: 'laptop-lenovo-03',
+      name: 'Lenovo IdeaPad Slim 3 14IAH8 (Core i5 12450H / 16GB RAM / 512GB SSD)',
       price: 12900000,
-      brand: "Lenovo",
-      weight: "1.43kg",
-      screen: "14 inch viền hơi dày",
-      usage: "Đa nhiệm cực khủng với 16GB RAM không lo giật lag, gõ văn bản êm tay",
-      battery: "3 - 4 tiếng dùng liên tục",
+      brand: 'Lenovo',
+      weight: '1.43kg',
+      screen: '14 inch viền hơi dày',
+      usage:
+        'Đa nhiệm cực khủng với 16GB RAM không lo giật lag, gõ văn bản êm tay',
+      battery: '3 - 4 tiếng dùng liên tục',
       stock: 22,
       raw_specs: {
-        cpu: "Intel Core i5 Gen 12",
-        ram: "16GB LPDDR5",
-        storage: "512GB SSD"
-      }
-    }
-  ]
+        cpu: 'Intel Core i5 Gen 12',
+        ram: '16GB LPDDR5',
+        storage: '512GB SSD',
+      },
+    },
+  ],
 };
 
 const MOCK_PROMOTIONS = {
-  installment_0: ["ac-pana-01", "ac-daikin-02", "laptop-hp-01", "fridge-lg-02"],
+  installment_0: ['ac-pana-01', 'ac-daikin-02', 'laptop-hp-01', 'fridge-lg-02'],
   discounts: {
-    "ac-pana-01": "Tặng ống đồng tối đa 5m trị giá 800.000đ",
-    "laptop-asus-02": "Tặng chuột không dây Silent trị giá 250.000đ",
-    "fridge-lg-02": "Phiếu mua hàng gia dụng 300.000đ"
-  }
+    'ac-pana-01': 'Tặng ống đồng tối đa 5m trị giá 800.000đ',
+    'laptop-asus-02': 'Tặng chuột không dây Silent trị giá 250.000đ',
+    'fridge-lg-02': 'Phiếu mua hàng gia dụng 300.000đ',
+  },
 };
 
 const MOCK_FAQ = {
-  "bảo hành máy lạnh": "Dạ, tất cả các dòng máy lạnh Panasonic và Daikin tại hệ thống được bảo hành chính hãng tại nhà 1 năm toàn bộ máy và 5 năm cho máy nén ạ. Casper bảo hành 2 năm.",
-  "bảo hành điều hòa": "Dạ, tất cả các dòng máy lạnh Panasonic và Daikin tại hệ thống được bảo hành chính hãng tại nhà 1 năm toàn bộ máy và 5 năm cho máy nén ạ. Casper bảo hành 2 năm.",
-  "giao hàng": "Dạ, miễn phí vận chuyển nội thành Đà Nẵng và các tỉnh có chi nhánh Điện Máy Xanh trong vòng 10km ạ. Giao lắp ngay trong ngày.",
-  "trả góp": "Dạ, hiện hệ thống hỗ trợ trả góp 0% lãi suất thông qua thẻ tín dụng hoặc các công ty tài chính (Home Credit, HD Saison) với thủ tục chỉ cần CCCD gắn chip ạ."
+  'bảo hành máy lạnh':
+    'Dạ, tất cả các dòng máy lạnh Panasonic và Daikin tại hệ thống được bảo hành chính hãng tại nhà 1 năm toàn bộ máy và 5 năm cho máy nén ạ. Casper bảo hành 2 năm.',
+  'bảo hành điều hòa':
+    'Dạ, tất cả các dòng máy lạnh Panasonic và Daikin tại hệ thống được bảo hành chính hãng tại nhà 1 năm toàn bộ máy và 5 năm cho máy nén ạ. Casper bảo hành 2 năm.',
+  'giao hàng':
+    'Dạ, miễn phí vận chuyển nội thành Đà Nẵng và các tỉnh có chi nhánh Điện Máy Xanh trong vòng 10km ạ. Giao lắp ngay trong ngày.',
+  'trả góp':
+    'Dạ, hiện hệ thống hỗ trợ trả góp 0% lãi suất thông qua thẻ tín dụng hoặc các công ty tài chính (Home Credit, HD Saison) với thủ tục chỉ cần CCCD gắn chip ạ.',
 };
-
 
 // ==========================================
 // 2. CONVERSATIONAL STATE & CONFIG
 // ==========================================
 let sessionState = {
-  stage: "INIT", // INIT -> PROBING -> RECOMMENDATION -> DONE
+  stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION -> DONE
   category: null, // "ac", "fridge", "laptop"
   collectedData: {
     budget: null,
     roomSize: null,
     sunExposure: null,
     familySize: null,
-    usage: null
+    usage: null,
   },
   probingQuestionCount: 0,
-  history: []
+  history: [],
 };
 
 // Bản đồ dịch thuật từ lóng & viết tắt địa phương tiếng Việt
 const SLANG_MAP = {
-  "đh": "điều hòa / máy lạnh",
-  "ml": "điều hòa / máy lạnh",
-  "tl": "tủ lạnh",
-  "đt": "điện thoại",
-  "dt": "điện thoại",
-  "ko": "không",
-  "đc": "được",
-  "bth": "bình thường",
-  "củ": "triệu VNĐ",
-  "tr": "triệu VNĐ",
-  "k": "nghìn VNĐ",
-  "ngựa": "HP (Sức ngựa)",
-  "m2": "mét vuông"
+  đh: 'điều hòa / máy lạnh',
+  ml: 'điều hòa / máy lạnh',
+  tl: 'tủ lạnh',
+  đt: 'điện thoại',
+  dt: 'điện thoại',
+  ko: 'không',
+  đc: 'được',
+  bth: 'bình thường',
+  củ: 'triệu VNĐ',
+  tr: 'triệu VNĐ',
+  k: 'nghìn VNĐ',
+  ngựa: 'HP (Sức ngựa)',
+  m2: 'mét vuông',
 };
-
 
 // ==========================================
 // 3. LINGUISTIC & LOCALIZED PARSERS
 // ==========================================
 
 function analyzeLinguisticSlang(text) {
-  const slangDiv = document.getElementById("slang-inspector");
-  slangDiv.innerHTML = ""; // Clear
+  const slangDiv = document.getElementById('slang-inspector');
+  slangDiv.innerHTML = ''; // Clear
   const lowerText = text.toLowerCase();
   let detected = false;
 
@@ -231,8 +234,9 @@ function analyzeLinguisticSlang(text) {
     // Sử dụng Regex để định vị chuẩn xác từ viết tắt độc lập, không bị lẫn vào từ khác
     const regex = new RegExp(`\\b${key}\\b`, 'gi');
     if (regex.test(lowerText)) {
-      const pill = document.createElement("div");
-      pill.className = "flex items-center justify-between bg-slate-800 px-2 py-1 rounded text-[11px] border border-slate-700/50";
+      const pill = document.createElement('div');
+      pill.className =
+        'flex items-center justify-between bg-slate-800 px-2 py-1 rounded text-[11px] border border-slate-700/50';
       pill.innerHTML = `
         <span class="text-accent-amber font-semibold">"${key}"</span>
         <i class="fa-solid fa-arrow-right text-[10px] text-slate-500"></i>
@@ -244,9 +248,10 @@ function analyzeLinguisticSlang(text) {
   }
 
   // Phân tích thêm đơn vị "ngựa" cho điều hòa
-  if (lowerText.includes("ngựa") || lowerText.includes("hp")) {
-    const pill = document.createElement("div");
-    pill.className = "flex items-center justify-between bg-slate-800 px-2 py-1 rounded text-[11px] border border-slate-700/50";
+  if (lowerText.includes('ngựa') || lowerText.includes('hp')) {
+    const pill = document.createElement('div');
+    pill.className =
+      'flex items-center justify-between bg-slate-800 px-2 py-1 rounded text-[11px] border border-slate-700/50';
     pill.innerHTML = `
       <span class="text-accent-amber font-semibold">"Ngựa / HP"</span>
       <i class="fa-solid fa-arrow-right text-[10px] text-slate-500"></i>
@@ -263,21 +268,22 @@ function analyzeLinguisticSlang(text) {
 
 // Hàm chuyển định dạng tiền tệ Việt Nam Đồng
 function formatVND(amount) {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount).replace('₫', 'đ');
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+    .format(amount)
+    .replace('₫', 'đ');
 }
-
 
 // ==========================================
 // 4. CHAT SYSTEM WORKFLOW & ACTION HANDLERS
 // ==========================================
 
 function scrollChatToBottom() {
-  const chatBox = document.getElementById("chat-box");
+  const chatBox = document.getElementById('chat-box');
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function showTypingIndicator() {
-  const chatBox = document.getElementById("chat-box");
+  const chatBox = document.getElementById('chat-box');
   const indicatorHtml = `
     <div id="typing-indicator" class="flex items-start space-x-3 message-fade-in">
       <div class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
@@ -297,14 +303,14 @@ function showTypingIndicator() {
 }
 
 function removeTypingIndicator() {
-  const indicator = document.getElementById("typing-indicator");
+  const indicator = document.getElementById('typing-indicator');
   if (indicator) {
     indicator.remove();
   }
 }
 
 function appendUserMessage(text) {
-  const chatBox = document.getElementById("chat-box");
+  const chatBox = document.getElementById('chat-box');
   const messageHtml = `
     <div class="flex items-start space-x-3 justify-end message-fade-in">
       <div class="space-y-1 max-w-[80%]">
@@ -323,7 +329,7 @@ function appendUserMessage(text) {
 }
 
 function appendAssistantMessage(htmlContent) {
-  const chatBox = document.getElementById("chat-box");
+  const chatBox = document.getElementById('chat-box');
   const messageHtml = `
     <div class="flex items-start space-x-3 message-fade-in">
       <div class="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center shrink-0 shadow-md">
@@ -341,20 +347,19 @@ function appendAssistantMessage(htmlContent) {
   scrollChatToBottom();
 }
 
-
 // ==========================================
 // 5. CHAT SUBMISSION PROCESS (MAIN PIPELINE)
 // ==========================================
 
 function handleUserSubmit(event) {
   event.preventDefault();
-  const inputEl = document.getElementById("user-input");
+  const inputEl = document.getElementById('user-input');
   const rawInput = inputEl.value.trim();
   if (!rawInput) return;
 
   // 1. Gửi tin nhắn lên khung chat
   appendUserMessage(rawInput);
-  inputEl.value = "";
+  inputEl.value = '';
 
   // 2. Chạy bộ phân tích từ lóng ra sidepanel
   analyzeLinguisticSlang(rawInput);
@@ -363,7 +368,8 @@ function handleUserSubmit(event) {
   showTypingIndicator();
 
   // 4. Giả lập độ trễ đạt chuẩn Hackathon (Hỏi thường < 3s, So sánh < 5s)
-  const isCompareRequest = detectCompareKeyword(rawInput) || sessionState.stage === "PROBING";
+  const isCompareRequest =
+    detectCompareKeyword(rawInput) || sessionState.stage === 'PROBING';
   const latency = isCompareRequest ? 1600 : 750; // Giả lập thời gian phản hồi thực tế của LLM
 
   setTimeout(() => {
@@ -374,12 +380,18 @@ function handleUserSubmit(event) {
 
 function detectCompareKeyword(text) {
   const lower = text.toLowerCase();
-  return lower.includes("tìm") || lower.includes("mua") || lower.includes("tư vấn") || lower.includes("so sánh") || lower.includes("gợi ý");
+  return (
+    lower.includes('tìm') ||
+    lower.includes('mua') ||
+    lower.includes('tư vấn') ||
+    lower.includes('so sánh') ||
+    lower.includes('gợi ý')
+  );
 }
 
 function processResponseLogic(userInput, latency) {
   // Đồng bộ độ trễ thực tế ra Sidebar
-  document.getElementById("latency-val").textContent = `${latency}ms`;
+  document.getElementById('latency-val').textContent = `${latency}ms`;
 
   const lowerInput = userInput.toLowerCase();
 
@@ -392,26 +404,44 @@ function processResponseLogic(userInput, latency) {
   // Xử lý các câu hỏi FAQ chính sách (bảo hành, lắp đặt, vận chuyển, trả góp)
   for (const [key, faqAns] of Object.entries(MOCK_FAQ)) {
     if (lowerInput.includes(key)) {
-      updateSidebarLogs("faq", true);
-      appendAssistantMessage(`<p class="text-sm leading-relaxed">${faqAns}</p>`);
+      updateSidebarLogs('faq', true);
+      appendAssistantMessage(
+        `<p class="text-sm leading-relaxed">${faqAns}</p>`,
+      );
       return;
     }
   }
 
   // KHỞI CHẠY TIẾN TRÌNH: NHẬN DIỆN NGÀNH HÀNG KHÁCH HÀNG ĐANG HỎI
-  if (sessionState.stage === "INIT") {
-    if (lowerInput.includes("máy lạnh") || lowerInput.includes("điều hòa") || lowerInput.includes("đh") || lowerInput.includes("hp") || lowerInput.includes("ngựa")) {
-      sessionState.category = "ac";
-      sessionState.stage = "PROBING";
-      document.getElementById("active-category").textContent = "Máy Lạnh (AC)";
-    } else if (lowerInput.includes("tủ lạnh") || lowerInput.includes("tl") || lowerInput.includes("lít") || lowerInput.includes("lit")) {
-      sessionState.category = "fridge";
-      sessionState.stage = "PROBING";
-      document.getElementById("active-category").textContent = "Tủ Lạnh";
-    } else if (lowerInput.includes("laptop") || lowerInput.includes("máy tính") || lowerInput.includes("ram") || lowerInput.includes("i5")) {
-      sessionState.category = "laptop";
-      sessionState.stage = "PROBING";
-      document.getElementById("active-category").textContent = "Laptop";
+  if (sessionState.stage === 'INIT') {
+    if (
+      lowerInput.includes('máy lạnh') ||
+      lowerInput.includes('điều hòa') ||
+      lowerInput.includes('đh') ||
+      lowerInput.includes('hp') ||
+      lowerInput.includes('ngựa')
+    ) {
+      sessionState.category = 'ac';
+      sessionState.stage = 'PROBING';
+      document.getElementById('active-category').textContent = 'Máy Lạnh (AC)';
+    } else if (
+      lowerInput.includes('tủ lạnh') ||
+      lowerInput.includes('tl') ||
+      lowerInput.includes('lít') ||
+      lowerInput.includes('lit')
+    ) {
+      sessionState.category = 'fridge';
+      sessionState.stage = 'PROBING';
+      document.getElementById('active-category').textContent = 'Tủ Lạnh';
+    } else if (
+      lowerInput.includes('laptop') ||
+      lowerInput.includes('máy tính') ||
+      lowerInput.includes('ram') ||
+      lowerInput.includes('i5')
+    ) {
+      sessionState.category = 'laptop';
+      sessionState.stage = 'PROBING';
+      document.getElementById('active-category').textContent = 'Laptop';
     } else {
       // Ngoài phạm vi demo của 3 ngành hàng
       appendAssistantMessage(`
@@ -423,73 +453,71 @@ function processResponseLogic(userInput, latency) {
   }
 
   // TIẾN TRÌNH HỎI NGƯỢC (STEP 1: PROACTIVE PROBING)
-  if (sessionState.stage === "PROBING") {
-    document.getElementById("chat-stage").textContent = "Đang Hỏi Ngược";
-    document.getElementById("chat-stage").className = "font-semibold text-accent-orange";
+  if (sessionState.stage === 'PROBING') {
+    document.getElementById('chat-stage').textContent = 'Đang Hỏi Ngược';
+    document.getElementById('chat-stage').className =
+      'font-semibold text-accent-orange';
 
     // Trích xuất ngân sách nếu có (ví dụ: "dưới 15 củ")
     extractDataIntoContext(lowerInput);
 
-    if (sessionState.category === "ac") {
+    if (sessionState.category === 'ac') {
       if (sessionState.collectedData.roomSize === null) {
-        updateSidebarLogs("catalog", false);
+        updateSidebarLogs('catalog', false);
         appendAssistantMessage(`
           <p class="text-sm">Dạ, máy lạnh tại hệ thống đang có rất nhiều dòng tiết kiệm điện cực xịn sò ạ!</p>
           <p class="text-sm mt-2">Để em chọn được dòng máy chạy êm và có công suất **ngựa (HP)** vừa vặn nhất, anh/chị cho em hỏi <strong>diện tích phòng ngủ/phòng khách</strong> của mình khoảng bao nhiêu mét vuông (m²) vậy ạ? Và phòng mình có bị hướng nắng nóng chiếu trực tiếp vào không anh/chị?</p>
         `);
-        sessionState.collectedData.roomSize = "WAITING"; // Set cờ đợi câu trả lời diện tích
+        sessionState.collectedData.roomSize = 'WAITING'; // Set cờ đợi câu trả lời diện tích
         return;
-      } else if (sessionState.collectedData.roomSize === "WAITING") {
+      } else if (sessionState.collectedData.roomSize === 'WAITING') {
         parseRoomSizeAndSun(lowerInput);
-        sessionState.stage = "RECOMMENDATION";
+        sessionState.stage = 'RECOMMENDATION';
       }
-    }
-
-    else if (sessionState.category === "fridge") {
+    } else if (sessionState.category === 'fridge') {
       if (sessionState.collectedData.familySize === null) {
-        updateSidebarLogs("catalog", false);
+        updateSidebarLogs('catalog', false);
         appendAssistantMessage(`
           <p class="text-sm">Dạ, tủ lạnh là thiết bị tối quan trọng cho gia đình, lựa chọn dung tích lít phù hợp sẽ giúp bảo quản thực phẩm tối ưu và tránh lãng phí điện năng ạ.</p>
           <p class="text-sm mt-2">Để em lọc sản phẩm chuẩn xác nhất, anh/chị cho em hỏi **nhà mình có khoảng bao nhiêu thành viên** sinh hoạt chung ạ? Và anh/chị mong muốn tầm tài chính khoảng bao nhiêu "củ" đổ lại ạ?</p>
         `);
-        sessionState.collectedData.familySize = "WAITING";
+        sessionState.collectedData.familySize = 'WAITING';
         return;
-      } else if (sessionState.collectedData.familySize === "WAITING") {
+      } else if (sessionState.collectedData.familySize === 'WAITING') {
         parseFamilySizeAndBudget(lowerInput);
-        sessionState.stage = "RECOMMENDATION";
+        sessionState.stage = 'RECOMMENDATION';
       }
-    }
-
-    else if (sessionState.category === "laptop") {
+    } else if (sessionState.category === 'laptop') {
       if (sessionState.collectedData.usage === null) {
-        updateSidebarLogs("catalog", false);
+        updateSidebarLogs('catalog', false);
         appendAssistantMessage(`
           <p class="text-sm">Dạ, laptop mỏng nhẹ mang đi lại cho sinh viên là phân khúc đang có rất nhiều deal hời kèm trả góp 0% lãi suất ạ!</p>
           <p class="text-sm mt-2">Để em lọc cấu hình mượt mà nhất, ngoài việc học và làm văn phòng thông thường thì bạn có chơi game online hay dùng các phần mềm đồ họa thiết kế nào khác không ạ?</p>
         `);
-        sessionState.collectedData.usage = "WAITING";
+        sessionState.collectedData.usage = 'WAITING';
         return;
-      } else if (sessionState.collectedData.usage === "WAITING") {
+      } else if (sessionState.collectedData.usage === 'WAITING') {
         parseLaptopUsage(lowerInput);
-        sessionState.stage = "RECOMMENDATION";
+        sessionState.stage = 'RECOMMENDATION';
       }
     }
   }
 
   // TIẾN TRÌNH XUẤT ĐỀ XUẤT TOP 3 VÀ PHÂN TÍCH ĐÁNH ĐỔI (STEP 3: RECOMMENDATION)
-  if (sessionState.stage === "RECOMMENDATION") {
-    document.getElementById("chat-stage").textContent = "So Sánh & Đề Xuất";
-    document.getElementById("chat-stage").className = "font-semibold text-accent-green";
+  if (sessionState.stage === 'RECOMMENDATION') {
+    document.getElementById('chat-stage').textContent = 'So Sánh & Đề Xuất';
+    document.getElementById('chat-stage').className =
+      'font-semibold text-accent-green';
 
     // Đồng bộ hoàn thành tiến trình RAG lên sidepanel
-    updateSidebarLogs("catalog", true);
-    updateSidebarLogs("promo", true);
+    updateSidebarLogs('catalog', true);
+    updateSidebarLogs('promo', true);
 
     const recommendedHtml = generateTop3Recommendations(sessionState.category);
     appendAssistantMessage(recommendedHtml);
 
     // Chuyển máy trạng thái về ban đầu để người dùng có thể hỏi tiếp
-    sessionState.stage = "INIT";
+    sessionState.stage = 'INIT';
     sessionState.category = null;
     resetCollectedData();
   }
@@ -497,7 +525,16 @@ function processResponseLogic(userInput, latency) {
 
 // Kiểm tra chống ảo giác: Tránh bịa đặt các dòng máy ngoài catalog
 function detectUnknowSpecsOrPrices(input) {
-  const productExclusions = ["iphone", "samsung s24", "macbook pro", "máy giặt", "máy sấy", "tivi", "sony", "toshiba"];
+  const productExclusions = [
+    'iphone',
+    'samsung s24',
+    'macbook pro',
+    'máy giặt',
+    'máy sấy',
+    'tivi',
+    'sony',
+    'toshiba',
+  ];
   for (const item of productExclusions) {
     if (input.includes(item)) return true;
   }
@@ -506,7 +543,7 @@ function detectUnknowSpecsOrPrices(input) {
 
 // Phản hồi của hàng rào chống ảo giác (Anti-Hallucination Guardrail Response)
 function triggerMissingDataResponse() {
-  updateSidebarLogs("catalog", false);
+  updateSidebarLogs('catalog', false);
   appendAssistantMessage(`
     <div class="space-y-2">
       <div class="flex items-center space-x-2 text-accent-orange font-semibold text-sm">
@@ -530,7 +567,7 @@ function triggerMissingDataResponse() {
 
 // Bóc tách ngân sách của người dùng
 function extractDataIntoContext(text) {
-  if (text.includes("triệu") || text.includes("tr") || text.includes("củ")) {
+  if (text.includes('triệu') || text.includes('tr') || text.includes('củ')) {
     const numbers = text.match(/\d+/g);
     if (numbers && numbers.length > 0) {
       sessionState.collectedData.budget = parseInt(numbers[0]) * 1000000;
@@ -545,7 +582,10 @@ function parseRoomSizeAndSun(text) {
   } else {
     sessionState.collectedData.roomSize = 12; // Mặc định nếu người dùng gõ chữ không kèm số
   }
-  sessionState.collectedData.sunExposure = text.includes("nắng") || text.includes("nóng") || text.includes("hướng tây");
+  sessionState.collectedData.sunExposure =
+    text.includes('nắng') ||
+    text.includes('nóng') ||
+    text.includes('hướng tây');
 }
 
 function parseFamilySizeAndBudget(text) {
@@ -567,13 +607,13 @@ function resetCollectedData() {
     roomSize: null,
     sunExposure: null,
     familySize: null,
-    usage: null
+    usage: null,
   };
 }
 
 // Làm mới cuộc hội thoại
-window.resetConversation = function() {
-  const chatBox = document.getElementById("chat-box");
+window.resetConversation = function () {
+  const chatBox = document.getElementById('chat-box');
   chatBox.innerHTML = `
     <div class="flex items-start space-x-3 message-fade-in">
       <div class="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center shrink-0 shadow-md">
@@ -592,48 +632,52 @@ window.resetConversation = function() {
       </div>
     </div>
   `;
-  sessionState.stage = "INIT";
+  sessionState.stage = 'INIT';
   sessionState.category = null;
   resetCollectedData();
-  document.getElementById("active-category").textContent = "Chưa xác định";
-  document.getElementById("chat-stage").textContent = "Khởi tạo";
-  document.getElementById("chat-stage").className = "font-semibold text-accent-amber";
-  document.getElementById("slang-inspector").innerHTML = `<span class="text-slate-500 italic">Chưa phát hiện từ viết tắt...</span>`;
-  document.getElementById("rag-catalog-status").className = "text-slate-500";
-  document.getElementById("rag-catalog-status").innerHTML = `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
-  document.getElementById("rag-promo-status").className = "text-slate-500";
-  document.getElementById("rag-promo-status").innerHTML = `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
-  document.getElementById("rag-faq-status").className = "text-slate-500";
-  document.getElementById("rag-faq-status").innerHTML = `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
-  document.getElementById("latency-val").textContent = "0ms";
+  document.getElementById('active-category').textContent = 'Chưa xác định';
+  document.getElementById('chat-stage').textContent = 'Khởi tạo';
+  document.getElementById('chat-stage').className =
+    'font-semibold text-accent-amber';
+  document.getElementById('slang-inspector').innerHTML =
+    `<span class="text-slate-500 italic">Chưa phát hiện từ viết tắt...</span>`;
+  document.getElementById('rag-catalog-status').className = 'text-slate-500';
+  document.getElementById('rag-catalog-status').innerHTML =
+    `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
+  document.getElementById('rag-promo-status').className = 'text-slate-500';
+  document.getElementById('rag-promo-status').innerHTML =
+    `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
+  document.getElementById('rag-faq-status').className = 'text-slate-500';
+  document.getElementById('rag-faq-status').innerHTML =
+    `<i class="fa-solid fa-circle-minus mr-1"></i>Chờ`;
+  document.getElementById('latency-val').textContent = '0ms';
 };
 
 // Đổ nhanh dữ liệu demo cho BGK
-window.fillQuickPrompt = function(promptText) {
-  const inputEl = document.getElementById("user-input");
+window.fillQuickPrompt = function (promptText) {
+  const inputEl = document.getElementById('user-input');
   inputEl.value = promptText;
   inputEl.focus();
 };
 
 function updateSidebarLogs(system, active) {
   const elMap = {
-    "catalog": "rag-catalog-status",
-    "promo": "rag-promo-status",
-    "faq": "rag-faq-status"
+    catalog: 'rag-catalog-status',
+    promo: 'rag-promo-status',
+    faq: 'rag-faq-status',
   };
 
   const targetEl = document.getElementById(elMap[system]);
   if (!targetEl) return;
 
   if (active) {
-    targetEl.className = "text-accent-green font-semibold flex items-center";
+    targetEl.className = 'text-accent-green font-semibold flex items-center';
     targetEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-accent-green inline-block mr-1.5 pulse-green"></span>Truy xuất OK`;
   } else {
-    targetEl.className = "text-accent-amber font-semibold flex items-center";
+    targetEl.className = 'text-accent-amber font-semibold flex items-center';
     targetEl.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1.5"></i>Đang gọi API`;
   }
 }
-
 
 // ==========================================
 // 6. SPEC-TO-BENEFIT TRANSLATION & COMPARISON
@@ -641,19 +685,20 @@ function updateSidebarLogs(system, active) {
 
 function translateSpecToBenefit(specName, specVal) {
   const dictionary = {
-    "inverter": {
-      true: "Công nghệ biến tần Inverter vượt trội: Giúp máy vận hành siêu êm ái, giảm tối đa tiếng ồn cục nóng ngoài trời và cực kỳ tiết kiệm điện năng tiêu thụ hàng tháng cho gia đình.",
-      false: "Không có Inverter: Dễ tốn điện hơn nếu sử dụng liên tục trên 6 tiếng mỗi ngày."
+    inverter: {
+      true: 'Công nghệ biến tần Inverter vượt trội: Giúp máy vận hành siêu êm ái, giảm tối đa tiếng ồn cục nóng ngoài trời và cực kỳ tiết kiệm điện năng tiêu thụ hàng tháng cho gia đình.',
+      false:
+        'Không có Inverter: Dễ tốn điện hơn nếu sử dụng liên tục trên 6 tiếng mỗi ngày.',
     },
-    "screen_oled": {
-      true: "Màn hình OLED cao cấp: Cho dải màu rực rỡ, độ tương phản sâu xem phim giải trí cực đã mắt, chống mỏi mắt cho người học bài ban đêm."
+    screen_oled: {
+      true: 'Màn hình OLED cao cấp: Cho dải màu rực rỡ, độ tương phản sâu xem phim giải trí cực đã mắt, chống mỏi mắt cho người học bài ban đêm.',
     },
-    "ram_16gb": {
-      true: "Bộ nhớ RAM 16GB cực khủng: Lướt web mở 30 tab Chrome đồng thời, chạy Excel nặng không lo giật lag hay treo ứng dụng giữa chừng."
-    }
+    ram_16gb: {
+      true: 'Bộ nhớ RAM 16GB cực khủng: Lướt web mở 30 tab Chrome đồng thời, chạy Excel nặng không lo giật lag hay treo ứng dụng giữa chừng.',
+    },
   };
 
-  return dictionary[specName] ? dictionary[specName][specVal] : "";
+  return dictionary[specName] ? dictionary[specName][specVal] : '';
 }
 
 function generateTop3Recommendations(category) {
@@ -669,32 +714,35 @@ function generateTop3Recommendations(category) {
   `;
 
   products.forEach((product, idx) => {
-    const isInstallmentZero = MOCK_PROMOTIONS.installment_0.includes(product.id);
-    const gift = MOCK_PROMOTIONS.discounts[product.id] || "Không áp dụng quà tặng đi kèm";
-    const stockText = product.stock > 0
-      ? `<span class="text-accent-green font-medium">Còn hàng (${product.stock} máy tại siêu thị)</span>`
-      : `<span class="text-red-500 font-medium">Hết hàng tạm thời (No Stock)</span>`;
+    const isInstallmentZero = MOCK_PROMOTIONS.installment_0.includes(
+      product.id,
+    );
+    const gift =
+      MOCK_PROMOTIONS.discounts[product.id] || 'Không áp dụng quà tặng đi kèm';
+    const stockText =
+      product.stock > 0
+        ? `<span class="text-accent-green font-medium">Còn hàng (${product.stock} máy tại siêu thị)</span>`
+        : `<span class="text-red-500 font-medium">Hết hàng tạm thời (No Stock)</span>`;
 
-    let benefitHighlight = "";
-    let tradeoffHighlight = "";
+    let benefitHighlight = '';
+    let tradeoffHighlight = '';
 
-    if (category === "ac") {
+    if (category === 'ac') {
       benefitHighlight = `
         <div class="text-xs text-slate-300 space-y-1 bg-slate-900/50 p-2 rounded border border-slate-700/30">
           <p class="text-[11px] text-accent-green font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
           <p>• Phù hợp hoàn hảo cho không gian <strong>${product.room_size}</strong>.</p>
-          <p>• ${translateSpecToBenefit("inverter", product.inverter)}</p>
+          <p>• ${translateSpecToBenefit('inverter', product.inverter)}</p>
           <p>• Độ ồn tối đa chỉ <strong>${product.noise}</strong>.</p>
         </div>
       `;
-      tradeoffHighlight = idx === 2
-        ? "Mức giá cực rẻ tiết kiệm tài chính tối đa, tuy nhiên máy sử dụng màng lọc bụi thô cơ bản (không lọc được bụi siêu mịn PM2.5) và máy hoạt động có tiếng ồn lớn hơn hai dòng cao cấp phía trên."
-        : idx === 1
-          ? "Làm lạnh cực nhanh và sâu nhưng giá thành cao hơn hẳn dòng Panasonic, diện tích lắp đặt cục nóng lớn hơn."
-          : "Công suất 1 HP chỉ khuyên dùng cho phòng nhỏ dưới 15m², nếu phòng bị hướng nắng gắt chiếu trực tiếp vào buổi trưa thì máy sẽ mất nhiều thời gian hơn để làm mát sâu.";
-    }
-
-    else if (category === "fridge") {
+      tradeoffHighlight =
+        idx === 2
+          ? 'Mức giá cực rẻ tiết kiệm tài chính tối đa, tuy nhiên máy sử dụng màng lọc bụi thô cơ bản (không lọc được bụi siêu mịn PM2.5) và máy hoạt động có tiếng ồn lớn hơn hai dòng cao cấp phía trên.'
+          : idx === 1
+            ? 'Làm lạnh cực nhanh và sâu nhưng giá thành cao hơn hẳn dòng Panasonic, diện tích lắp đặt cục nóng lớn hơn.'
+            : 'Công suất 1 HP chỉ khuyên dùng cho phòng nhỏ dưới 15m², nếu phòng bị hướng nắng gắt chiếu trực tiếp vào buổi trưa thì máy sẽ mất nhiều thời gian hơn để làm mát sâu.';
+    } else if (category === 'fridge') {
       benefitHighlight = `
         <div class="text-xs text-slate-300 space-y-1 bg-slate-900/50 p-2 rounded border border-slate-700/30">
           <p class="text-[11px] text-accent-green font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
@@ -702,37 +750,37 @@ function generateTop3Recommendations(category) {
           <p>• ${product.cooling}</p>
         </div>
       `;
-      tradeoffHighlight = idx === 2
-        ? "Mức giá siêu rẻ cho sinh viên nhưng dung tích rất nhỏ 90L không có ngăn làm đá đông mềm riêng biệt, và không tích hợp Inverter tiết kiệm điện."
-        : idx === 0
-          ? "Kiểu dáng ngăn đá phía trên truyền thống nên mỗi lần lấy rau củ ngăn dưới cùng mình sẽ phải cúi khom người hơi mỏi nhẹ một chút."
-          : "Trang bị vòi lấy nước ngoài siêu tiện lợi nhưng kích thước tủ tương đối to ngang, cần vị trí đặt tủ rộng tối thiểu 70cm để mở cánh tủ thoải mái nhất.";
-    }
-
-    else if (category === "laptop") {
-      const is16GB = product.id === "laptop-lenovo-03";
+      tradeoffHighlight =
+        idx === 2
+          ? 'Mức giá siêu rẻ cho sinh viên nhưng dung tích rất nhỏ 90L không có ngăn làm đá đông mềm riêng biệt, và không tích hợp Inverter tiết kiệm điện.'
+          : idx === 0
+            ? 'Kiểu dáng ngăn đá phía trên truyền thống nên mỗi lần lấy rau củ ngăn dưới cùng mình sẽ phải cúi khom người hơi mỏi nhẹ một chút.'
+            : 'Trang bị vòi lấy nước ngoài siêu tiện lợi nhưng kích thước tủ tương đối to ngang, cần vị trí đặt tủ rộng tối thiểu 70cm để mở cánh tủ thoải mái nhất.';
+    } else if (category === 'laptop') {
+      const is16GB = product.id === 'laptop-lenovo-03';
       benefitHighlight = `
         <div class="text-xs text-slate-300 space-y-1 bg-slate-900/50 p-2 rounded border border-slate-700/30">
           <p class="text-[11px] text-accent-green font-semibold uppercase tracking-wider">Lợi ích thực tế:</p>
           <p>• Thiết kế mỏng nhẹ chỉ nặng <strong>${product.weight}</strong>, mang đi học cả ngày không mệt mỏi.</p>
           <p>• Màn hình <strong>${product.screen}</strong> bảo vệ thị lực.</p>
-          ${is16GB ? `<p>• ${translateSpecToBenefit("ram_16gb", true)}</p>` : `<p>• 8GB RAM mượt mà cho mọi tác vụ Word, Excel phổ thông.</p>`}
+          ${is16GB ? `<p>• ${translateSpecToBenefit('ram_16gb', true)}</p>` : `<p>• 8GB RAM mượt mà cho mọi tác vụ Word, Excel phổ thông.</p>`}
         </div>
       `;
-      tradeoffHighlight = idx === 2
-        ? "Cấu hình cực mạnh và đa nhiệm siêu khủng trong tầm giá tốt nhưng viền màn hình hơi dày và vỏ máy bằng chất liệu nhựa thuần tối giản, ít sang trọng."
-        : idx === 0
-          ? "Thiết kế vỏ nhôm tinh xảo cao cấp nhưng thời lượng pin ở mức trung bình (4-5 tiếng), bạn nên mang theo củ sạc đi kèm khi học nhóm cả ngày."
-          : "Màn hình OLED hiển thị màu sắc rực rỡ siêu nịnh mắt nhưng vỏ máy cấu trúc nhựa dễ bám dấu vân tay khi sử dụng.";
+      tradeoffHighlight =
+        idx === 2
+          ? 'Cấu hình cực mạnh và đa nhiệm siêu khủng trong tầm giá tốt nhưng viền màn hình hơi dày và vỏ máy bằng chất liệu nhựa thuần tối giản, ít sang trọng.'
+          : idx === 0
+            ? 'Thiết kế vỏ nhôm tinh xảo cao cấp nhưng thời lượng pin ở mức trung bình (4-5 tiếng), bạn nên mang theo củ sạc đi kèm khi học nhóm cả ngày.'
+            : 'Màn hình OLED hiển thị màu sắc rực rỡ siêu nịnh mắt nhưng vỏ máy cấu trúc nhựa dễ bám dấu vân tay khi sử dụng.';
     }
 
     htmlResult += `
-      <!-- THẺ SẢN PHẨM ${idx+1} -->
+      <!-- THẺ SẢN PHẨM ${idx + 1} -->
       <div class="trade-off-card bg-slate-950 rounded-xl p-4 border border-slate-800 flex flex-col justify-between space-y-3">
         <div>
           <div class="flex justify-between items-start mb-2">
             <span class="px-2 py-0.5 text-[10px] font-bold bg-brand-500/10 text-brand-500 border border-brand-500/20 rounded">
-              Gợi Ý ${idx+1}
+              Gợi Ý ${idx + 1}
             </span>
             ${isInstallmentZero ? `<span class="px-2 py-0.5 text-[10px] font-bold bg-accent-orange/10 text-accent-orange border border-accent-orange/20 rounded">Góp 0%</span>` : ''}
           </div>
@@ -788,10 +836,10 @@ function generateTop3Recommendations(category) {
 // ==========================================
 // 7. INITIALIZE DOM EVENTS FOR WEBPACK
 // ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-  const chatForm = document.getElementById("chat-form");
+document.addEventListener('DOMContentLoaded', () => {
+  const chatForm = document.getElementById('chat-form');
   if (chatForm) {
-    chatForm.addEventListener("submit", handleUserSubmit);
+    chatForm.addEventListener('submit', handleUserSubmit);
   }
 
   // Expose function out of bundle for inline HTML onclick handlers
