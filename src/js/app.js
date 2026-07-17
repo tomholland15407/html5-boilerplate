@@ -275,7 +275,7 @@ function showTypingIndicator() {
   const indicatorHtml = `
     <div id="typing-indicator" class="flex items-start space-x-3 message-fade-in">
       <div class="w-10 h-10 rounded-xl bg-white border border-slate-700/50 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-        <img src="img/mascot.jpg" alt="Mascot Typing..." class="w-full h-full object-contain p-0.5 animate-pulse" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+        <img src="img/mascot.png" alt="Mascot Typing..." class="w-full h-full object-contain p-0.5 animate-pulse" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="bg-slate-800 text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-700/50">
         <div class="flex items-center space-x-1 py-1">
@@ -322,7 +322,7 @@ function appendAssistantMessage(htmlContent) {
   const messageHtml = `
     <div class="flex items-start space-x-3 message-fade-in">
       <div class="w-10 h-10 rounded-xl bg-white border border-slate-700/50 flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-        <img src="img/mascot.jpg" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+        <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
         <div class="bg-slate-800 text-slate-100 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-700/50">
@@ -589,7 +589,7 @@ window.resetConversation = function () {
   chatBox.innerHTML = `
     <div class="flex items-start space-x-3 message-fade-in">
       <div class="w-10 h-10 rounded-xl bg-white border border-slate-700/50 flex items-center justify-center shrink-0 shadow-md overflow-hidden">
-        <img src="img/mascot.jpg" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+        <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="space-y-1 max-w-[80%]">
         <div class="bg-slate-800 text-slate-100 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-700/50">
