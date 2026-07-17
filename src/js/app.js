@@ -2,7 +2,7 @@
 /**
  * Smart Assistant - Trợ Lý Mua Sắm Thông Thái (JS Engine for Webpack)
  * Vietnam Innovation Challenge 2026
- * Hệ thống màu đồng bộ kép Dark & Light cho mọi kịch bản Demo
+ * Hệ thống giao diện nâng cấp hướng cá nhân hóa người tiêu dùng đại chúng
  */
 
 const MOCK_CATALOG = {
@@ -184,8 +184,8 @@ const MOCK_FAQ = {
 // 2. CONVERSATIONAL STATE & CONFIG
 // ==========================================
 let sessionState = {
-  stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION -> DONE
-  category: null, // 'ac', 'fridge', 'laptop'
+  stage: 'INIT',
+  category: null,
   collectedData: {
     budget: null,
     roomSize: null,
@@ -197,7 +197,10 @@ let sessionState = {
   history: [],
 };
 
-// Bản đồ dịch thuật từ lóng & viết tắt địa phương tiếng Việt
+// HỆ THỐNG QUẢN LÝ LỊCH SỬ CHAT (CUSTOMER CHAT MEMORY CORE)
+let consumerChatSessions = [];
+let activeSessionId = null;
+
 const SLANG_MAP = {
   đh: 'điều hòa / máy lạnh',
   ml: 'điều hòa / máy lạnh',
@@ -220,7 +223,9 @@ const SLANG_MAP = {
 
 function analyzeLinguisticSlang(text) {
   const slangDiv = document.getElementById('slang-inspector');
-  slangDiv.innerHTML = ''; // Clear
+  if (!slangDiv) return; // Bảo vệ an toàn DOM ẩn
+
+  slangDiv.innerHTML = '';
   const lowerText = text.toLowerCase();
   let detected = false;
 
@@ -268,12 +273,13 @@ function formatVND(amount) {
 
 function scrollChatToBottom() {
   const chatBox = document.getElementById('chat-box');
-  chatBox.scrollTop = chatBox.scrollHeight;
+  if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// CẬP NHẬT TRẠNG THÁI GÕ CHỮ CỦA MASCOT (HỖ TRỢ DUAL-THEME)
 function showTypingIndicator() {
   const chatBox = document.getElementById('chat-box');
+  if (!chatBox) return;
+
   const indicatorHtml = `
     <div id="typing-indicator" class="flex items-start space-x-3 message-fade-in">
       <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
@@ -294,13 +300,13 @@ function showTypingIndicator() {
 
 function removeTypingIndicator() {
   const indicator = document.getElementById('typing-indicator');
-  if (indicator) {
-    indicator.remove();
-  }
+  if (indicator) indicator.remove();
 }
 
 function appendUserMessage(text) {
   const chatBox = document.getElementById('chat-box');
+  if (!chatBox) return;
+
   const messageHtml = `
     <div class="flex items-start space-x-3 justify-end message-fade-in">
       <div class="space-y-1 max-w-[80%]">
@@ -316,11 +322,20 @@ function appendUserMessage(text) {
   `;
   chatBox.insertAdjacentHTML('beforeend', messageHtml);
   scrollChatToBottom();
+
+  // Ghi nhận tin nhắn vào cấu trúc Session hoạt động hiện tại để phục vụ phục hồi nếu cần
+  if (activeSessionId) {
+    const currentSess = consumerChatSessions.find(s => s.id === activeSessionId);
+    if (currentSess) {
+      currentSess.messages.push({ role: 'user', content: text });
+    }
+  }
 }
 
-// KHỞI TẠO TIN NHẮN TỪ TRỢ LÝ (HỖ TRỢ TRẠNG THÁI MÀU SÁNG/TỐI)
 function appendAssistantMessage(htmlContent) {
   const chatBox = document.getElementById('chat-box');
+  if (!chatBox) return;
+
   const messageHtml = `
     <div class="flex items-start space-x-3 message-fade-in">
       <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
@@ -330,26 +345,211 @@ function appendAssistantMessage(htmlContent) {
         <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border transition-colors duration-300">
           ${htmlContent}
         </div>
-        <span class="text-[10px] text-slate-400 dark:text-slate-500 pl-2">Phản hồi từ RAG Engine</span>
+        <span class="text-[10px] text-slate-400 dark:text-slate-500 pl-2">Phản hồi từ Trợ lý Thông thái</span>
       </div>
     </div>
   `;
   chatBox.insertAdjacentHTML('beforeend', messageHtml);
   scrollChatToBottom();
+
+  if (activeSessionId) {
+    const currentSess = consumerChatSessions.find(s => s.id === activeSessionId);
+    if (currentSess) {
+      currentSess.messages.push({ role: 'assistant', content: htmlContent });
+    }
+  }
 }
 
-// Gắn xuất API toàn cục để nút trong Chat có thể gọi hàm ngoài webpack dễ dàng
 window.appendAssistantMessage = appendAssistantMessage;
 
 // ==========================================
-// 5. CHAT SUBMISSION PROCESS (MAIN PIPELINE)
+// 5. CHAT HISTORY MANAGEMENT FUNCTIONS
+// ==========================================
+
+function createNewChatSession(initialTitle = "Cuộc trò chuyện mới") {
+  const newId = 'session_' + Date.now();
+  const newSession = {
+    id: newId,
+    title: initialTitle,
+    timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+    messages: [],
+    category: null
+  };
+
+  consumerChatSessions.unshift(newSession);
+  activeSessionId = newId;
+  renderChatHistoryUI();
+  return newSession;
+}
+
+function updateActiveSessionTitle(newTitle) {
+  if (!activeSessionId) return;
+  const session = consumerChatSessions.find(s => s.id === activeSessionId);
+  if (session) {
+    session.title = newTitle;
+    renderChatHistoryUI();
+  }
+}
+
+function renderChatHistoryUI() {
+  const container = document.getElementById('chat-history-list');
+  if (!container) return;
+
+  if (consumerChatSessions.length === 0) {
+    container.innerHTML = `
+      <div id="history-empty-state" class="text-center py-8 px-4 border border-dashed border-slate-200 dark:border-brand-border/40 rounded-xl">
+        <i class="fa-regular fa-comments text-slate-300 dark:text-slate-600 text-2xl mb-2 block"></i>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 italic">Chưa có cuộc trò chuyện cũ nào tại phiên này.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = '';
+  consumerChatSessions.forEach(session => {
+    const isActive = session.id === activeSessionId;
+    const pill = document.createElement('div');
+
+    pill.className = `group flex items-center justify-between p-3 rounded-xl border transition-all duration-200 cursor-pointer text-xs font-medium relative history-item-appear ${
+      isActive
+      ? 'border-brand-electric/40 bg-brand-electric/5 text-brand-electric dark:bg-brand-electric/10'
+      : 'border-slate-100 dark:border-brand-border/40 bg-slate-50/60 dark:bg-brand-panel/40 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-brand-border hover:bg-slate-100 dark:hover:bg-brand-dark/30'
+    }`;
+
+    // Tạo cấu trúc hiển thị text thân thiện kèm icon ngành hàng tương ứng
+    let categoryIcon = '<i class="fa-regular fa-comment text-slate-400 group-hover:text-brand-electric transition-colors"></i>';
+    if (session.category === 'ac') categoryIcon = '<i class="fa-solid fa-snowflake text-cyan-500"></i>';
+    if (session.category === 'fridge') categoryIcon = '<i class="fa-solid fa-carrot text-emerald-500"></i>';
+    if (session.category === 'laptop') categoryIcon = '<i class="fa-solid fa-laptop text-indigo-500"></i>';
+
+    pill.innerHTML = `
+      <div class="flex items-center space-x-2.5 truncate w-[85%]">
+        <span class="shrink-0 text-sm">${categoryIcon}</span>
+        <div class="truncate flex flex-col text-left">
+          <span class="truncate font-semibold tracking-wide text-slate-900 dark:text-slate-100">${session.title}</span>
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">${session.timestamp} • Điện Máy Xanh</span>
+        </div>
+      </div>
+      <button class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-brand-coral p-1 rounded transition-opacity" title="Xóa lịch sử này">
+        <i class="fa-solid fa-trash-can text-[11px]"></i>
+      </button>
+    `;
+
+    // Gắn trình xử lý sự kiện bấm khôi phục hoặc xóa session
+    pill.addEventListener('click', (e) => {
+      if (e.target.closest('button')) {
+        e.stopPropagation();
+        deleteChatSession(session.id);
+      } else {
+        switchChatSession(session.id);
+      }
+    });
+
+    container.appendChild(pill);
+  });
+}
+
+function deleteChatSession(id) {
+  consumerChatSessions = consumerChatSessions.filter(s => s.id !== id);
+  if (activeSessionId === id) {
+    if (consumerChatSessions.length > 0) {
+      activeSessionId = consumerChatSessions[0].id;
+    } else {
+      activeSessionId = null;
+      window.resetConversation();
+      return;
+    }
+  }
+  renderChatHistoryUI();
+}
+
+function switchChatSession(id) {
+  activeSessionId = id;
+  renderChatHistoryUI();
+
+  const targetSess = consumerChatSessions.find(s => s.id === id);
+  if (!targetSess || targetSess.messages.length === 0) {
+    // Nếu là phiên rỗng thì dọn dẹp màn hình chat về ban đầu
+    clearChatBoxArea();
+    return;
+  }
+
+  // Khôi phục lại toàn bộ giao diện hộp thoại tương ứng với dữ liệu đã lưu
+  const chatBox = document.getElementById('chat-box');
+  if (!chatBox) return;
+  chatBox.innerHTML = '';
+
+  targetSess.messages.forEach(msg => {
+    if (msg.role === 'user') {
+      const uHtml = `
+        <div class="flex items-start space-x-3 justify-end message-fade-in">
+          <div class="space-y-1 max-w-[80%]">
+            <div class="bg-brand-cobalt text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md border border-brand-cobalt/20">
+              <p class="text-sm leading-relaxed">${msg.content}</p>
+            </div>
+            <div class="text-[10px] text-slate-400 dark:text-slate-500 text-right pr-2">Lịch sử cuộc gọi</div>
+          </div>
+          <div class="w-9 h-9 rounded-xl bg-white dark:bg-brand-panel border border-slate-200 dark:border-brand-border flex items-center justify-center shrink-0 transition-colors duration-300 shadow-sm">
+            <i class="fa-solid fa-user text-brand-electric text-sm"></i>
+          </div>
+        </div>
+      `;
+      chatBox.insertAdjacentHTML('beforeend', uHtml);
+    } else {
+      const aHtml = `
+        <div class="flex items-start space-x-3 message-fade-in">
+          <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+            <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+          </div>
+          <div class="space-y-1 max-w-[85%] w-full">
+            <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border transition-colors duration-300">
+              ${msg.content}
+            </div>
+            <span class="text-[10px] text-slate-400 dark:text-slate-500 pl-2">Đã khôi phục từ bộ nhớ</span>
+          </div>
+        </div>
+      `;
+      chatBox.insertAdjacentHTML('beforeend', aHtml);
+    }
+  });
+  scrollChatToBottom();
+}
+
+function clearChatBoxArea() {
+  const chatBox = document.getElementById('chat-box');
+  if (!chatBox) return;
+  chatBox.innerHTML = `
+    <div class="flex items-start space-x-3 message-fade-in">
+      <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center shrink-0 shadow-md overflow-hidden">
+        <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+      </div>
+      <div class="space-y-1 max-w-[80%]">
+        <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border transition-colors duration-300">
+          <p class="text-sm leading-relaxed">
+            Dạ, cuộc trò chuyện mới đã được mở sẵn sàng. Anh/chị hãy nhập thông tin thiết bị cần tìm kiếm nhé! ⚙️
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ==========================================
+// 6. CHAT SUBMISSION PROCESS (MAIN PIPELINE)
 // ==========================================
 
 function handleUserSubmit(event) {
   event.preventDefault();
   const inputEl = document.getElementById('user-input');
+  if (!inputEl) return;
+
   const rawInput = inputEl.value.trim();
   if (!rawInput) return;
+
+  // Nếu chưa có session nào được kích hoạt, tự động mở một session mới lập tức
+  if (!activeSessionId) {
+    createNewChatSession();
+  }
 
   appendUserMessage(rawInput);
   inputEl.value = '';
@@ -365,14 +565,6 @@ function handleUserSubmit(event) {
   }, latency);
 }
 
-// Đăng ký bộ lắng nghe sự kiện Submit cho form Chat
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('chat-form');
-  if (form) {
-    form.addEventListener('submit', handleUserSubmit);
-  }
-});
-
 function detectCompareKeyword(text) {
   const lower = text.toLowerCase();
   return (
@@ -385,7 +577,13 @@ function detectCompareKeyword(text) {
 }
 
 function processResponseLogic(userInput, latency) {
-  document.getElementById('latency-val').textContent = `${latency}ms`;
+  // Cập nhật giá trị an toàn thông qua hàm bọc cách ly lỗi
+  const safeUpdateText = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+
+  safeUpdateText('latency-val', `${latency}ms`);
   const lowerInput = userInput.toLowerCase();
 
   if (detectUnknowSpecsOrPrices(lowerInput)) {
@@ -411,7 +609,13 @@ function processResponseLogic(userInput, latency) {
     ) {
       sessionState.category = 'ac';
       sessionState.stage = 'PROBING';
-      document.getElementById('active-category').textContent = 'Máy Lạnh (AC)';
+      safeUpdateText('active-category', 'Máy Lạnh (AC)');
+
+      // Đồng bộ nhãn tiêu đề lịch sử thân thiện cho khách hàng nhìn thấy
+      updateActiveSessionTitle('❄️ Tư vấn mua Máy Lạnh');
+      const curSess = consumerChatSessions.find(s => s.id === activeSessionId);
+      if (curSess) curSess.category = 'ac';
+
     } else if (
       lowerInput.includes('tủ lạnh') ||
       lowerInput.includes('tl') ||
@@ -420,7 +624,12 @@ function processResponseLogic(userInput, latency) {
     ) {
       sessionState.category = 'fridge';
       sessionState.stage = 'PROBING';
-      document.getElementById('active-category').textContent = 'Tủ Lạnh';
+      safeUpdateText('active-category', 'Tủ Lạnh');
+
+      updateActiveSessionTitle('🥦 Tư vấn mua Tủ Lạnh');
+      const curSess = consumerChatSessions.find(s => s.id === activeSessionId);
+      if (curSess) curSess.category = 'fridge';
+
     } else if (
       lowerInput.includes('laptop') ||
       lowerInput.includes('máy tính') ||
@@ -429,10 +638,15 @@ function processResponseLogic(userInput, latency) {
     ) {
       sessionState.category = 'laptop';
       sessionState.stage = 'PROBING';
-      document.getElementById('active-category').textContent = 'Laptop';
+      safeUpdateText('active-category', 'Laptop');
+
+      updateActiveSessionTitle('💻 Tư vấn mua Laptop');
+      const curSess = consumerChatSessions.find(s => s.id === activeSessionId);
+      if (curSess) curSess.category = 'laptop';
+
     } else {
       appendAssistantMessage(`
-        <p class="text-sm">Dạ, Trợ lý Thông thái hiện đang kết nối trực tiếp với kho hàng của Điện Máy Xanh để tư vấn cho mình về 3 ngành hàng chính: <strong>Máy lạnh (Điều hòa), Tủ lạnh và Laptop</strong> ạ. 💻❄️</p>
+        <p class="text-sm">Dạ, Trợ lý Thông thái hiện đang kết nối trực tiếp với kho hàng để tư vấn về 3 ngành hàng chính: <strong>Máy lạnh, Tủ lạnh và Laptop</strong> ạ. 💻❄️</p>
         <p class="text-sm mt-2">Anh/chị có thể cho em hỏi mình đang muốn mua thiết bị lắp đặt cho gia đình hay sắm máy tính học tập để em tư vấn phân tích chuẩn nhất nhé ạ?</p>
       `);
       return;
@@ -440,8 +654,11 @@ function processResponseLogic(userInput, latency) {
   }
 
   if (sessionState.stage === 'PROBING') {
-    document.getElementById('chat-stage').textContent = 'Đang Hỏi Ngược';
-    document.getElementById('chat-stage').className = 'font-bold text-brand-gold';
+    const stageEl = document.getElementById('chat-stage');
+    if (stageEl) {
+      stageEl.textContent = 'Đang Hỏi Ngược';
+      stageEl.className = 'font-bold text-brand-gold';
+    }
 
     extractDataIntoContext(lowerInput);
 
@@ -463,7 +680,7 @@ function processResponseLogic(userInput, latency) {
         updateSidebarLogs('catalog', false);
         appendAssistantMessage(`
           <p class="text-sm">Dạ, việc chọn dung tích tủ lạnh phù hợp với số người sẽ giúp giữ thực phẩm luôn tươi ngon và tiết kiệm hóa đơn tiền điện đáng kể ạ. 🥦</p>
-          <p class="text-sm mt-2">Anh/chị cho em hỏi **nhà mình hiện có khoảng bao nhiêu thành viên** sinh hoạt chung ạ? Và ngân sách dự phòng mình muốn đầu tư khoảng dưới bao nhiêu "củ" thế ạ?</p>
+          <p class="text-sm mt-2">Anh/chị cho em hỏi **nhà mình hiện có khoảng bao nhiêu thành viên** sinh hoạt chung ạ? Và ngân sách dự phòng mình muốn đầu tư khoảng dưới bao nhiêu triệu thế ạ?</p>
         `);
         sessionState.collectedData.familySize = 'WAITING';
         return;
@@ -476,7 +693,7 @@ function processResponseLogic(userInput, latency) {
         updateSidebarLogs('catalog', false);
         appendAssistantMessage(`
           <p class="text-sm">Dạ, các phân khúc laptop mỏng nhẹ dành cho học sinh, sinh viên và nhân viên văn phòng đang có giá cực tốt ạ. 💻</p>
-          <p class="text-sm mt-2">Để cấu hình chạy mượt mà nhất trong suốt 4 năm, ngoài học tập và làm văn phòng cơ bản, mình có dùng thêm phần mềm thiết kế đồ họa (như Photoshop, Canva, Premiere) hay chơi các tựa game nào khác không ạ?</p>
+          <p class="text-sm mt-2">Để cấu hình chạy mượt mà nhất, ngoài học tập và làm văn phòng cơ bản, mình có dùng thêm phần mềm thiết kế đồ họa (như Photoshop, Canva) hay chơi các tựa game nào khác không ạ?</p>
         `);
         sessionState.collectedData.usage = 'WAITING';
         return;
@@ -488,14 +705,22 @@ function processResponseLogic(userInput, latency) {
   }
 
   if (sessionState.stage === 'RECOMMENDATION') {
-    document.getElementById('chat-stage').textContent = 'So Sánh & Đề Xuất';
-    document.getElementById('chat-stage').className = 'font-bold text-brand-success';
+    const stageEl = document.getElementById('chat-stage');
+    if (stageEl) {
+      stageEl.textContent = 'So Sánh & Đề Xuất';
+      stageEl.className = 'font-bold text-brand-success';
+    }
 
     updateSidebarLogs('catalog', true);
     updateSidebarLogs('promo', true);
 
     const recommendedHtml = generateTop3Recommendations(sessionState.category);
     appendAssistantMessage(recommendedHtml);
+
+    // Nâng cấp nhãn lịch sử chat sau khi đã xuất ra kết quả đề xuất Top 3 thành công
+    if (sessionState.category === 'ac') updateActiveSessionTitle('❄️ Top 3 Máy Lạnh tối ưu');
+    if (sessionState.category === 'fridge') updateActiveSessionTitle('🥦 Top 3 Tủ Lạnh tối ưu');
+    if (sessionState.category === 'laptop') updateActiveSessionTitle('💻 Top 3 Laptop phù hợp');
 
     sessionState.stage = 'INIT';
     sessionState.category = null;
@@ -529,13 +754,13 @@ function triggerMissingDataResponse() {
         <span>Sản phẩm này hiện đang cập nhật cơ sở dữ liệu...</span>
       </div>
       <p class="text-sm text-slate-600 dark:text-slate-300">
-        Kho hàng RAG thử nghiệm trong phân khu Demo của dự án hiện chưa lưu trữ thông số kỹ thuật hoặc bảng giá của hãng sản xuất này.
+        Kho hàng thử nghiệm hiện chưa lưu trữ thông số kỹ thuật hoặc bảng giá của hãng sản xuất cụ thể này.
       </p>
       <p class="text-sm text-slate-600 dark:text-slate-300">
-        Để nhận thông tin chính xác 100%, em xin phép <strong>chuyển hướng kết nối trực tiếp anh/chị với tư vấn viên siêu thị</strong> gần nhất để gọi điện hỗ trợ chỉ sau 2 phút được không ạ?
+        Để nhận thông tin chính xác 100%, em xin phép <strong>chuyển hướng kết nối trực tiếp anh/chị với chuyên viên siêu thị</strong> gần nhất để gọi điện hỗ trợ chỉ sau 2 phút được không ạ?
       </p>
       <div class="flex space-x-2 pt-2">
-        <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ đã gửi thông tin thành công! Tư vấn viên Điện Máy Xanh sẽ gọi lại hỗ trợ ngay lập tức ạ.</p>')" class="bg-brand-cobalt hover:bg-brand-electric text-white text-xs px-3.5 py-2 rounded font-semibold transition-all">
+        <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ đã gửi thông tin thành công! Tổng đài viên Điện Máy Xanh sẽ gọi lại hỗ trợ ngay lập tức ạ.</p>')" class="bg-brand-cobalt hover:bg-brand-electric text-white text-xs px-3.5 py-2 rounded font-semibold transition-all">
           Gặp nhân viên tư vấn ngay
         </button>
       </div>
@@ -588,47 +813,58 @@ function resetCollectedData() {
   };
 }
 
-// LÀM MỚI HỘI THOẠI (RESET) - ĐỒNG BỘ MÀU CHUYÊN NGHIỆP VÀ MASCOT PNG MỚI
 window.resetConversation = function () {
   const chatBox = document.getElementById('chat-box');
-  chatBox.innerHTML = `
-    <div class="flex items-start space-x-3 message-fade-in">
-      <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center shrink-0 shadow-md overflow-hidden">
-        <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
-      </div>
-      <div class="space-y-1 max-w-[80%]">
-        <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border transition-colors duration-300">
-          <p class="text-sm leading-relaxed">
-            Dạ, phiên hội thoại đã được khởi động lại thành công. Toàn bộ tài liệu RAG và cơ chế chống ảo giác đã được thiết lập lại từ đầu ạ! ⚙️
-          </p>
-          <p class="text-sm leading-relaxed mt-2">
-            Anh/chị muốn tư vấn so sánh Máy lạnh, Tủ lạnh hay Laptop của thương hiệu nào ạ? Hãy nhắn cho em nhé.
-          </p>
+  if (chatBox) {
+    chatBox.innerHTML = `
+      <div class="flex items-start space-x-3 message-fade-in">
+        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center shrink-0 shadow-md overflow-hidden">
+          <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
         </div>
-        <span class="text-[10px] text-slate-400 dark:text-slate-500 pl-2">Vừa mới gửi</span>
+        <div class="space-y-1 max-w-[80%]">
+          <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border transition-colors duration-300">
+            <p class="text-sm leading-relaxed">
+              Dạ, phiên hội thoại tư vấn đã được làm mới thành công từ đầu ạ! ⚙️
+            </p>
+            <p class="text-sm leading-relaxed mt-2">
+              Anh/chị muốn tư vấn chọn lựa Máy lạnh, Tủ lạnh hay Laptop thương hiệu nào ạ? Hãy nhắn cho em nhé.
+            </p>
+          </div>
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 pl-2">Vừa mới gửi</span>
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  }
+
   sessionState.stage = 'INIT';
   sessionState.category = null;
   resetCollectedData();
-  document.getElementById('active-category').textContent = 'Chưa xác định';
-  document.getElementById('chat-stage').textContent = 'Khởi tạo';
-  document.getElementById('chat-stage').className = 'font-bold text-brand-gold';
-  document.getElementById('slang-inspector').innerHTML = `<span class="text-slate-400 dark:text-slate-500 italic text-[11px]">Chưa phát hiện từ viết tắt...</span>`;
-  document.getElementById('rag-catalog-status').className = 'text-slate-400 dark:text-slate-500';
-  document.getElementById('rag-catalog-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất`;
-  document.getElementById('rag-promo-status').className = 'text-slate-400 dark:text-slate-500';
-  document.getElementById('rag-promo-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất`;
-  document.getElementById('rag-faq-status').className = 'text-slate-400 dark:text-slate-500';
-  document.getElementById('rag-faq-status').innerHTML = `<i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất`;
-  document.getElementById('latency-val').textContent = '0ms';
+
+  // Xóa trắng an toàn nội dung trong hộp debug ẩn để tránh lỗi xung đột dữ liệu
+  const safeUpdateText = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+  const safeUpdateHtml = (id, html) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  };
+
+  safeUpdateText('active-category', 'Chưa xác định');
+  safeUpdateText('chat-stage', 'Khởi tạo');
+  safeUpdateHtml('slang-inspector', '<span class="text-slate-400 dark:text-slate-500 italic text-[11px]">Chưa phát hiện từ viết tắt...</span>');
+  safeUpdateText('latency-val', '0ms');
+
+  // Đồng thời tạo ngay một session trống hoàn toàn mới trong bộ nhớ lịch sử
+  createNewChatSession();
 };
 
 window.fillQuickPrompt = function (promptText) {
   const inputEl = document.getElementById('user-input');
-  inputEl.value = promptText;
-  inputEl.focus();
+  if (inputEl) {
+    inputEl.value = promptText;
+    inputEl.focus();
+  }
 };
 
 function updateSidebarLogs(system, active) {
@@ -671,16 +907,14 @@ function translateSpecToBenefit(specName, specVal) {
   return dictionary[specName] ? dictionary[specName][specVal] : '';
 }
 
-// HÀM HIỂN THỊ THẺ SO SÁNH SẢN PHẨM CHUYÊN NGHIỆP HỖ TRỢ DUAL-THEME ĐỒNG BỘ HOÀN HẢO
 function generateTop3Recommendations(category) {
   const products = MOCK_CATALOG[category];
   let htmlResult = `
     <div class="space-y-4">
       <p class="text-sm">
-        Dạ, dựa vào nhu cầu thực tế của gia đình mình, RAG Engine đã lọc và đưa ra bảng so sánh <strong>Top 3 sản phẩm tối ưu nhất</strong> kèm phân tích điểm đánh đổi (Trade-off) chi tiết giúp anh/chị dễ ra quyết định:
+        Dạ, dựa vào nhu cầu thực tế của gia đình mình, em đã lọc và đưa ra bảng so sánh <strong>Top 3 sản phẩm tối ưu nhất</strong> kèm phân tích điểm đánh đổi chi tiết giúp anh/chị dễ đưa ra quyết định:
       </p>
 
-      <!-- GRID OF 3 CARDS -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-3">
   `;
 
@@ -743,7 +977,6 @@ function generateTop3Recommendations(category) {
     }
 
     htmlResult += `
-      <!-- THẺ SẢN PHẨM HỖ TRỢ DUAL-THEME ĐỒNG BỘ TOÀN DIỆN -->
       <div class="trade-off-card bg-slate-50 dark:bg-brand-dark rounded-xl p-4 border border-slate-200 dark:border-brand-border flex flex-col justify-between space-y-3 transition-all duration-300 shadow-sm dark:shadow-none">
         <div>
           <div class="flex justify-between items-start mb-2">
@@ -763,12 +996,10 @@ function generateTop3Recommendations(category) {
             Trạng thái: ${stockText}
           </div>
 
-          <!-- Section dịch thuật thông số -->
           <div class="mt-3">
             ${benefitHighlight}
           </div>
 
-          <!-- Section Phân tích Trade-off sử dụng màu Coral của Cdiscount -->
           <div class="mt-3 space-y-1 bg-brand-coral/5 p-2.5 rounded-lg border border-brand-coral/15 text-xs text-slate-700 dark:text-slate-300">
             <p class="text-[11px] text-brand-coral font-bold uppercase tracking-wider flex items-center">
               <i class="fa-solid fa-triangle-exclamation mr-1"></i> Điểm cần cân nhắc (Trade-off):
@@ -777,12 +1008,11 @@ function generateTop3Recommendations(category) {
           </div>
         </div>
 
-        <!-- Quà tặng & Action chọn mua -->
         <div class="pt-2 border-t border-slate-200 dark:border-brand-border space-y-2">
           <div class="text-[11px] text-slate-500 dark:text-slate-400">
-            🎁 <strong>Quà tặng đi kèm:</strong> <span class="text-slate-700 dark:text-slate-200 font-medium">${gift}</span>
+            🎁 <strong>Quà tặng:</strong> <span class="text-slate-700 dark:text-slate-200 font-medium">${gift}</span>
           </div>
-          <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ em đã thêm <strong>${product.name}</strong> vào danh sách so sánh của anh/chị kèm bộ quà tặng khuyến mãi đặc quyền Điện Máy Xanh rồi nhé ạ!</p>')" class="w-full bg-white dark:bg-brand-panel hover:bg-brand-cobalt hover:text-white text-xs py-2 rounded-lg border border-slate-200 dark:border-brand-border hover:border-brand-cobalt font-semibold transition-all duration-200 shadow-sm">
+          <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ em đã thêm <strong>${product.name}</strong> vào danh sách mua sắm kèm bộ quà tặng khuyến mãi đặc quyền Điện Máy Xanh rồi nhé ạ!</p>')" class="w-full bg-white dark:bg-brand-panel hover:bg-brand-cobalt hover:text-white text-xs py-2 rounded-lg border border-slate-200 dark:border-brand-border hover:border-brand-cobalt font-semibold transition-all duration-200 shadow-sm">
             Chọn Mua / Nhận Tư Vấn Sâu
           </button>
         </div>
@@ -796,3 +1026,40 @@ function generateTop3Recommendations(category) {
   `;
   return htmlResult;
 }
+
+// =================================================================
+// 7. BỘ ĐIỀU KHIỂN ĐÓNG/MỞ SIDEBAR COLLAPSIBLE CHUYÊN NGHIỆP
+// =================================================================
+function initCollapsibleSidebarLogic() {
+  const sidebarPanel = document.getElementById('sidebar-panel');
+  const btnClose = document.getElementById('sidebar-toggle-close');
+  const btnOpen = document.getElementById('sidebar-toggle-open');
+
+  if (!sidebarPanel || !btnClose || !btnOpen) return;
+
+  // Lắng nghe sự kiện click nút thu gọn (Close)
+  btnClose.addEventListener('click', () => {
+    sidebarPanel.classList.add('sidebar-collapsed-state');
+    btnOpen.classList.remove('hidden'); // Hiển thị nút mở rộng nổi
+  });
+
+  // Lắng nghe sự kiện click nút mở rộng (Open)
+  btnOpen.addEventListener('click', () => {
+    sidebarPanel.classList.remove('sidebar-collapsed-state');
+    btnOpen.classList.add('hidden'); // Ẩn nút mở rộng đi
+  });
+}
+
+// KHỞI CHẠY KHI TOÀN BỘ DOM ĐÃ SẴN SÀNG KHÔNG LỖI WEBPACK COMPILER
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('chat-form');
+  if (form) {
+    form.addEventListener('submit', handleUserSubmit);
+  }
+
+  // Khởi tạo cơ chế thu gọn sidebar
+  initCollapsibleSidebarLogic();
+
+  // Tự động tạo phiên trò chuyện mặc định đầu tiên cho trải nghiệm mượt mà
+  createNewChatSession();
+});

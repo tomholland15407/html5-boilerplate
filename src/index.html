@@ -16,19 +16,19 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class', // Kích hoạt cơ chế chuyển đổi giao diện bằng Class
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
             brand: {
-              dark: '#070f1e',        // Nền tối Indigo sâu thẳm (Walmart Deep Navy)
-              panel: '#0f1d36',       // Nền các thẻ Card, Sidebar, Chat Box ở Dark Mode
-              border: '#1e2e4a',      // Đường viền tinh tế ở Dark Mode
-              cobalt: '#1d4ed8',      // Cdiscount Blue - Nút nhấn chính, điểm nhấn lớn
-              electric: '#0095da',    // Blibli Dynamic Blue - Trạng thái hoạt động, text quan trọng
-              coral: '#ff3b30',       // Cdiscount Coral Red - Trade-off, cảnh báo, giảm giá sâu
-              gold: '#ffb800',        // Walmart Warm Gold - Trả góp 0%, đề xuất giá trị, sao đánh giá
-              success: '#10b981',     // Success Green - Đèn RAG hoạt động mượt mà, còn hàng
+              dark: '#070f1e',
+              panel: '#0f1d36',
+              border: '#1e2e4a',
+              cobalt: '#1d4ed8',
+              electric: '#0095da',
+              coral: '#ff3b30',
+              gold: '#ffb800',
+              success: '#10b981',
             }
           },
           fontFamily: {
@@ -51,9 +51,8 @@
     })();
   </script>
 
-  <!-- CSS TÙY BIẾN CHUYÊN NGHIỆP CHỐNG LỖI COMPILER WEBPACK -->
+  <!-- CSS TÙY BIẾN CHUYÊN NGHIỆP VÀ CÁC HIỆU ỨNG CHUYỂN ĐỘNG SIDEBAR -->
   <style>
-    /* 1. Thanh cuộn đồng bộ hệ màu theo từng Giao diện */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -75,7 +74,6 @@
       background: #0095da;
     }
 
-    /* 2. Hiệu ứng xuất hiện tin nhắn mượt mà */
     .message-fade-in {
       animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
@@ -90,7 +88,6 @@
       }
     }
 
-    /* 3. Hiệu ứng gõ chữ nhấp nháy */
     .typing-dot {
       animation: wave 1.2s infinite ease-in-out;
     }
@@ -101,15 +98,10 @@
       animation-delay: 0.4s;
     }
     @keyframes wave {
-      0%, 60%, 100% {
-        transform: translateY(0);
-      }
-      30% {
-        transform: translateY(-6px);
-      }
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
     }
 
-    /* 4. Thẻ sản phẩm so sánh tương thích mượt mà */
     .trade-off-card {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -118,63 +110,59 @@
       box-shadow: 0 12px 24px -10px rgba(0, 149, 218, 0.15);
     }
 
-    /* 5. Hiệu ứng nhấp nháy đèn trạng thái RAG */
     .pulse-green {
       box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
       animation: pulse-g 1.6s infinite cubic-bezier(0.66, 0, 0, 1);
     }
     @keyframes pulse-g {
-      to {
-        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-      }
+      to { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
     }
 
-    /* 6. Hiệu ứng mascot nhún nhảy nhẹ nhàng (Floating Effect) */
     @keyframes mascotFloat {
-      0%, 100% {
-        transform: translateY(0) rotate(0deg);
-      }
-      50% {
-        transform: translateY(-5px) rotate(1deg);
-      }
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(1deg); }
     }
     .animate-mascot-float {
       animation: mascotFloat 3.5s ease-in-out infinite;
     }
+
+    /* Hiệu ứng mượt mà cho tính năng thu gọn Sidebar */
+    .sidebar-transition {
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                  padding 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 0.2s ease-in-out;
+    }
   </style>
+  <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body class="bg-slate-50 dark:bg-brand-dark text-slate-800 dark:text-slate-200 font-sans h-screen flex flex-col overflow-hidden transition-colors duration-300">
 
   <!-- PHẦN ĐẦU TRANG (HEADER BAR) -->
-  <header class="bg-white dark:bg-brand-panel border-b border-slate-200 dark:border-brand-border px-6 py-4 flex justify-between items-center shrink-0 transition-colors duration-300 shadow-sm dark:shadow-none">
+  <header class="bg-white dark:bg-brand-panel border-b border-slate-200 dark:border-brand-border px-6 py-4 flex justify-between items-center shrink-0 transition-colors duration-300 shadow-sm dark:shadow-none z-10">
     <div class="flex items-center space-x-3">
-      <!-- Khung ảnh mascot có hoạt ảnh nhún nhảy -->
       <div class="w-12 h-12 rounded-xl bg-white p-0.5 shadow-lg shadow-brand-electric/10 dark:shadow-brand-electric/20 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-brand-border animate-mascot-float">
         <img src="img/mascot.png" alt="Dien May Xanh Mascot" class="w-full h-full object-contain rounded-lg" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div>
         <h1 class="font-bold text-lg tracking-wide text-slate-900 dark:text-white flex items-center transition-colors duration-300">
           Trợ Lý Mua Sắm Thông Thái
-          <span class="ml-2 px-2 py-0.5 text-xs bg-brand-electric/10 text-brand-electric rounded border border-brand-electric/20 font-normal">v1.3-Retail</span>
+          <span class="ml-2 px-2 py-0.5 text-xs bg-brand-electric/10 text-brand-electric rounded border border-brand-electric/20 font-normal">v1.5-Customer</span>
         </h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">AI-Powered Shopping Consultant • Đối Tác Toàn Diện Điện Máy Xanh</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">Tư vấn chọn sản phẩm Điện máy & Công nghệ tối ưu theo nhu cầu thực tế</p>
       </div>
     </div>
 
-    <!-- KHU VỰC ĐÈN TRẠNG THÁI VÀ NÚT CHUYỂN ĐỔI THEME -->
+    <!-- KHU VỰC TRẠNG THÁI VÀ TOGGLE GIAO DIỆN -->
     <div class="flex items-center space-x-4 text-xs">
-      <!-- Đèn Trạng Thái RAG -->
-      <span class="flex items-center text-brand-success font-medium hidden sm:flex">
+      <span class="flex items-center text-brand-success font-medium">
         <span class="w-2 h-2 rounded-full bg-brand-success inline-block mr-2 animate-ping"></span>
-        RAG Sẵn Sàng
+        Hệ thống Sẵn Sàng
       </span>
       <span class="text-slate-300 dark:text-brand-border hidden sm:inline">|</span>
 
-      <!-- NÚT BẤM TOGGLE CHUYỂN GIAO DIỆN (THEME TOGGLE SWITCH) -->
       <button id="theme-toggle-btn" class="flex items-center space-x-2 bg-slate-100 dark:bg-brand-dark/80 hover:bg-slate-200 dark:hover:bg-brand-border px-3 py-2 rounded-lg border border-slate-200 dark:border-brand-border text-slate-700 dark:text-slate-300 transition-all duration-300 shadow-sm active:scale-95" title="Chuyển đổi giao diện Sáng/Tối">
         <span id="theme-icon-container" class="flex items-center">
-          <!-- Sẽ tự động kết xuất icon qua JS -->
           <i class="fa-solid fa-moon text-slate-600 dark:text-brand-gold text-sm"></i>
         </span>
         <span class="font-semibold text-[11px] hidden md:inline" id="theme-text-status">Giao diện: Tối</span>
@@ -183,92 +171,96 @@
   </header>
 
   <!-- KHU VỰC CHÍNH (MAIN AREA) -->
-  <main class="flex-1 flex overflow-hidden">
+  <main class="flex-1 flex overflow-hidden relative">
 
-    <!-- BÊN TRÁI: BẢNG THEO DÕI RAG TRỰC TIẾP (TECHNICAL MONITOR) -->
-    <aside class="w-80 bg-white dark:bg-brand-panel border-r border-slate-200 dark:border-brand-border p-5 flex flex-col justify-between overflow-y-auto shrink-0 hidden md:flex transition-colors duration-300">
-      <div class="space-y-6">
-        <div>
-          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 transition-colors duration-300">Thông Tin Phiên Tư Vấn</h2>
-          <div class="bg-slate-50 dark:bg-brand-dark rounded-xl p-3.5 border border-slate-200 dark:border-brand-border space-y-2 transition-colors duration-300">
-            <div class="flex justify-between text-xs">
-              <span class="text-slate-500 dark:text-slate-400">Ngành hàng chọn lọc:</span>
-              <span id="active-category" class="font-semibold text-brand-electric">Chưa xác định</span>
-            </div>
-            <div class="flex justify-between text-xs">
-              <span class="text-slate-500 dark:text-slate-400">Giai đoạn hội thoại:</span>
-              <span id="chat-stage" class="font-semibold text-brand-gold">Khởi tạo</span>
-            </div>
+    <!-- BÊN TRÁI: DANH SÁCH LỊCH SỬ TRÒ CHUYỆN (CUSTOMER CHAT HISTORY) -->
+    <aside id="sidebar-panel" class="w-80 bg-white dark:bg-brand-panel border-r border-slate-200 dark:border-brand-border p-5 flex flex-col justify-between overflow-y-auto shrink-0 transition-colors duration-300 sidebar-transition relative z-20">
+
+      <!-- Lớp vỏ bọc kiểm soát cuộn nội dung khi thu nhỏ chiều rộng -->
+      <div class="space-y-5 w-72 flex flex-col flex-1 overflow-hidden">
+
+        <!-- Header Sidebar chứa tiêu đề thân thiện và nút thu gọn -->
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-brand-border/60 pb-3 shrink-0">
+          <div class="flex items-center space-x-2 text-slate-900 dark:text-white">
+            <i class="fa-solid fa-clock-rotate-left text-brand-electric"></i>
+            <h2 class="text-sm font-bold tracking-wide">Lịch sử tư vấn</h2>
           </div>
+          <button id="sidebar-toggle-close" class="text-slate-400 hover:text-brand-coral dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-brand-dark/60 transition-all" title="Thu gọn thanh lịch sử">
+            <i class="fa-solid fa-angles-left"></i>
+          </button>
         </div>
 
-        <div>
-          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 transition-colors duration-300">Phân Tích Từ Lóng & Viết Tắt</h2>
-          <div class="bg-slate-50 dark:bg-brand-dark rounded-xl p-3.5 border border-slate-200 dark:border-brand-border space-y-2 text-xs transition-colors duration-300">
-            <p class="text-slate-400 dark:text-slate-500 italic mb-2 transition-colors duration-300">Phát hiện viết tắt & ngôn ngữ địa phương:</p>
-            <div id="slang-inspector" class="space-y-1 max-h-32 overflow-y-auto">
-              <span class="text-slate-400 dark:text-slate-500 italic">Chưa phát hiện từ viết tắt...</span>
-            </div>
-          </div>
-        </div>
+        <!-- Nút thêm hội thoại mới trực quan cho người tiêu dùng -->
+        <button onclick="window.resetConversation()" class="w-full bg-slate-50 dark:bg-brand-dark/50 hover:bg-brand-electric/10 hover:text-brand-electric text-slate-700 dark:text-slate-300 font-semibold text-xs py-3 px-4 rounded-xl border border-dashed border-slate-300 dark:border-brand-border flex items-center justify-center space-x-2 transition-all group shrink-0 active:scale-98">
+          <i class="fa-solid fa-plus transition-transform group-hover:rotate-90"></i>
+          <span>Bắt đầu tư vấn mới</span>
+        </button>
 
-        <div>
-          <h2 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 transition-colors duration-300">Trạng Thái RAG & Chống Ảo Giác</h2>
-          <div class="bg-slate-50 dark:bg-brand-dark rounded-xl p-3.5 border border-slate-200 dark:border-brand-border space-y-3 text-xs transition-colors duration-300">
-            <div class="flex items-center justify-between">
-              <span class="text-slate-500 dark:text-slate-400">1. Kho Dữ Liệu Catalog:</span>
-              <span id="rag-catalog-status" class="text-slate-400 dark:text-slate-500 flex items-center"><i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-500 dark:text-slate-400">2. Chương Trình Khuyến Mãi:</span>
-              <span id="rag-promo-status" class="text-slate-400 dark:text-slate-500 flex items-center"><i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-500 dark:text-slate-400">3. Chính Sách & FAQs:</span>
-              <span id="rag-faq-status" class="text-slate-400 dark:text-slate-500 flex items-center"><i class="fa-solid fa-circle-minus mr-1.5"></i>Chờ truy xuất</span>
-            </div>
-            <div class="pt-2 border-t border-slate-200 dark:border-brand-border">
-              <p class="text-[10px] text-slate-400 dark:text-slate-500">Bộ Kiểm Soát Chống Ảo Giác (Guardrails):</p>
-              <div class="mt-1 flex items-center space-x-1 text-brand-success">
-                <i class="fa-solid fa-shield-halved"></i>
-                <span class="text-[11px] font-semibold">Bảo vệ thông tin chính xác 100%</span>
-              </div>
+        <!-- Container chứa các danh mục lịch sử trò chuyện được cập nhật động -->
+        <div class="flex-1 overflow-y-auto pr-1">
+          <div id="chat-history-list" class="space-y-2">
+            <!-- Được render động từ app.js. Nếu trống, render giao diện mặc định trống -->
+            <div id="history-empty-state" class="text-center py-8 px-4 border border-dashed border-slate-200 dark:border-brand-border/40 rounded-xl">
+              <i class="fa-regular fa-comments text-slate-300 dark:text-slate-600 text-2xl mb-2 block"></i>
+              <p class="text-[11px] text-slate-400 dark:text-slate-500 italic">Chưa có cuộc trò chuyện cũ nào tại phiên này.</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Footer Sidebar -->
-      <div class="pt-4 border-t border-slate-200 dark:border-brand-border space-y-2">
-        <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
-          <i class="fa-solid fa-bolt text-brand-electric"></i>
-          <span>Độ trễ API RAG: <strong id="latency-val" class="text-slate-800 dark:text-slate-200">0ms</strong></span>
+      <!-- Footer Sidebar - Đơn giản hóa, loại bỏ độ trễ kỹ thuật và thêm thông tin dịch vụ -->
+      <div class="pt-4 border-t border-slate-200 dark:border-brand-border w-72 shrink-0 space-y-1.5">
+        <div class="flex items-center space-x-2 text-[11px] text-slate-500 dark:text-slate-400">
+          <i class="fa-solid fa-shield-check text-brand-success"></i>
+          <span>Dữ liệu bảo mật & chính xác 100%</span>
         </div>
         <div class="text-[10px] text-slate-400 dark:text-slate-600">
-          Vietnam Innovation Challenge 2026. Powered by Điện Máy Xanh Dev Team.
+          Hệ thống CSKH tự động Điện Máy Xanh 2026.
         </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- HỘP ĐEN GỠ LỖI ẨN (HIDDEN DEBUG SHADOW BOX)                     -->
+      <!-- Khối div này mang thuộc tính hidden, mắt người dùng không nhìn thấy -->
+      <!-- Nhưng giúp bảo toàn 100% các ID mà logic app.js cũ đang ghi đè,  -->
+      <!-- Ngăn chặn triệt để lỗi crash 'Cannot set properties of null'.  -->
+      <!-- ================================================================= -->
+      <div hidden aria-hidden="true" class="absolute pointer-events-none opacity-0 invisible w-0 h-0 overflow-hidden">
+        <span id="active-category">Chưa xác định</span>
+        <span id="chat-stage">Khởi tạo</span>
+        <div id="slang-inspector"></div>
+        <span id="rag-catalog-status"></span>
+        <span id="rag-promo-status"></span>
+        <span id="rag-faq-status"></span>
+        <span id="latency-val">0ms</span>
       </div>
     </aside>
 
     <!-- BÊN PHẢI: KHUNG CHAT TƯƠNG TÁC (INTERACTIVE CHAT INTERFACE) -->
-    <section class="flex-1 flex flex-col bg-slate-100/50 dark:bg-brand-dark relative transition-colors duration-300">
+    <section class="flex-1 flex flex-col bg-slate-100/50 dark:bg-brand-dark relative transition-colors duration-300 overflow-hidden">
 
-      <!-- Banner Thông báo Nổi -->
-      <div class="bg-white/80 dark:bg-brand-panel/40 border-b border-slate-200 dark:border-brand-border px-6 py-2 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 shrink-0 transition-colors duration-300">
-        <div class="flex items-center space-x-2">
-          <span class="w-1.5 h-1.5 rounded-full bg-brand-electric inline-block animate-pulse"></span>
-          <span>Lời khuyên: Nhập nhu cầu thực tế của bạn bằng tiếng Việt tự nhiên.</span>
+      <!-- Banner Thông báo Nổi + Nút Mở rộng Sidebar khi bị thu gọn -->
+      <div class="bg-white/80 dark:bg-brand-panel/40 border-b border-slate-200 dark:border-brand-border px-4 py-2 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 shrink-0 transition-colors duration-300 min-h-[45px]">
+        <div class="flex items-center space-x-3">
+          <!-- Nút mở rộng Sidebar chỉ hiển thị khi Sidebar bị ẩn đi -->
+          <button id="sidebar-toggle-open" class="hidden text-brand-cobalt dark:text-brand-electric hover:bg-slate-100 dark:hover:bg-brand-panel p-1.5 rounded-lg border border-slate-200 dark:border-brand-border/60 transition-all font-bold" title="Hiển thị lịch sử trò chuyện">
+            <i class="fa-solid fa-angles-right mr-1"></i> Lịch sử
+          </button>
+          <div class="flex items-center space-x-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-electric inline-block animate-pulse"></span>
+            <span class="truncate max-w-[250px] sm:max-w-none">Mẹo: Nhập nhu cầu mua sắm bằng tiếng Việt tự nhiên để nhận tư vấn tốt nhất.</span>
+          </div>
         </div>
-        <button onclick="window.resetConversation()" class="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center space-x-1 text-[11px] bg-slate-50 dark:bg-brand-panel hover:bg-slate-100 dark:hover:bg-brand-border px-2.5 py-1 rounded border border-slate-200 dark:border-brand-border/40 shadow-sm">
+        <button onclick="window.resetConversation()" class="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center space-x-1 text-[11px] bg-slate-50 dark:bg-brand-panel hover:bg-slate-100 dark:hover:bg-brand-border px-2.5 py-1 rounded border border-slate-200 dark:border-brand-border/40 shadow-sm shrink-0">
           <i class="fa-solid fa-rotate-left"></i>
-          <span>Làm mới hội thoại</span>
+          <span class="hidden sm:inline">Làm mới cuộc trò chuyện</span>
         </button>
       </div>
 
       <!-- Khu vực hiển thị tin nhắn -->
       <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-6">
 
-        <!-- TIN NHẮN CHÀO MỪNG BAN ĐẦU - DÙNG AVATAR MASCOT PNG TRONG SUỐT -->
+        <!-- TIN NHẮN CHÀO MỪNG BAN ĐẦU -->
         <div class="flex items-start space-x-3 message-fade-in">
           <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center shrink-0 shadow-md overflow-hidden">
             <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
@@ -279,15 +271,15 @@
                 Dạ, em xin chào anh/chị ạ! Em là <strong>Trợ lý Mua sắm Thông thái</strong> đồng hành cùng anh/chị tại hệ thống Điện Máy Xanh. 🌟
               </p>
               <p class="text-sm leading-relaxed mt-2">
-                Em được tích hợp cơ sở dữ liệu thời gian thực (RAG) nhằm hỗ trợ anh/chị lựa chọn các sản phẩm công nghệ và điện máy tối ưu nhất dựa trên nhu cầu, diện tích lắp đặt, số người sử dụng hay hạn mức tài chính của mình.
+                Em ở đây để hỗ trợ anh/chị chọn lựa các dòng sản phẩm công nghệ và điện máy phù hợp nhất dựa trên nhu cầu sử dụng thực tế, không gian lắp đặt, số lượng thành viên hay hạn mức tài chính cụ thể của gia đình mình.
               </p>
               <p class="text-sm leading-relaxed mt-2">
-                Anh/chị đang cần tìm dòng sản phẩm nào dưới đây để em hỗ trợ tư vấn tức thì ạ?
+                Anh/chị đang quan tâm đến nhóm sản phẩm nào dưới đây để em hỗ trợ tư vấn, phân tích và so sánh ngay lập tức ạ?
               </p>
               <div class="mt-3 flex gap-2 flex-wrap">
-                <span class="px-2.5 py-1 bg-slate-50 dark:bg-brand-dark rounded text-xs border border-slate-200 dark:border-brand-border font-semibold text-brand-electric">❄️ Máy lạnh</span>
-                <span class="px-2.5 py-1 bg-slate-50 dark:bg-brand-dark rounded text-xs border border-slate-200 dark:border-brand-border font-semibold text-brand-electric">🥦 Tủ lạnh</span>
-                <span class="px-2.5 py-1 bg-slate-50 dark:bg-brand-dark rounded text-xs border border-slate-200 dark:border-brand-border font-semibold text-brand-electric">💻 Laptop</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua máy lạnh')" class="px-2.5 py-1 bg-slate-50 dark:bg-brand-dark rounded text-xs border border-slate-200 dark:border-brand-border font-semibold text-brand-electric cursor-pointer hover:bg-brand-electric hover:text-white transition-all">❄️ Máy lạnh</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua tủ lạnh')" class="px-2.5 py-1 bg-slate-50 dark:bg-brand-dark rounded text-xs border border-slate-200 dark:border-brand-border font-semibold text-brand-electric cursor-pointer hover:bg-brand-electric hover:text-white transition-all">🥦 Tủ lạnh</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua laptop')" class="px-2.5 py-1 bg-slate-50 dark:bg-brand-dark rounded text-xs border border-slate-200 dark:border-brand-border font-semibold text-brand-electric cursor-pointer hover:bg-brand-electric hover:text-white transition-all">💻 Laptop</span>
               </div>
             </div>
             <span class="text-[10px] text-slate-400 pl-2">Vừa mới gửi</span>
@@ -299,7 +291,7 @@
       <!-- Thẻ Gợi ý Kịch bản nhanh (Quick Prompts) -->
       <div class="px-6 py-3 bg-white/60 dark:bg-brand-panel/30 border-t border-slate-200 dark:border-brand-border/40 shrink-0 transition-colors duration-300">
         <p class="text-[11px] text-slate-500 dark:text-slate-500 mb-2 flex items-center font-semibold uppercase tracking-wider">
-          <i class="fa-regular fa-lightbulb text-brand-gold mr-1.5"></i> Gợi ý kịch bản Demo nhanh cho Ban Giám Khảo:
+          <i class="fa-regular fa-lightbulb text-brand-gold mr-1.5"></i> Gợi ý nhu cầu tìm kiếm nhanh:
         </p>
         <div class="flex flex-wrap gap-2">
           <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ cho phòng ngủ')" class="text-xs bg-white dark:bg-brand-panel hover:bg-slate-100 dark:hover:bg-brand-border border border-slate-200 dark:border-brand-border text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-sm">
@@ -320,16 +312,14 @@
       <!-- Ô NHẬP LIỆU GỬI TIN NHẮN (INPUT BAR) -->
       <footer class="p-4 bg-white dark:bg-brand-panel border-t border-slate-200 dark:border-brand-border shrink-0 transition-colors duration-300 shadow-lg dark:shadow-none">
         <form id="chat-form" class="relative flex items-center">
-          <input type="text" id="user-input" placeholder="Nhập câu hỏi bằng tiếng Việt... (Ví dụ: 'Cần tìm tl tầm 8tr cho gia đình 3 người ko tốn điện')"
+          <input type="text" id="user-input" placeholder="Nhập câu hỏi bằng tiếng Việt... (Ví dụ: 'Cần tìm tủ lạnh tầm 8 triệu cho gia đình 3 người tiết kiệm điện')"
             class="w-full bg-slate-50 dark:bg-brand-dark border border-slate-200 dark:border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm rounded-xl pl-4 pr-24 py-4 focus:outline-none transition-all duration-200 shadow-inner"
             autocomplete="off" required>
 
           <div class="absolute right-3 flex items-center space-x-2">
-            <!-- Mic Icon (Visual only) -->
             <button type="button" class="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors p-1" title="Tính năng giọng nói">
               <i class="fa-solid fa-microphone"></i>
             </button>
-            <!-- Send Button -->
             <button type="submit" class="bg-brand-cobalt hover:bg-brand-electric text-white font-semibold text-sm px-4 py-2 rounded-lg flex items-center space-x-1.5 transition-all shadow-md shadow-brand-cobalt/20 active:scale-95">
               <span>Gửi</span>
               <i class="fa-solid fa-paper-plane text-xs"></i>
@@ -342,7 +332,7 @@
 
   </main>
 
-  <!-- ĐOẠN JS ĐIỀU KHIỂN TOGGLE KHẨN CẤP ĐỂ ĐẢM BẢO HOẠT ĐỘNG KHÔNG LỖI WEBPACK -->
+  <!-- ĐOẠN JS ĐIỀU KHIỂN TOGGLE GIAO DIỆN SÁNG / TỐI -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const themeToggleBtn = document.getElementById('theme-toggle-btn');
@@ -359,22 +349,14 @@
         }
       }
 
-      // Khởi tạo trạng thái nút bấm ban đầu
       const isCurrentlyDark = document.documentElement.classList.contains('dark');
       updateToggleButton(isCurrentlyDark);
 
       themeToggleBtn.addEventListener('click', () => {
         const isDark = document.documentElement.classList.toggle('dark');
-
-        if (isDark) {
-          localStorage.setItem('theme', 'dark');
-        } else {
-          localStorage.setItem('theme', 'light');
-        }
-
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
         updateToggleButton(isDark);
 
-        // Kích hoạt Event tùy biến thông báo cho file app.js tái dựng thẻ nếu cần
         const event = new CustomEvent('themeChanged', { detail: { isDark } });
         window.dispatchEvent(event);
       });

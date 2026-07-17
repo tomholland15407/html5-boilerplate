@@ -24,3 +24,40 @@
 .animate-mascot-cast {
   animation: mascot-march 0.5s ease-in-out infinite;
 }
+
+/* ================================================================= */
+/* CÁC LỚP BỔ SUNG PHỤC VỤ LUỒNG COLLAPSIBLE SIDEBAR NÂNG CAO        */
+/* ================================================================= */
+
+/* Trạng thái ẩn hoàn toàn của Sidebar dành cho khách hàng */
+.sidebar-collapsed-state {
+  width: 0px !important;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  opacity: 0 !important;
+  border-right-width: 0px !important;
+  pointer-events: none;
+}
+
+/* Hiệu ứng trượt xuất hiện cho các phần tử lịch sử trò chuyện mới được thêm vào */
+.history-item-appear {
+  animation: historyItemAnim 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes historyItemAnim {
+  from {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Kiểu dáng cho các nút lịch sử chat đang hoạt động tích cực */
+.active-history-pill {
+  border-color: rgba(0, 149, 218, 0.4) !important;
+  background-color: rgba(0, 149, 218, 0.06) !important;
+  color: #0095da !important;
+}
