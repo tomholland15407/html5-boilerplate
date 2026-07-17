@@ -149,7 +149,7 @@ function initCollapsibleSidebarLogic() {
 }
 
 // ==========================================
-// HIỆU ỨNG RUNG LẮC MASCOT GÓC TRÊN TRÁI
+// HIỆU ỨNG RUNG LẮC ĐỒNG LOẠT CHO TOÀN BỘ MASCOT
 // ==========================================
 function injectJiggleStyles() {
   if (document.getElementById('mascot-jiggle-style')) return;
@@ -174,13 +174,18 @@ function injectJiggleStyles() {
 }
 
 function triggerMascotJiggle() {
-  // Tìm kiếm phần tử hình ảnh Mascot lớn ở góc trên bên trái màn hình
-  const topLeftMascot = document.getElementById('top-left-mascot') || document.querySelector('img[src*="mascot"]:not(#chat-box *)');
-  if (!topLeftMascot) return;
+  // Quét chọn TẤT CẢ các thẻ img có đường dẫn hoặc thuộc tính liên quan đến mascot
+  const allMascots = document.querySelectorAll('img[src*="mascot"]');
 
-  topLeftMascot.classList.add('animate-jiggle-vivid');
+  allMascots.forEach(mascot => {
+    mascot.classList.add('animate-jiggle-vivid');
+  });
+
+  // Gỡ class sau khi chạy xong animation (0.6 giây) để có thể kích hoạt lại lần sau
   setTimeout(() => {
-    topLeftMascot.classList.remove('animate-jiggle-vivid');
+    allMascots.forEach(mascot => {
+      mascot.classList.remove('animate-jiggle-vivid');
+    });
   }, 600);
 }
 
@@ -468,7 +473,6 @@ function dispatchLogicEngine(text) {
   }
 }
 
-// Sửa lỗi hiển thị Mascot mất shadow và xóa hoàn toàn emoji tại đây
 window.resetConversation = function() {
   const chatBox = document.getElementById('chat-box');
   if (chatBox) {
