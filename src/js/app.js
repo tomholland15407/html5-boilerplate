@@ -126,7 +126,7 @@ let consumerChatSessions = [];
 let activeSessionId = null;
 
 // ==========================================
-// HỆ THỐNG ĐIỀU KHIỂN ĐÓNG/MỞ SIDEBAR (ĐÃ ĐƯỢC FIX)
+// HỆ THỐNG ĐIỀU KHIỂN ĐÓNG/MỞ SIDEBAR
 // ==========================================
 function initCollapsibleSidebarLogic() {
   const sidebarPanel = document.getElementById('sidebar-panel');
@@ -135,27 +135,59 @@ function initCollapsibleSidebarLogic() {
 
   if (!sidebarPanel || !btnClose || !btnOpen) return;
 
-  // 1. Khi bấm nút Thu gọn (<<)
   btnClose.addEventListener('click', () => {
-    // Xóa các class chiếm diện tích của Tailwind để ép thu về 0px triệt để
     sidebarPanel.classList.remove('w-80', 'p-5', 'border-r');
     sidebarPanel.classList.add('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
-
-    // Kích hoạt nút Lịch sử xuất hiện
     btnOpen.classList.remove('hidden');
   });
 
-  // 2. Khi bấm nút Mở rộng (>> Lịch sử)
   btnOpen.addEventListener('click', () => {
-    // Gỡ bỏ trạng thái ẩn hoàn toàn
     sidebarPanel.classList.remove('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
-    // Khôi phục đầy đủ layout ban đầu của sidebar
     sidebarPanel.classList.add('w-80', 'p-5', 'border-r');
-
-    // Ẩn nút đi cho thoáng diện tích
     btnOpen.classList.add('hidden');
   });
 }
+
+// ==========================================
+// HIỆU ỨNG RUNG LẮC MASCOT GÓC TRÊN TRÁI
+// ==========================================
+function injectJiggleStyles() {
+  if (document.getElementById('mascot-jiggle-style')) return;
+  const style = document.createElement('style');
+  style.id = 'mascot-jiggle-style';
+  style.innerHTML = `
+    @keyframes jiggleVivid {
+      0% { transform: scale(1) rotate(0deg); }
+      15% { transform: scale(1.15) rotate(-10deg); }
+      30% { transform: scale(1.15) rotate(8deg); }
+      45% { transform: scale(1.08) rotate(-6deg); }
+      60% { transform: scale(1.08) rotate(4deg); }
+      75% { transform: scale(1.02) rotate(-2deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    .animate-jiggle-vivid {
+      animation: jiggleVivid 0.6s ease-in-out;
+      display: inline-block !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function triggerMascotJiggle() {
+  // Tìm kiếm phần tử hình ảnh Mascot lớn ở góc trên bên trái màn hình
+  const topLeftMascot = document.getElementById('top-left-mascot') || document.querySelector('img[src*="mascot"]:not(#chat-box *)');
+  if (!topLeftMascot) return;
+
+  topLeftMascot.classList.add('animate-jiggle-vivid');
+  setTimeout(() => {
+    topLeftMascot.classList.remove('animate-jiggle-vivid');
+  }, 600);
+}
+
+window.handleBuyProduct = function() {
+  window.appendAssistantMessage('<p class="text-sm">Dạ tuyệt vời, em đã ghi nhận yêu cầu đặt mua sản phẩm của anh/chị!</p>');
+  triggerMascotJiggle();
+};
 
 // ==========================================
 // CORE FUNCTIONS - XỬ LÝ LỘC LUỒNG CHAT
@@ -326,7 +358,7 @@ function restoreSessionMessages(session) {
       const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-brand-cobalt text-white rounded-2xl px-4 py-3 text-sm">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     } else {
-      const html = `<div class="flex items-start space-x-3 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border flex items-center justify-center shrink-0"><img src="img/mascot.png" class="p-0.5 object-contain"></div><div class="max-w-[85%] bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl px-4 py-3 border border-slate-200 dark:border-brand-border text-sm">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md"><img src="img/mascot.png" class="p-0.5 object-contain"></div><div class="max-w-[85%] bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl px-4 py-3 border border-slate-200 dark:border-brand-border text-sm">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     }
   });
@@ -358,7 +390,6 @@ function handleFormSubmit(event) {
 function dispatchLogicEngine(text) {
   const lower = text.toLowerCase();
 
-  // Kiểm tra FAQ nhanh
   for (const [key, answer] of Object.entries(MOCK_FAQ)) {
     if (lower.includes(key)) {
       appendAssistantMessage(`<p class="text-sm">${answer}</p>`);
@@ -366,7 +397,6 @@ function dispatchLogicEngine(text) {
     }
   }
 
-  // Khởi tạo phỏng vấn nhu cầu mua sắm khách hàng
   if (sessionState.stage === 'INIT') {
     if (lower.includes('máy lạnh') || lower.includes('điều hòa') || lower.includes('đh')) {
       sessionState.category = 'ac';
@@ -425,24 +455,34 @@ function dispatchLogicEngine(text) {
           <div class="bg-amber-50 dark:bg-amber-950/20 p-2 rounded text-[11px] text-amber-700 dark:text-amber-400 border border-amber-200/50">
             <strong>Cân nhắc:</strong> Dòng này bán chạy nên đôi khi xảy ra tình trạng thiếu hàng cục bộ, cần đặt trước.
           </div>
-          <button onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ tuyệt vời, em đã ghi nhận yêu cầu đặt mua sản phẩm của anh/chị!</p>')" class="w-full bg-white dark:bg-brand-panel hover:bg-brand-electric hover:text-white text-xs py-2 rounded-lg border border-slate-200 dark:border-brand-border font-semibold transition-all">Chọn sản phẩm</button>
+          <button onclick="window.handleBuyProduct()" class="w-full bg-white dark:bg-brand-panel hover:bg-brand-electric hover:text-white text-xs py-2 rounded-lg border border-slate-200 dark:border-brand-border font-semibold transition-all">Chọn sản phẩm</button>
         </div>`;
     });
 
     cardsHtml += `</div>`;
     appendAssistantMessage(cardsHtml);
 
-    // Reset state về ban đầu
     sessionState.stage = 'INIT';
     sessionState.category = null;
     sessionState.collectedData = { roomSize: null, familySize: null };
   }
 }
 
+// Sửa lỗi hiển thị Mascot mất shadow và xóa hoàn toàn emoji tại đây
 window.resetConversation = function() {
   const chatBox = document.getElementById('chat-box');
   if (chatBox) {
-    chatBox.innerHTML = `<div class="flex items-start space-x-3"><div class="w-10 h-10 rounded-xl bg-white border flex items-center justify-center shrink-0"><img src="img/mascot.png" class="p-0.5 object-contain"></div><div class="max-w-[80%] bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl px-4 py-3 border border-slate-200 dark:border-brand-border text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ!</div></div>`;
+    chatBox.innerHTML = `
+      <div class="flex items-start space-x-3 message-fade-in">
+        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
+          <img src="img/mascot.png" alt="Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+        </div>
+        <div class="space-y-1 max-w-[85%] w-full">
+          <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border">
+            <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ!</p>
+          </div>
+        </div>
+      </div>`;
   }
   sessionState.stage = 'INIT';
   sessionState.category = null;
@@ -463,9 +503,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('chat-form');
   if (form) form.addEventListener('submit', handleFormSubmit);
 
-  // Kích hoạt tính năng đóng mở mượt mà của Sidebar
   initCollapsibleSidebarLogic();
+  injectJiggleStyles();
 
-  // Tạo phiên trò chuyện mặc định
+  // Ép cụm text Bảo mật canh trái thẳng hàng tuyệt đối với dòng dưới
+  const allElements = document.getElementsByTagName('*');
+  for (let el of allElements) {
+    if (el.textContent.trim().startsWith('Dữ liệu bảo mật') && el.children.length === 0) {
+      el.style.textAlign = 'left';
+      el.style.display = 'block';
+      if (el.parentElement) {
+        el.parentElement.style.display = 'flex';
+        el.parentElement.style.flexDirection = 'column';
+        el.parentElement.style.alignItems = 'flex-start';
+        el.parentElement.style.textAlign = 'left';
+        el.parentElement.style.paddingLeft = '0';
+        el.parentElement.style.marginLeft = '0';
+      }
+    }
+  }
+
   createNewChatSession();
 });
