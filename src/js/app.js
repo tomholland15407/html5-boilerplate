@@ -5,7 +5,8 @@
 
 // ==========================================
 // 1. MOCK GROUND TRUTH DATABASE (RAG TARGET)
-// ==========================================const MOCK_CATALOG = {
+// ==========================================
+const MOCK_CATALOG = {
   ac: [
     {
       id: 'ac-pana-01',
@@ -767,8 +768,8 @@ function generateTop3Recommendations(category) {
           <div class="text-[11px] text-slate-400">
             🎁 <strong>Quà tặng đi kèm:</strong> <span class="text-slate-200">${gift}</span>
           </div>
-          <button type="button" onclick="window.appendAssistantMessage('<p class=\'text-sm\'>Dạ đã thêm sản phẩm <strong>${product.name}</strong> vào danh sách tư vấn của bạn cùng ưu đãi đặc biệt rồi nhé ạ!</p>')" class="w-full bg-slate-800 hover:bg-brand-600 hover:text-white transition-all text-slate-200 py-1.5 rounded text-xs font-semibold">
-            Chọn mua sản phẩm này
+          <button type="button" onclick="window.appendAssistantMessage('<p class=\\'text-sm\\'>Dạ đã thêm sản phẩm <strong>${product.name}</strong> vào danh sách tư vấn của bạn cùng ưu đãi đặc biệt rồi nhé ạ!</p>')" class="w-full bg-slate-800 hover:bg-brand-600 hover:text-white text-xs py-2 rounded font-medium transition-all">
+            Chọn Mua / Tư Vấn
           </button>
         </div>
       </div>
@@ -777,24 +778,7 @@ function generateTop3Recommendations(category) {
 
   htmlResult += `
       </div>
-      <p class="text-xs text-slate-400 italic mt-3">
-        *Lưu ý: Mọi mức giá và ưu đãi quà tặng phía trên được truy xuất tự động từ hệ thống quản lý tồn kho trực tiếp theo thời gian thực tại Điện Máy Xanh, đảm bảo độ chính xác 100% không ảo giác dữ liệu.*[cite: 1]
-      </p>
     </div>
   `;
-
   return htmlResult;
 }
-
-// ==========================================
-// 7. INITIALIZE DOM EVENTS FOR WEBPACK
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-  const chatForm = document.getElementById('chat-form');
-  if (chatForm) {
-    chatForm.addEventListener('submit', handleUserSubmit);
-  }
-
-  // Expose function out of bundle for inline HTML onclick handlers
-  window.appendAssistantMessage = appendAssistantMessage;
-});
