@@ -795,3 +795,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
   createNewChatSession();
 });
+// ==========================================
+// FORCE INJECT HACKATHON LIVE DOTS ANIMATION
+// ==========================================
+(function injectUltraLivelyDots() {
+  if (document.getElementById('ultra-lively-dots-style')) return;
+  const style = document.createElement('style');
+  style.id = 'ultra-lively-dots-style';
+  style.innerHTML = `
+    .typing-dot {
+      display: inline-block !important;
+      will-change: transform, opacity, background-color, box-shadow;
+      animation: ultra-lively-wave 0.5s infinite cubic-bezier(0.25, 1, 0.5, 1) !important;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.08s !important; }
+    .typing-dot:nth-child(3) { animation-delay: 0.16s !important; }
+
+    @keyframes ultra-lively-wave {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.4;
+      }
+      35% {
+        transform: translateY(-10px) scaleX(0.8) scaleY(1.25) !important;
+        opacity: 1;
+        background-color: #0095da !important;
+        box-shadow: 0 0 10px #0095da, 0 0 20px rgba(0, 149, 218, 0.4);
+      }
+      70% {
+        transform: translateY(1.5px) scaleX(1.2) scaleY(0.85) !important;
+        opacity: 0.7;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+})();
