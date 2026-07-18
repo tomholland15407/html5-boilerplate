@@ -204,33 +204,8 @@
     <!-- BÊN PHẢI: KHUNG CHAT TƯƠNG TÁC (INTERACTIVE CHAT INTERFACE) -->
     <section class="flex-1 flex flex-col bg-gradient-to-br from-[#f3f7fa] via-[#edf2f7] to-[#e4ecf3] dark:from-brand-dark dark:to-brand-dark relative transition-colors duration-300 overflow-hidden custom-mesh-bg">
 
-      <!-- ======================================================== -->
-      <!-- THÀNH PHẦN TÍCH HỢP: HÌNH MỜ WATERMARK ĐIỆN MÁY XANH CHÌM DƯỚI NỀN -->
-      <!-- ======================================================== -->
-      <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-[0.045] dark:opacity-[0.025] z-0 transition-opacity duration-300">
-        <svg class="w-[320px] sm:w-[450px] md:w-[550px] h-auto text-current" viewBox="0 0 600 250" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Vòng tròn linh vật người máy màu vàng đặc trưng -->
-          <circle cx="90" cy="125" r="45" fill="#ffb800" />
-          <!-- Biểu tượng người máy pixel đơn giản hóa -->
-          <path d="M85 100 h10 v10 h-10 z M75 110 h30 v10 h-30 z M65 120 h40 v10 h-40 z M75 130 h10 v20 h-10 z M95 130 h10 v20 h-10 z" fill="#000" />
-
-          <!-- Chữ "Điện máy" cách điệu -->
-          <text x="155" y="145" font-family="'Be Vietnam Pro', sans-serif" font-size="52" font-weight="800" fill="#0095da" letter-spacing="-1">Điện máy</text>
-          <!-- Chữ "XANH" in đậm nổi bật -->
-          <text x="390" y="145" font-family="'Be Vietnam Pro', sans-serif" font-size="54" font-weight="900" fill="#ffb800" font-style="italic" letter-spacing="-1">XANH</text>
-
-          <!-- Đám mây suy nghĩ chứa dấu hỏi chấm phía góc phải -->
-          <path d="M470 70 C455 70 450 82 458 90 C450 98 462 110 475 102 C488 110 500 98 492 90 C500 82 488 70 475 74 C471 70 468 70 470 70 Z" stroke="#ffb800" stroke-width="3.5" stroke-linecap="round" fill="none" />
-          <text x="471" y="93" font-family="'Be Vietnam Pro', sans-serif" font-size="22" font-weight="900" fill="#ffb800">?</text>
-          <!-- Các bong bóng suy nghĩ nhỏ nối xuống -->
-          <circle cx="452" cy="108" r="4" fill="#ffb800" />
-          <circle cx="445" cy="116" r="2.5" fill="#ffb800" />
-        </svg>
-      </div>
-      <!-- ======================================================== -->
-
       <!-- Banner Thông báo + Nút Mở rộng Sidebar khi bị thu gọn -->
-      <div class="bg-white/80 dark:bg-brand-panel/40 border-b border-slate-200 dark:border-brand-border px-4 py-2 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 shrink-0 transition-colors duration-300 min-h-[45px] relative z-10">
+      <div class="bg-white/80 dark:bg-brand-panel/40 border-b border-slate-200 dark:border-brand-border px-4 py-2 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 shrink-0 transition-colors duration-300 min-h-[45px]">
         <div class="flex items-center space-x-3">
           <button id="btn-open-sidebar" class="hidden flex items-center space-x-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-blue-600 font-semibold shadow-sm hover:bg-slate-50 transition-all dark:bg-brand-panel dark:border-brand-border dark:text-brand-electric">
             <i class="fa-solid fa-angles-right mr-1"></i> Lịch sử
@@ -246,8 +221,8 @@
         </button>
       </div>
 
-      <!-- Khu vực hiển thị tin nhắn (Bổ sung z-10 để nằm đè lên hình mờ ổn định) -->
-      <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-6 relative z-10">
+      <!-- Khu vực hiển thị tin nhắn -->
+      <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-6">
 
         <!-- THẺ TIN NHẮN CHÀO MỪNG ĐÃ ĐƯỢC PHỦ MÀU XANH CAO CẤP MỚI ĐỒNG BỘ -->
         <div class="flex items-start space-x-3.5 message-fade-in">
@@ -281,7 +256,7 @@
       </div>
 
       <!-- Thẻ Gợi ý Kịch bản nhanh (Quick Prompts) -->
-      <div class="px-6 py-3 bg-white/60 dark:bg-brand-panel/30 border-t border-slate-200 dark:border-brand-border/40 shrink-0 transition-colors duration-300 relative z-10">
+      <div class="px-6 py-3 bg-white/60 dark:bg-brand-panel/30 border-t border-slate-200 dark:border-brand-border/40 shrink-0 transition-colors duration-300">
         <p class="text-[11px] text-slate-500 dark:text-slate-500 mb-2 flex items-center font-semibold uppercase tracking-wider">
           <i class="fa-regular fa-lightbulb text-brand-gold mr-1.5"></i> Gợi ý nhu cầu tìm kiếm nhanh:
         </p>
@@ -300,7 +275,7 @@
       </div>
 
       <!-- Ô NHẬP LIỆU GỬI TIN NHẮN (INPUT BAR) -->
-      <footer class="p-4 bg-white dark:bg-brand-panel border-t border-slate-200 dark:border-brand-border shrink-0 transition-colors duration-300 shadow-lg dark:shadow-none relative z-10">
+      <footer class="p-4 bg-white dark:bg-brand-panel border-t border-slate-200 dark:border-brand-border shrink-0 transition-colors duration-300 shadow-lg dark:shadow-none">
         <form id="chat-form" class="relative flex items-center">
           <input type="text" id="user-input" placeholder="Nhập câu hỏi bằng tiếng Việt... (Ví dụ: 'Cần tìm tủ lạnh tầm 8 triệu cho gia đình 3 người tiết kiệm điện')"
             class="w-full bg-slate-50 dark:bg-brand-dark border border-slate-200 dark:border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm rounded-xl pl-4 pr-24 py-4 focus:outline-none transition-all duration-200 shadow-inner"
