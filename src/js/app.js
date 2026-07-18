@@ -209,6 +209,7 @@ function scrollChatToBottom() {
   if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+// MODIFIED: Changed layout to unobtrusive light blue with soft borders
 function showTypingIndicator() {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
@@ -217,7 +218,7 @@ function showTypingIndicator() {
       <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
         <img src="img/mascot.png" alt="..." class="w-full h-full object-contain p-0.5 animate-pulse" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
-      <div class="glass-message-card text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 border border-slate-200 dark:border-brand-border">
+      <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 border border-blue-100 dark:border-blue-900/50 shadow-sm">
         <div class="flex items-center space-x-1 py-1">
           <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
           <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
@@ -257,6 +258,7 @@ function appendUserMessage(text) {
   }
 }
 
+// MODIFIED: Changed layout to unobtrusive light blue with soft borders
 function appendAssistantMessage(htmlContent) {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
@@ -266,7 +268,7 @@ function appendAssistantMessage(htmlContent) {
         <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
-        <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
+        <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
           ${htmlContent}
         </div>
       </div>
@@ -355,6 +357,7 @@ function renderChatHistoryUI() {
   });
 }
 
+// MODIFIED: Changed layout to unobtrusive light blue with soft borders for reloaded history messages
 function restoreSessionMessages(session) {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
@@ -366,7 +369,7 @@ function restoreSessionMessages(session) {
           <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
-          <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
+          <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
             <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
           </div>
         </div>
@@ -387,7 +390,7 @@ function restoreSessionMessages(session) {
       const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tr-none px-4 py-3 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     } else {
-      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain"></div><div class="max-w-[85%] w-full glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 text-[13.5px]">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain"></div><div class="max-w-[85%] w-full bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     }
   });
@@ -643,7 +646,6 @@ function dispatchLogicEngine(text) {
                    <li><i class="fa-solid fa-laptop text-slate-400 mr-1.5"></i>Màn hình: <strong>${product.screen}</strong></li>`;
     }
 
-    // MODIFIED: Product suggestion cards now feature a lively light yellow layout with golden borders!
     cardsHtml += `
       <div class="bg-amber-50/60 dark:bg-amber-950/20 rounded-xl p-4 border border-amber-200/80 dark:border-amber-500/20 flex flex-col justify-between space-y-3.5 shadow-sm transition-all hover:shadow-md hover:border-amber-400/80">
         <div>
@@ -683,6 +685,7 @@ function dispatchLogicEngine(text) {
 // ==========================================
 // CÁC HÀM KHỞI TẠO VÀ LÀM MỚI PHIÊN
 // ==========================================
+// MODIFIED: Changed layout to unobtrusive light blue with soft borders for empty/fresh state template strings
 window.resetConversation = function() {
   if (activeSessionId) {
     const currentSession = consumerChatSessions.find(item => item.id === activeSessionId);
@@ -712,7 +715,7 @@ window.resetConversation = function() {
             <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
           </div>
           <div class="space-y-1 max-w-[85%] w-full">
-            <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
+            <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
               <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
             </div>
           </div>
