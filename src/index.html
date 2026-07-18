@@ -204,8 +204,17 @@
     <!-- BÊN PHẢI: KHUNG CHAT TƯƠNG TÁC (INTERACTIVE CHAT INTERFACE) -->
     <section class="flex-1 flex flex-col bg-gradient-to-br from-[#f3f7fa] via-[#edf2f7] to-[#e4ecf3] dark:from-brand-dark dark:to-brand-dark relative transition-colors duration-300 overflow-hidden custom-mesh-bg">
 
+      <!-- ========================================================================= -->
+      <!-- THÀNH PHẦN MỚI: HÌNH NỀN CHÌM WATERMARK SẮC NÉT (KHÔNG SỬ DỤNG BỘ LỌC NHÒE BLUR) -->
+      <!-- ========================================================================= -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0">
+        <img src="img/dienmayxanh-bg.png" alt="Điện Máy Xanh Watermark"
+             class="w-[280px] sm:w-[380px] md:w-[450px] h-auto object-contain opacity-[0.06] dark:opacity-[0.03] transition-opacity duration-300">
+      </div>
+      <!-- ========================================================================= -->
+
       <!-- Banner Thông báo + Nút Mở rộng Sidebar khi bị thu gọn -->
-      <div class="bg-white/80 dark:bg-brand-panel/40 border-b border-slate-200 dark:border-brand-border px-4 py-2 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 shrink-0 transition-colors duration-300 min-h-[45px]">
+      <div class="bg-white/80 dark:bg-brand-panel/40 border-b border-slate-200 dark:border-brand-border px-4 py-2 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 shrink-0 transition-colors duration-300 min-h-[45px] relative z-10">
         <div class="flex items-center space-x-3">
           <button id="btn-open-sidebar" class="hidden flex items-center space-x-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-blue-600 font-semibold shadow-sm hover:bg-slate-50 transition-all dark:bg-brand-panel dark:border-brand-border dark:text-brand-electric">
             <i class="fa-solid fa-angles-right mr-1"></i> Lịch sử
@@ -222,7 +231,7 @@
       </div>
 
       <!-- Khu vực hiển thị tin nhắn -->
-      <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-6">
+      <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-6 relative z-10">
 
         <!-- THẺ TIN NHẮN CHÀO MỪNG ĐÃ ĐƯỢC PHỦ MÀU XANH CAO CẤP MỚI ĐỒNG BỘ -->
         <div class="flex items-start space-x-3.5 message-fade-in">
@@ -256,7 +265,7 @@
       </div>
 
       <!-- Thẻ Gợi ý Kịch bản nhanh (Quick Prompts) -->
-      <div class="px-6 py-3 bg-white/60 dark:bg-brand-panel/30 border-t border-slate-200 dark:border-brand-border/40 shrink-0 transition-colors duration-300">
+      <div class="px-6 py-3 bg-white/60 dark:bg-brand-panel/30 border-t border-slate-200 dark:border-brand-border/40 shrink-0 transition-colors duration-300 relative z-10">
         <p class="text-[11px] text-slate-500 dark:text-slate-500 mb-2 flex items-center font-semibold uppercase tracking-wider">
           <i class="fa-regular fa-lightbulb text-brand-gold mr-1.5"></i> Gợi ý nhu cầu tìm kiếm nhanh:
         </p>
@@ -275,7 +284,7 @@
       </div>
 
       <!-- Ô NHẬP LIỆU GỬI TIN NHẮN (INPUT BAR) -->
-      <footer class="p-4 bg-white dark:bg-brand-panel border-t border-slate-200 dark:border-brand-border shrink-0 transition-colors duration-300 shadow-lg dark:shadow-none">
+      <footer class="p-4 bg-white dark:bg-brand-panel border-t border-slate-200 dark:border-brand-border shrink-0 transition-colors duration-300 shadow-lg dark:shadow-none relative z-10">
         <form id="chat-form" class="relative flex items-center">
           <input type="text" id="user-input" placeholder="Nhập câu hỏi bằng tiếng Việt... (Ví dụ: 'Cần tìm tủ lạnh tầm 8 triệu cho gia đình 3 người tiết kiệm điện')"
             class="w-full bg-slate-50 dark:bg-brand-dark border border-slate-200 dark:border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm rounded-xl pl-4 pr-24 py-4 focus:outline-none transition-all duration-200 shadow-inner"
