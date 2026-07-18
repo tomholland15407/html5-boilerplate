@@ -1,6 +1,6 @@
 /* eslint-disable */
 /**
- * Smart Assistant - Trợ Lý Mua Sắm Điện Máy Thông Thái (JS Engine)
+ * Smart Assistant - Trợ Lý Mua Sắm Thông Thái (JS Engine)
  * Toàn bộ cơ sở dữ liệu MockData và logic điều phối hội thoại
  */
 
@@ -115,6 +115,7 @@ const MOCK_FAQ = {
   'trả góp': 'Dạ, hiện tại có chương trình hỗ trợ trả góp 0% lãi suất qua căn cước công dân gắn chip cực nhanh chóng, xét duyệt chỉ 5 phút ạ.'
 };
 
+// Cấu trúc trạng thái ứng dụng
 let sessionState = {
   stage: 'INIT',
   category: null,
@@ -135,18 +136,20 @@ function initCollapsibleSidebarLogic() {
   if (!sidebarPanel || !btnClose || !btnOpen) return;
 
   btnClose.addEventListener('click', () => {
-    sidebarPanel.classList.add('sidebar-collapsed');
+    sidebarPanel.classList.remove('w-80', 'p-5', 'border-r');
+    sidebarPanel.classList.add('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
     btnOpen.classList.remove('hidden');
   });
 
   btnOpen.addEventListener('click', () => {
-    sidebarPanel.classList.remove('sidebar-collapsed');
+    sidebarPanel.classList.remove('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
+    sidebarPanel.classList.add('w-80', 'p-5', 'border-r');
     btnOpen.classList.add('hidden');
   });
 }
 
 // ==========================================
-// HIỆU ỨNG RUNG LẮC MASCOT TRỰC QUAN
+// HIỆU ỨNG RUNG LẮC ĐỒNG LOẠT CHO TOÀN BỘ MASCOT
 // ==========================================
 function injectJiggleStyles() {
   if (document.getElementById('mascot-jiggle-style')) return;
@@ -172,9 +175,11 @@ function injectJiggleStyles() {
 
 function triggerMascotJiggle() {
   const allMascots = document.querySelectorAll('img[src*="mascot"]');
+
   allMascots.forEach(mascot => {
     mascot.classList.add('animate-jiggle-vivid');
   });
+
   setTimeout(() => {
     allMascots.forEach(mascot => {
       mascot.classList.remove('animate-jiggle-vivid');
@@ -186,6 +191,10 @@ window.handleBuyProduct = function() {
   window.appendAssistantMessage('<p class="text-sm">Dạ tuyệt vời, em đã ghi nhận yêu cầu đặt mua sản phẩm của anh/chị!</p>');
   triggerMascotJiggle();
 };
+
+// ==========================================
+// CORE FUNCTIONS - XỬ LÝ LỘC LUỒNG CHAT
+// ==========================================
 
 function formatVND(amount) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount).replace('₫', 'đ');
@@ -204,11 +213,11 @@ function showTypingIndicator() {
       <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
         <img src="img/mascot.png" alt="..." class="w-full h-full object-contain p-0.5 animate-pulse" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
-      <div class="glowing-blue-chat-card text-slate-400 rounded-2xl rounded-tl-none px-4 py-3">
+      <div class="glass-message-card text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 border border-slate-200 dark:border-brand-border">
         <div class="flex items-center space-x-1 py-1">
-          <span class="w-2 h-2 bg-blue-400 rounded-full typing-dot"></span>
-          <span class="w-2 h-2 bg-blue-400 rounded-full typing-dot"></span>
-          <span class="w-2 h-2 bg-blue-400 rounded-full typing-dot"></span>
+          <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
+          <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
+          <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
         </div>
       </div>
     </div>`;
@@ -227,7 +236,7 @@ function appendUserMessage(text) {
   const html = `
     <div class="flex items-start space-x-3 justify-end message-fade-in">
       <div class="space-y-1 max-w-[80%]">
-        <div class="bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tl-none px-4 py-3 shadow-md">
+        <div class="bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tr-none px-4 py-3 shadow-md">
           <p class="text-sm leading-relaxed">${text}</p>
         </div>
       </div>
@@ -244,7 +253,7 @@ function appendUserMessage(text) {
   }
 }
 
-// SỬ DỤNG CLASS GLOWING BLUE HOÀN CHỈNH CHO PHẢN HỒI CỦA TRỢ LÝ
+// ĐỒNG BỘ HÓA ĐỘNG: ĐẢM BẢO CÁC TIN NHẮN DO AI SINH RA ĐỀU MANG PHONG CÁCH GLASSMORPHISM MỚI
 function appendAssistantMessage(htmlContent) {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
@@ -254,7 +263,7 @@ function appendAssistantMessage(htmlContent) {
         <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
-        <div class="glowing-blue-chat-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5">
+        <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
           ${htmlContent}
         </div>
       </div>
@@ -270,9 +279,9 @@ function appendAssistantMessage(htmlContent) {
 
 window.appendAssistantMessage = appendAssistantMessage;
 
-// =======================================================
-// QUẢN LÝ LỊCH SỬ CHAT VỚI TÔNG MÀU VÀNG SLIGHT AMBER/YELLOW
-// =======================================================
+// ==========================================
+// QUẢN LÝ LỊCH SỬ PHIÊN TRÒ CHUYỆN (SESSIONS)
+// ==========================================
 function createNewChatSession(initialTitle = "Cuộc trò chuyện mới") {
   const newId = 'session_' + Date.now();
   const newSession = {
@@ -298,15 +307,14 @@ function updateActiveSessionTitle(newTitle, categoryCode) {
   }
 }
 
-// ĐỔI SANG MÀU VÀNG NHẸ ĐỒNG BỘ CHO CÁC HỘP THOẠI LỊCH SỬ (CHAT HISTORY BOXES)
 function renderChatHistoryUI() {
   const container = document.getElementById('chat-history-list');
   if (!container) return;
 
   if (consumerChatSessions.length === 0) {
     container.innerHTML = `
-      <div id="history-empty-state" class="text-center py-8 px-4 border border-dashed border-amber-200 bg-[#fefce8]/40 rounded-xl">
-        <p class="text-[11px] text-[#854d0e] italic">Chưa có cuộc trò chuyện cũ.</p>
+      <div id="history-empty-state" class="text-center py-8 px-4 border border-dashed border-slate-200 dark:border-brand-border/40 rounded-xl">
+        <p class="text-[11px] text-slate-400 italic">Chưa có cuộc trò chuyện cũ.</p>
       </div>`;
     return;
   }
@@ -316,24 +324,23 @@ function renderChatHistoryUI() {
     const isActive = session.id === activeSessionId;
     const pill = document.createElement('div');
 
-    // Sử dụng màu vàng hổ phách nhạt chuẩn theo yêu cầu của bạn
     pill.className = `group flex items-center justify-between p-3 rounded-xl border transition-all duration-200 cursor-pointer text-xs font-medium history-item-appear ${
       isActive
-      ? 'border-amber-400 bg-[#fefce8] text-[#854d0e] ring-2 ring-[#fef08a]'
-      : 'border-[#fef08a]/60 bg-[#fefce8]/50 text-[#854d0e]/80 hover:bg-[#fefce8] hover:text-[#854d0e]'
+      ? 'border-brand-electric/40 bg-brand-electric/5 text-brand-electric dark:bg-brand-electric/10'
+      : 'border-slate-100 dark:border-brand-border/40 bg-slate-50/60 dark:bg-brand-panel/40 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-brand-dark/30'
     }`;
 
-    let icon = '<i class="fa-regular fa-comment text-amber-500"></i>';
-    if (session.category === 'ac') icon = '<i class="fa-solid fa-snowflake text-cyan-600"></i>';
-    if (session.category === 'fridge') icon = '<i class="fa-solid fa-carrot text-emerald-600"></i>';
-    if (session.category === 'laptop') icon = '<i class="fa-solid fa-laptop text-indigo-600"></i>';
+    let icon = '<i class="fa-regular fa-comment text-slate-400"></i>';
+    if (session.category === 'ac') icon = '<i class="fa-solid fa-snowflake text-cyan-500"></i>';
+    if (session.category === 'fridge') icon = '<i class="fa-solid fa-carrot text-emerald-500"></i>';
+    if (session.category === 'laptop') icon = '<i class="fa-solid fa-laptop text-indigo-500"></i>';
 
     pill.innerHTML = `
       <div class="flex items-center space-x-2.5 truncate w-[90%]">
         <span class="shrink-0 text-sm">${icon}</span>
         <div class="truncate flex flex-col text-left">
-          <span class="truncate font-semibold">${session.title}</span>
-          <span class="text-[10px] text-amber-600/70 mt-0.5">${session.timestamp} • Điện Máy Xanh</span>
+          <span class="truncate font-semibold text-slate-900 dark:text-slate-100">${session.title}</span>
+          <span class="text-[10px] text-slate-400 mt-0.5">${session.timestamp} • Điện Máy Xanh</span>
         </div>
       </div>`;
 
@@ -353,11 +360,11 @@ function restoreSessionMessages(session) {
   if (!session.messages || session.messages.length === 0) {
     chatBox.innerHTML = `
       <div class="flex items-start space-x-3.5 message-fade-in">
-        <div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] bg-white">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] bg-white">
           <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
-          <div class="glowing-blue-chat-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5">
+          <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
             <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ!</p>
           </div>
         </div>
@@ -375,13 +382,16 @@ function restoreSessionMessages(session) {
       const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tr-none px-4 py-3 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     } else {
-      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain"></div><div class="max-w-[85%] w-full glowing-blue-chat-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 text-[13.5px]">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain"></div><div class="max-w-[85%] w-full glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 text-[13.5px]">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     }
   });
   scrollChatToBottom();
 }
 
+// ==========================================
+// PIPELINE XỬ LÝ CHAT & LOGIC PHÂN TÍCH RAG
+// ==========================================
 function handleFormSubmit(event) {
   event.preventDefault();
   const input = document.getElementById('user-input');
@@ -401,7 +411,6 @@ function handleFormSubmit(event) {
   }, 700);
 }
 
-// ĐỔI SANG MÀU VÀNG SLIGHT YELLOW CHO CÁC KHUNG GỢI Ý SẢN PHẨM HOÀN CHỈNH
 function dispatchLogicEngine(text) {
   const lower = text.toLowerCase();
 
@@ -455,23 +464,22 @@ function dispatchLogicEngine(text) {
 
   if (sessionState.stage === 'RECOMMENDATION') {
     const products = MOCK_CATALOG[sessionState.category];
-    let cardsHtml = `<p class="text-sm mb-3 text-slate-900 dark:text-slate-100">Dạ, em đã tra cứu kho hàng và đề xuất <strong>Top 3 sản phẩm</strong> phù hợp nhất kèm phân tích điểm đánh đổi (Trade-off):</p><div class="grid grid-cols-1 lg:grid-cols-3 gap-4">`;
+    let cardsHtml = `<p class="text-sm mb-3">Dạ, em đã tra cứu kho hàng và đề xuất <strong>Top 3 sản phẩm</strong> phù hợp nhất kèm phân tích điểm đánh đổi (Trade-off):</p><div class="grid grid-cols-1 lg:grid-cols-3 gap-4">`;
 
     products.forEach((p, idx) => {
       const promo = MOCK_PROMOTIONS.discounts[p.id] || 'Tặng phiếu mua hàng bách hóa';
-      // Đổi nền thẻ sang màu vàng kem amber nhẹ nhàng đồng bộ tinh tế
       cardsHtml += `
-        <div class="bg-[#fffdf4] dark:bg-brand-panel rounded-xl p-4 border border-[#fef08a] dark:border-brand-border flex flex-col justify-between space-y-3 shadow-sm text-left">
+        <div class="bg-white/80 dark:bg-brand-dark rounded-xl p-4 border border-slate-200 dark:border-brand-border flex flex-col justify-between space-y-3 shadow-sm">
           <div>
-            <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-500/10 text-[#854d0e] rounded">Gợi ý ${idx+1}</span>
-            <h3 class="font-bold text-xs text-[#854d0e] mt-1 line-clamp-2">${p.name}</h3>
-            <div class="text-sm font-extrabold text-blue-700 dark:text-brand-electric mt-1">${formatVND(p.price)}</div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-2">Quà khuyến mãi: ${promo}</p>
+            <span class="px-2 py-0.5 text-[10px] font-bold bg-brand-electric/10 text-brand-electric rounded">Gợi ý ${idx+1}</span>
+            <h3 class="font-bold text-xs text-slate-900 dark:text-white mt-1">${p.name}</h3>
+            <div class="text-sm font-extrabold text-blue-600 dark:text-brand-electric mt-1">${formatVND(p.price)}</div>
+            <p class="text-[11px] text-slate-500 mt-2">Quà khuyến mãi: ${promo}</p>
           </div>
-          <div class="bg-[#fefce8] p-2 rounded text-[11px] text-[#854d0e] border border-[#fef08a]/80">
-            <strong>Cân nhắc:</strong> Dòng này bán rất chạy, cần kiểm tra kỹ khu vực lắp đặt để hẹn lịch sớm.
+          <div class="bg-amber-50 dark:bg-amber-950/20 p-2 rounded text-[11px] text-amber-700 dark:text-amber-400 border border-amber-200/50">
+            <strong>Cân nhắc:</strong> Dòng này bán chạy nên đôi khi xảy ra tình trạng thiếu hàng cục bộ, cần đặt trước.
           </div>
-          <button onclick="window.handleBuyProduct()" class="w-full custom-btn-select text-xs py-2 rounded-lg font-bold transition-all shadow-sm">Chọn sản phẩm</button>
+          <button onclick="window.handleBuyProduct()" class="w-full custom-btn-select text-xs py-2 rounded-lg font-semibold transition-all">Chọn sản phẩm</button>
         </div>`;
     });
 
@@ -500,7 +508,7 @@ window.resetConversation = function() {
           <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
-          <div class="glowing-blue-chat-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5">
+          <div class="glass-message-card text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-white/50 dark:border-brand-border/40">
             <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ!</p>
           </div>
         </div>
@@ -520,11 +528,30 @@ window.fillQuickPrompt = function(promptText) {
   }
 };
 
+// Khởi tạo các sự kiện khi tải trang hoàn tất
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('chat-form');
   if (form) form.addEventListener('submit', handleFormSubmit);
 
   initCollapsibleSidebarLogic();
   injectJiggleStyles();
+
+  // Ép cụm text Bảo mật canh trái thẳng hàng tuyệt đối với dòng dưới
+  const allElements = document.getElementsByTagName('*');
+  for (let el of allElements) {
+    if (el.textContent.trim().startsWith('Dữ liệu bảo mật') && el.children.length === 0) {
+      el.style.textAlign = 'left';
+      el.style.display = 'block';
+      if (el.parentElement) {
+        el.parentElement.style.display = 'flex';
+        el.parentElement.style.flexDirection = 'column';
+        el.parentElement.style.alignItems = 'flex-start';
+        el.parentElement.style.textAlign = 'left';
+        el.parentElement.style.paddingLeft = '0';
+        el.parentElement.style.marginLeft = '0';
+      }
+    }
+  }
+
   createNewChatSession();
 });
