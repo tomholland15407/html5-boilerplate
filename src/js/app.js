@@ -120,7 +120,7 @@ const MOCK_FAQ = {
 let sessionState = {
   stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION
   category: null, // ac, fridge, laptop
-  collectedData: {  // <--- FIXED: Changed from '=' to ':'
+  collectedData: {
     brand: null,
     budget: null, // { modifier: 'dưới'|'trên'|'tầm', value: số }
     roomSize: null, // số m2
@@ -209,6 +209,7 @@ function scrollChatToBottom() {
   if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+// Custom simple loading state inside the input card context
 function showTypingIndicator() {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
@@ -468,7 +469,10 @@ function extractEntitiesFromText(text) {
 // CORE LOGIC ENGINE - ĐIỀU PHỐI HỘI THOẠI & DỮ LIỆU RAG
 // ========================================================
 function handleFormSubmit(event) {
-  event.preventDefault();
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+
   const input = document.getElementById('user-input');
   if (!input) return;
   const val = input.value.trim();
@@ -512,7 +516,7 @@ function dispatchLogicEngine(text) {
   if (extracted.familySize) sessionState.collectedData.familySize = extracted.familySize;
   if (extracted.purpose) sessionState.collectedData.purpose = extracted.purpose;
 
-  // Cập nhật giao diện gỡ lỗi (Hộp đen ẩn) trực quan theo DOM
+  // Cập nhật giao diện gỡ lỗi trực quan theo DOM
   document.getElementById('active-category').textContent = sessionState.category || 'Chưa xác định';
   document.getElementById('slang-inspector').textContent = JSON.stringify(sessionState.collectedData);
 
@@ -705,11 +709,9 @@ window.resetConversation = function() {
     }
   }
 
-  // Tìm cuộc trò chuyện trống mới nhất hiện có trong danh sách lịch sử phiên
   const newestEmptySession = consumerChatSessions.find(session => !session.messages || session.messages.length === 0);
 
   if (newestEmptySession) {
-    // TÁI SỬ DỤNG PHIÊN TRỐNG SẴN CÓ
     activeSessionId = newestEmptySession.id;
     restoreSessionMessages(newestEmptySession);
 
@@ -724,7 +726,6 @@ window.resetConversation = function() {
 
     renderChatHistoryUI();
   } else {
-    // KHỞI TẠO PHIÊN MỚI TINH
     const chatBox = document.getElementById('chat-box');
     if (chatBox) {
       chatBox.innerHTML = `
@@ -755,11 +756,12 @@ window.resetConversation = function() {
   }
 };
 
+// MODIFIED: Quick chips now immediately process through the engine straightaway!
 window.fillQuickPrompt = function(promptText) {
   const input = document.getElementById('user-input');
   if (input) {
     input.value = promptText;
-    input.focus();
+    handleFormSubmit(null);
   }
 };
 
@@ -771,7 +773,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initCollapsibleSidebarLogic();
   injectJiggleStyles();
 
-  // Ép cụm văn bản bảo mật căn lề trái chuẩn xác theo thiết kế đồ họa
   const allElements = document.getElementsByTagName('*');
   for (let el of allElements) {
     if (el.textContent.trim().startsWith('Dữ liệu bảo mật') && el.children.length === 0) {
