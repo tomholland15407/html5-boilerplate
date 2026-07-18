@@ -234,7 +234,7 @@ function showTypingIndicator() {
   const html = `
     <div id="typing-indicator" class="flex items-start space-x-3.5 message-fade-in">
       <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-        <img src="img/mascot.png" alt="..." class="w-full h-full object-contain p-0.5 animate-pulse" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+        <img src="img/mascot.png" alt="..." class="w-full h-full object-contain p-0.5 animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 border border-blue-100 dark:border-blue-900/50 shadow-sm">
         <div class="flex items-center space-x-1 py-1">
@@ -283,7 +283,7 @@ function appendAssistantMessage(htmlContent) {
   const html = `
     <div class="flex items-start space-x-3.5 message-fade-in">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden">
-        <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
+        <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
         <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
