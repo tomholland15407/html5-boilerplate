@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Tailwind CSS CDN với cấu hình mở rộng màu sắc đồng bộ hoàn hảo hai giao diện -->
+  <!-- Tailwind CSS CDN với cấu hình màu sắc thương hiệu Điện Máy Xanh -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -29,9 +29,6 @@
               coral: '#ff3b30',
               gold: '#ffb800',
               success: '#10b981',
-              screenshotRed: '#cd2027',
-              screenshotAmber: '#d97706',
-              screenshotChipBg: '#fef3c7'
             }
           },
           fontFamily: {
@@ -62,20 +59,19 @@
   <!-- PHẦN ĐẦU TRANG (HEADER BAR) -->
   <header class="bg-white dark:bg-brand-panel border-b border-slate-200 dark:border-brand-border px-6 py-4 flex justify-between items-center shrink-0 transition-colors duration-300 shadow-sm dark:shadow-none z-10">
     <div class="flex items-center space-x-3">
-      <!-- Vòng tròn bo icon nhận diện thương hiệu mượt mà -->
-      <div class="w-12 h-12 rounded-xl bg-white p-0.5 shadow-md shadow-brand-electric/5 dark:shadow-brand-electric/20 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-brand-border animate-mascot-idle">
+      <div class="w-12 h-12 rounded-xl bg-white p-0.5 shadow-lg shadow-brand-electric/10 dark:shadow-brand-electric/20 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-brand-border animate-mascot-idle">
         <img src="img/mascot.png" alt="Dien May Xanh Mascot" class="w-full h-full object-contain rounded-lg" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div>
         <h1 class="font-bold text-lg tracking-wide text-slate-900 dark:text-white flex items-center transition-colors duration-300">
           Trợ Lý Mua Sắm Thông Thái
-          <span class="ml-2 px-2 py-0.5 text-xs bg-blue-50 dark:bg-brand-electric/10 text-brand-electric rounded border border-blue-200 dark:border-brand-electric/20 font-normal">v1.5-Customer</span>
+          <span class="ml-2 px-2 py-0.5 text-xs bg-brand-electric/10 text-brand-electric rounded border border-brand-electric/20 font-normal">v1.5-Customer</span>
         </h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">Tư vấn chọn sản phẩm Điện máy & Công nghệ tối ưu theo nhu cầu thực tế</p>
       </div>
     </div>
 
-    <!-- KHU VỰC TRẠNG THÁI VÀ TOGGLE GIAO DIỆN CHUYỂN ĐỔI CHẾ ĐỘ -->
+    <!-- KHU VỰC TRẠNG THÁI VÀ TOGGLE GIAO DIỆN -->
     <div class="flex items-center space-x-4 text-xs">
       <span class="flex items-center text-brand-success font-medium">
         <span class="w-2 h-2 rounded-full bg-brand-success inline-block mr-2 animate-ping"></span>
@@ -83,27 +79,25 @@
       </span>
       <span class="text-slate-300 dark:text-brand-border hidden sm:inline">|</span>
 
-      <!-- Nút bấm Toggle chính thay đổi nhãn văn bản và icon động theo đúng screenshot -->
       <button id="theme-toggle-btn" class="flex items-center space-x-2 bg-slate-100 dark:bg-brand-dark/80 hover:bg-slate-200 dark:hover:bg-brand-border px-3 py-2 rounded-lg border border-slate-200 dark:border-brand-border text-slate-700 dark:text-slate-300 transition-all duration-300 shadow-sm active:scale-95" title="Chuyển đổi giao diện Sáng/Tối">
         <span id="theme-icon-container" class="flex items-center">
-          <!-- Sẽ được hoán đổi tự động bằng mã JavaScript bên dưới -->
           <i class="fa-solid fa-moon text-slate-600 dark:text-brand-gold text-sm"></i>
         </span>
-        <span class="font-semibold text-[11px]" id="theme-text-status">Giao diện: Sáng</span>
+        <span class="font-semibold text-[11px] hidden md:inline" id="theme-text-status">Giao diện: Tối</span>
       </button>
     </div>
   </header>
 
-  <!-- KHU VỰC CHÍNH CHỨA TOÀN BỘ BỐ CỤC ỨNG DỤNG -->
+  <!-- KHU VỰC CHÍNH (MAIN AREA) -->
   <main class="flex-1 flex overflow-hidden relative">
 
-    <!-- BÊN TRÁI: DANH SÁCH LỊCH SỬ TRÒ CHUYỆN (SIDEBAR ĐƯỢC CHUẨN HÓA MÀU TRẮNG TINH KHIẾT) -->
-    <aside id="sidebar-panel" class="w-80 bg-white dark:bg-brand-panel border-r border-slate-200/80 dark:border-brand-border p-5 flex flex-col justify-between shrink-0 transition-colors duration-300 sidebar-transition relative z-20">
+    <!-- BÊN TRÁI: DANH SÁCH LỊCH SỬ TRÒ CHUYỆN (COLLAPSIBLE SIDEBAR) -->
+    <aside id="sidebar-panel" class="w-80 bg-white dark:bg-brand-panel border-r border-slate-200 dark:border-brand-border p-5 flex flex-col justify-between shrink-0 transition-colors duration-300 sidebar-transition relative z-20">
 
-      <!-- Khung bọc bảo vệ chiều rộng ngăn gãy hoặc tràn chữ khi đóng mở -->
+      <!-- Vỏ bọc kiểm soát cuộn nội dung khi thu nhỏ chiều rộng -->
       <div class="space-y-5 w-72 flex flex-col flex-1 overflow-hidden">
 
-        <!-- Header Sidebar chứa tiêu đề căn trái hoàn hảo -->
+        <!-- Header Sidebar chứa tiêu đề thân thiện và nút thu gọn -->
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-brand-border/60 pb-3 shrink-0">
           <div class="flex items-center space-x-2 text-slate-900 dark:text-white">
             <i class="fa-solid fa-clock-rotate-left text-brand-electric"></i>
@@ -114,16 +108,16 @@
           </button>
         </div>
 
-        <!-- Nút thêm cuộc trò chuyện mới màu Xanh Cobalt đổ bóng đúng chuẩn ảnh -->
-        <button onclick="window.resetConversation()" class="w-full bg-gradient-to-r from-[#0082c4] to-[#0095da] hover:from-[#0073b0] hover:to-[#0082c4] text-white font-semibold text-xs py-3 px-4 rounded-xl shadow-md shadow-brand-electric/10 flex items-center justify-center space-x-2 transition-all group shrink-0 active:scale-98">
+        <!-- Nút thêm hội thoại mới trực quan -->
+        <button onclick="window.resetConversation()" class="w-full bg-slate-50 dark:bg-brand-dark/50 hover:bg-brand-electric/10 hover:text-brand-electric text-slate-700 dark:text-slate-300 font-semibold text-xs py-3 px-4 rounded-xl border border-dashed border-slate-300 dark:border-brand-border flex items-center justify-center space-x-2 transition-all group shrink-0 active:scale-98">
           <i class="fa-solid fa-plus transition-transform group-hover:rotate-90"></i>
           <span>Bắt đầu tư vấn mới</span>
         </button>
 
-        <!-- Danh sách lịch sử cuộn mượt mà -->
+        <!-- Container chứa các danh mục lịch sử trò chuyện được cập nhật động -->
         <div class="flex-1 overflow-y-auto pr-1">
           <div id="chat-history-list" class="space-y-2">
-            <!-- Được render động từ mã nguồn app.js gốc -->
+            <!-- Được render động từ app.js -->
             <div id="history-empty-state" class="text-center py-8 px-4 border border-dashed border-slate-200 dark:border-brand-border/40 rounded-xl">
               <i class="fa-regular fa-comments text-slate-300 dark:text-slate-600 text-2xl mb-2 block"></i>
               <p class="text-[11px] text-slate-400 dark:text-slate-500 italic">Chưa có cuộc trò chuyện cũ nào tại phiên này.</p>
@@ -132,18 +126,18 @@
         </div>
       </div>
 
-      <!-- Footer Sidebar - Căn trái tuyệt đối theo đúng yêu cầu xử lý lỗi layout -->
-      <div class="pt-4 border-t border-slate-100 dark:border-brand-border w-72 shrink-0 flex flex-col items-start text-left">
-        <div class="flex items-center space-x-2 text-[11px] text-slate-400 dark:text-slate-400 font-medium mb-1">
-          <i class="fa-solid fa-shield-check text-brand-success text-xs"></i>
+      <!-- Footer Sidebar -->
+      <div class="pt-4 border-t border-slate-200 dark:border-brand-border w-72 shrink-0 space-y-1.5">
+        <div class="flex items-center space-x-2 text-[11px] text-slate-500 dark:text-slate-400">
+          <i class="fa-solid fa-shield-check text-brand-success"></i>
           <span>Dữ liệu bảo mật & chính xác 100%</span>
         </div>
-        <div class="text-[10px] text-slate-400 dark:text-slate-600 font-normal">
+        <div class="text-[10px] text-slate-400 dark:text-slate-600">
            Hệ thống CSKH tự động Điện Máy Xanh 2026.
         </div>
       </div>
 
-      <!-- HỘP ĐEN GỠ LỖI ẨN (Giữ nguyên cấu trúc DOM ban đầu của code cũ để không gây lỗi Runtime) -->
+      <!-- HỘP ĐEN GỠ LỖI ẨN (Bảo vệ an toàn cho logic app.js gốc khỏi lỗi rách DOM) -->
       <div hidden aria-hidden="true" class="absolute pointer-events-none opacity-0 invisible w-0 h-0 overflow-hidden">
         <span id="active-category">Chưa xác định</span>
         <span id="chat-stage">Khởi tạo</span>
@@ -155,90 +149,85 @@
       </div>
     </aside>
 
-    <!-- BÊN PHẢI: KHUNG CHAT TƯƠNG TÁC CHÍNH (NỀN GRADIENT CHỨA MẠNG LƯỚI TINH THỂ) -->
-    <section class="flex-1 flex flex-col bg-slate-50 dark:bg-brand-dark relative transition-colors duration-300 overflow-hidden canvas-crystal-network">
+    <!-- BÊN PHẢI: KHUNG CHAT TƯƠNG TÁC (INTERACTIVE CHAT INTERFACE) -->
+    <section class="flex-1 flex flex-col bg-slate-100/50 dark:bg-brand-dark relative transition-colors duration-300 overflow-hidden">
 
-      <!-- Thanh công cụ phụ (Sub-header) phía dưới tiêu đề -->
-      <div class="bg-white/90 dark:bg-brand-panel/40 border-b border-slate-200/60 dark:border-brand-border px-4 py-2 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 shrink-0 transition-colors duration-300 min-h-[45px] z-10 backdrop-blur-sm">
+      <!-- Banner Thông báo + Nút Mở rộng Sidebar khi bị thu gọn -->
+      <div class="bg-white/80 dark:bg-brand-panel/40 border-b border-slate-200 dark:border-brand-border px-4 py-2 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 shrink-0 transition-colors duration-300 min-h-[45px]">
         <div class="flex items-center space-x-3">
-          <!-- Nút mở rộng Sidebar ẩn mặc định, chỉ lộ diện khi sidebar bị kéo cụp -->
+          <!-- Nút mở rộng Sidebar (>> Lịch sử) -->
           <button id="btn-open-sidebar" class="hidden flex items-center space-x-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-blue-600 font-semibold shadow-sm hover:bg-slate-50 transition-all dark:bg-brand-panel dark:border-brand-border dark:text-brand-electric">
             <i class="fa-solid fa-angles-right mr-1"></i> Lịch sử
           </button>
           <div class="flex items-center space-x-2">
             <span class="w-1.5 h-1.5 rounded-full bg-brand-electric inline-block animate-pulse"></span>
-            <span class="truncate max-w-[220px] sm:max-w-none text-slate-400 dark:text-slate-400 font-normal">Mẹo: Nhập nhu cầu mua sắm bằng tiếng Việt tự nhiên để nhận tư vấn tốt nhất.</span>
+            <span class="truncate max-w-[250px] sm:max-w-none">Mẹo: Nhập nhu cầu mua sắm bằng tiếng Việt tự nhiên để nhận tư vấn tốt nhất.</span>
           </div>
         </div>
-        <button onclick="window.resetConversation()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors flex items-center space-x-1 text-[11px] bg-slate-50 dark:bg-brand-panel hover:bg-slate-100 dark:hover:bg-brand-border px-2.5 py-1 rounded border border-slate-200/80 dark:border-brand-border/40 shadow-sm shrink-0">
+        <button onclick="window.resetConversation()" class="hover:text-slate-900 dark:hover:text-white transition-colors flex items-center space-x-1 text-[11px] bg-slate-50 dark:bg-brand-panel hover:bg-slate-100 dark:hover:bg-brand-border px-2.5 py-1 rounded border border-slate-200 dark:border-brand-border/40 shadow-sm shrink-0">
           <i class="fa-solid fa-rotate-left"></i>
           <span class="hidden sm:inline">Làm mới cuộc trò chuyện</span>
         </button>
       </div>
 
-      <!-- KHU VỰC CHỨA CÁC TIN NHẮN CUỘN TRÒ CHUYỆN -->
-      <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-6 relative z-10">
+      <!-- Khu vực hiển thị tin nhắn -->
+      <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-6">
 
-        <!-- TIN NHẮN CHÀO MỪNG BAN ĐẦU - PHỎNG THEO HOÀN HẢO THEO ẢNH CHỤP GIAO DIỆN MẪU -->
+        <!-- TIN NHẮN CHÀO MỪNG BAN ĐẦU -->
         <div class="flex items-start space-x-3 message-fade-in">
-          <div class="w-10 h-10 rounded-xl bg-white border border-slate-200/80 dark:border-brand-border flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+          <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 dark:border-brand-border flex items-center justify-center shrink-0 shadow-md overflow-hidden">
             <img src="img/mascot.png" alt="Mascot Avatar" class="w-full h-full object-contain p-0.5" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
           </div>
-          <div class="space-y-1 max-w-[85%]">
-            <!-- Thẻ tin nhắn chính bọc Aura phát sáng xanh mượt mà ở light-theme -->
-            <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-4 shadow-[0_10px_35px_-5px_rgba(0,149,218,0.12)] dark:shadow-none border border-slate-100 dark:border-brand-border transition-all duration-300">
-              <p class="text-sm leading-relaxed text-slate-800 dark:text-slate-200">
-                Dạ, em xin chào anh/chị ạ! Em là <strong class="font-bold text-slate-900 dark:text-white">Trợ lý Mua sắm Thông thái</strong> đồng hành cùng anh/chị tại hệ thống Điện Máy Xanh.
+          <div class="space-y-1 max-w-[80%]">
+            <div class="bg-white dark:bg-brand-panel text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 shadow-md border border-slate-200 dark:border-brand-border transition-colors duration-300">
+              <p class="text-sm leading-relaxed">
+                Dạ, em xin chào anh/chị ạ! Em là <strong>Trợ lý Mua sắm Thông thái</strong> đồng hành cùng anh/chị tại hệ thống Điện Máy Xanh.
               </p>
-              <p class="text-sm leading-relaxed mt-2 text-slate-800 dark:text-slate-200">
+              <p class="text-sm leading-relaxed mt-2">
                 Em ở đây để hỗ trợ anh/chị chọn lựa các dòng sản phẩm công nghệ và điện máy phù hợp nhất dựa trên nhu cầu sử dụng thực tế, không gian lắp đặt, số lượng thành viên hay hạn mức tài chính cụ thể của gia đình mình.
               </p>
-              <p class="text-sm leading-relaxed mt-2 text-slate-800 dark:text-slate-200">
+              <p class="text-sm leading-relaxed mt-2">
                 Anh/chị đang quan tâm đến nhóm sản phẩm nào dưới đây để em hỗ trợ tư vấn, phân tích và so sánh ngay lặp tức ạ?
               </p>
-
-              <!-- Hộp chứa các Chip Tag bo viền vàng hổ phách đúng điệu bộ của screenshot -->
-              <div class="mt-4 flex gap-2.5 flex-wrap">
-                <span onclick="window.fillQuickPrompt('Tư vấn mua máy lạnh')" class="px-3 py-1 bg-white dark:bg-brand-dark rounded-lg text-xs border border-amber-500/50 dark:border-brand-border font-medium text-amber-700 dark:text-brand-electric cursor-pointer hover:bg-amber-50 dark:hover:bg-brand-electric dark:hover:text-white transition-all shadow-sm">Máy lạnh</span>
-                <span onclick="window.fillQuickPrompt('Tư vấn mua tủ lạnh')" class="px-3 py-1 bg-white dark:bg-brand-dark rounded-lg text-xs border border-amber-500/50 dark:border-brand-border font-medium text-amber-700 dark:text-brand-electric cursor-pointer hover:bg-amber-50 dark:hover:bg-brand-electric dark:hover:text-white transition-all shadow-sm">Tủ lạnh</span>
-                <span onclick="window.fillQuickPrompt('Tư vấn mua laptop')" class="px-3 py-1 bg-white dark:bg-brand-dark rounded-lg text-xs border border-amber-500/50 dark:border-brand-border font-medium text-amber-700 dark:text-brand-electric cursor-pointer hover:bg-amber-50 dark:hover:bg-brand-electric dark:hover:text-white transition-all shadow-sm">Laptop</span>
+              <div class="mt-3 flex gap-2 flex-wrap">
+                <span onclick="window.fillQuickPrompt('Tư vấn mua máy lạnh')" class="px-2.5 py-1 bg-slate-50 dark:bg-brand-dark rounded text-xs border border-slate-200 dark:border-brand-border font-semibold text-brand-electric cursor-pointer hover:bg-brand-electric hover:text-white transition-all">Máy lạnh</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua tủ lạnh')" class="px-2.5 py-1 bg-slate-50 dark:bg-brand-dark rounded text-xs border border-slate-200 dark:border-brand-border font-semibold text-brand-electric cursor-pointer hover:bg-brand-electric hover:text-white transition-all">Tủ lạnh</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua laptop')" class="px-2.5 py-1 bg-slate-50 dark:bg-brand-dark rounded text-xs border border-slate-200 dark:border-brand-border font-semibold text-brand-electric cursor-pointer hover:bg-brand-electric hover:text-white transition-all">Laptop</span>
               </div>
             </div>
-            <span class="text-[10px] text-slate-400 dark:text-slate-500 pl-2 block mt-1">Vừa mắt gửi</span>
+            <span class="text-[10px] text-slate-400 pl-2">Vừa mới gửi</span>
           </div>
         </div>
 
       </div>
 
-      <!-- KHU VỰC GỢI Ý NHU CẦU TÌM KIẾM NHANH (MÀU VÀNG QUANG PHỔ TINH TẾ) -->
-      <div class="px-6 py-3 bg-[#f4f7fc]/60 dark:bg-brand-panel/20 border-t border-slate-200/50 dark:border-brand-border/40 shrink-0 transition-colors duration-300 relative z-10 backdrop-blur-xs">
-        <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-2 flex items-center font-bold uppercase tracking-wider">
-          <i class="fa-regular fa-lightbulb text-amber-500 mr-2 text-xs"></i> Gợi ý nhu cầu tìm kiếm nhanh:
+      <!-- Thẻ Gợi ý Kịch bản nhanh (Quick Prompts) -->
+      <div class="px-6 py-3 bg-white/60 dark:bg-brand-panel/30 border-t border-slate-200 dark:border-brand-border/40 shrink-0 transition-colors duration-300">
+        <p class="text-[11px] text-slate-500 dark:text-slate-500 mb-2 flex items-center font-semibold uppercase tracking-wider">
+          <i class="fa-regular fa-lightbulb text-brand-gold mr-1.5"></i> Gợi ý nhu cầu tìm kiếm nhanh:
         </p>
-        <div class="flex flex-wrap gap-2.5">
-          <!-- Các nút lệnh bo viền tròn màu vàng mật ong nguyên bản -->
-          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ')" class="text-xs font-medium bg-white dark:bg-brand-panel hover:bg-amber-50/50 dark:hover:bg-brand-border border border-amber-400/70 dark:border-brand-border text-slate-700 dark:text-slate-300 px-3.5 py-1.5 rounded-full transition-all active:scale-95 shadow-2xs">
-            "Mua dh pana dưới 15 củ"
+        <div class="flex flex-wrap gap-2">
+          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ cho phòng ngủ')" class="text-xs bg-white dark:bg-brand-panel hover:bg-slate-100 dark:hover:bg-brand-border border border-slate-200 dark:border-brand-border text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-sm">
+            "Mua đh pana dưới 15 củ"
           </button>
-          <button onclick="window.fillQuickPrompt('Tủ lạnh tầm 10tr cho 4 người')" class="text-xs font-medium bg-white dark:bg-brand-panel hover:bg-amber-50/50 dark:hover:bg-brand-border border border-amber-400/70 dark:border-brand-border text-slate-700 dark:text-slate-300 px-3.5 py-1.5 rounded-full transition-all active:scale-95 shadow-2xs">
+          <button onclick="window.fillQuickPrompt('Tìm tủ lạnh tầm 10tr cho nhà 4 người')" class="text-xs bg-white dark:bg-brand-panel hover:bg-slate-100 dark:hover:bg-brand-border border border-slate-200 dark:border-brand-border text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-sm">
             "Tủ lạnh tầm 10tr cho 4 người"
           </button>
-          <button onclick="window.fillQuickPrompt('Laptop mỏng nhẹ -1Str')" class="text-xs font-medium bg-white dark:bg-brand-panel hover:bg-amber-50/50 dark:hover:bg-brand-border border border-amber-400/70 dark:border-brand-border text-slate-700 dark:text-slate-300 px-3.5 py-1.5 rounded-full transition-all active:scale-95 shadow-2xs">
-            "Laptop mỏng nhẹ -1Str"
+          <button onclick="window.fillQuickPrompt('Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học')" class="text-xs bg-white dark:bg-brand-panel hover:bg-slate-100 dark:hover:bg-brand-border border border-slate-200 dark:border-brand-border text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-sm">
+            "Laptop mỏng nhẹ ~15tr"
           </button>
         </div>
       </div>
 
-      <!-- Ô NHẬP LIỆU GỬI TIN NHẮN (THANH FOOTER INPUT ĐƯỢC THIẾT KẾ NÚT ĐỎ SẮC NÉT) -->
-      <footer class="p-4 bg-white dark:bg-brand-panel border-t border-slate-200/80 dark:border-brand-border shrink-0 transition-colors duration-300 relative z-10 shadow-[0_-5px_20px_rgba(0,0,0,0.02)]">
-        <form id="chat-form" class="relative flex items-center w-full max-w-7xl mx-auto">
-          <input type="text" id="user-input" placeholder="Nhập cổ hội bằng tiếng Việt... (Ví dụ: 'Cần tìm tủ lạnh tẩm 8 triệu cho gia đình 3 người tiết kiệm điện')"
-            class="w-full bg-white dark:bg-brand-dark border border-slate-300 dark:border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm rounded-xl pl-4 pr-24 py-4 focus:outline-none transition-all shadow-2xs"
+      <!-- Ô NHẬP LIỆU GỬI TIN NHẮN (INPUT BAR) -->
+      <footer class="p-4 bg-white dark:bg-brand-panel border-t border-slate-200 dark:border-brand-border shrink-0 transition-colors duration-300 shadow-lg dark:shadow-none">
+        <form id="chat-form" class="relative flex items-center">
+          <input type="text" id="user-input" placeholder="Nhập câu hỏi bằng tiếng Việt... (Ví dụ: 'Cần tìm tủ lạnh tầm 8 triệu cho gia đình 3 người tiết kiệm điện')"
+            class="w-full bg-slate-50 dark:bg-brand-dark border border-slate-200 dark:border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm rounded-xl pl-4 pr-24 py-4 focus:outline-none transition-all duration-200 shadow-inner"
             autocomplete="off" required>
 
-          <div class="absolute right-3 flex items-center">
-            <!-- Nút gửi màu đỏ thẫm rực rỡ chuẩn xác theo ảnh của bạn -->
-            <button type="submit" class="bg-brand-screenshotRed hover:bg-[#b51a20] text-white font-medium text-sm px-5 py-2 rounded-lg flex items-center space-x-1.5 transition-all shadow-sm active:scale-95">
+          <div class="absolute right-3 flex items-center space-x-2">
+            <button type="submit" class="bg-brand-cobalt hover:bg-brand-electric text-white font-semibold text-sm px-4 py-2 rounded-lg flex items-center space-x-1.5 transition-all shadow-md shadow-brand-cobalt/20 active:scale-95">
               <span>Gửi</span>
               <i class="fa-solid fa-paper-plane text-xs"></i>
             </button>
@@ -250,7 +239,7 @@
 
   </main>
 
-  <!-- ĐOẠN ĐIỀU KHIỂN TOGGLE CHUYỂN ĐỔI GIAO DIỆN ĐỒNG BỘ HIỆU ỨNG VÀ TRẠNG THÁI CHỮ -->
+  <!-- ĐOẠN JS ĐIỀU KHIỂN TOGGLE GIAO DIỆN SÁNG / TỐI -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const themeToggleBtn = document.getElementById('theme-toggle-btn');
@@ -259,7 +248,7 @@
 
       function updateToggleButton(isDark) {
         if (isDark) {
-          themeIconContainer.innerHTML = '<i class="fa-solid fa-sun text-brand-gold text-sm"></i>';
+          themeIconContainer.innerHTML = '<i class="fa-solid fa-sun text-brand-gold text-sm animate-pulse"></i>';
           themeTextStatus.textContent = 'Giao diện: Tối';
         } else {
           themeIconContainer.innerHTML = '<i class="fa-solid fa-moon text-slate-600 text-sm"></i>';
@@ -267,7 +256,6 @@
         }
       }
 
-      // Đọc trạng thái khởi tạo thực tế của DOM
       const isCurrentlyDark = document.documentElement.classList.contains('dark');
       updateToggleButton(isCurrentlyDark);
 
