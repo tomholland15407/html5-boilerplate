@@ -128,32 +128,18 @@
       <!-- FOOTER SIDEBAR NÂNG CẤP VỚI HỌA TIẾT ĐỒ HỌA SỌC CHÉO PHONG CÁCH DIGITAL -->
       <div class="w-full font-sans select-none px-4 pb-4 text-center">
 
-        <!-- Luxury Golden Flourish SVG Divider -->
-        <!-- Modern Triple-Dash Balanced Divider -->
-        <div class="w-full flex justify-center items-center py-3">
-          <svg class="w-full max-w-[280px] h-auto drop-shadow-[0_1px_3px_rgba(0,0,0,0.12)]" viewBox="0 0 400 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="luxury-gold" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#bf953f" />
-                <stop offset="25%" stop-color="#fcf6ba" />
-                <stop offset="50%" stop-color="#b38728" />
-                <stop offset="75%" stop-color="#fbf5b7" />
-                <stop offset="100%" stop-color="#aa771c" />
-              </linearGradient>
-            </defs>
-
-            <!-- Outer Left Dash Accent -->
-            <line x1="10" y1="20" x2="40" y2="20" stroke="url(#luxury-gold)" stroke-width="2" stroke-linecap="round" />
-
-            <!-- Long Main Structural Centerline -->
-            <line x1="60" y1="20" x2="340" y2="20" stroke="url(#luxury-gold)" stroke-width="2" stroke-linecap="round" />
-
-            <!-- Outer Right Dash Accent -->
-            <line x1="360" y1="20" x2="390" y2="20" stroke="url(#luxury-gold)" stroke-width="2" stroke-linecap="round" />
-          </svg>
+        <!-- INTEGRATED OPTION C: MODERN TRIPLE-DASH SPLIT LINE -->
+        <div class="w-full flex items-center justify-center space-x-2 py-4 select-none">
+          <div class="h-[1px] flex-1 bg-gradient-to-r from-transparent to-slate-200 dark:to-brand-border/50"></div>
+          <div class="flex items-center space-x-1.5 shrink-0 px-1">
+            <span class="w-1.5 h-1 bg-brand-electric/30 dark:bg-brand-electric/20 rounded-full"></span>
+            <span class="w-6 h-1 bg-brand-electric shadow-[0_0_10px_rgba(0,149,218,0.7)] rounded-full animate-pulse"></span>
+            <span class="w-1.5 h-1 bg-brand-electric/30 dark:bg-brand-electric/20 rounded-full"></span>
+          </div>
+          <div class="h-[1px] flex-1 bg-gradient-to-l from-transparent to-slate-200 dark:to-brand-border/50"></div>
         </div>
 
-        <!-- Content Block (Centered to complement the royal motif) -->
+        <!-- Content Block -->
         <div class="mt-3 space-y-1">
           <div class="text-[12px] font-semibold tracking-wide text-amber-900 dark:text-amber-200">
             Dữ liệu bảo mật & chính xác 100%
@@ -183,7 +169,6 @@
       <!-- THÀNH PHẦN KHỐI NỀN ĐƯỢC TỐI ƯU HÓA: PHÓNG ĐẠI TRÀN BIÊN KHÔNG GÂY MẤT TÍNH NĂNG -->
       <!-- ========================================================================= -->
       <div class="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
-        <!-- Đã cấu hình w-full h-full kết hợp object-cover để buộc ảnh nền kéo giãn hết kích thước vách chat -->
         <img src="img/dienmayxanh-bg.png" alt="Điện Máy Xanh Watermark"
              class="w-full h-full object-cover opacity-[0.065] dark:opacity-[0.035] transition-opacity duration-300"
              style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
@@ -213,7 +198,7 @@
         <!-- THẺ TIN NHẮN CHÀO MỪNG ĐÃ ĐƯỢC PHỦ MÀU XANH CAO CẤP MỚI ĐỒNG BỘ -->
         <div class="flex items-start space-x-3.5 message-fade-in">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden">
-            <img src="img/mascot.png" alt="Mascot Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
+            <img src="img/mascot.png" alt="Mascot Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
           </div>
 
           <div class="space-y-1.5 max-w-[85%] w-full sm:w-auto">
@@ -228,7 +213,7 @@
                 Anh/chị đang quan tâm đến nhóm sản phẩm nào dưới đây để em hỗ trợ tư vấn, phân tích và so sánh ngay lập tức ạ?
               </p>
 
-              <!-- CÁC THẺ DANH MỤC ĐƯỢC GIỮ NGUYÊN MÀU CAM ẤM THEO THIẾT KẾ MỤC TIÊU CỦA BẠN -->
+              <!-- CÁC THẺ DANH MỤC ĐƯỢC GIỮ NGUYÊN MÀU CAM ẤM -->
               <div class="mt-4 flex gap-2 flex-wrap">
                 <span onclick="window.fillQuickPrompt('Tư vấn mua máy lạnh')" class="px-3 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold rounded-lg border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Máy lạnh</span>
                 <span onclick="window.fillQuickPrompt('Tư vấn mua tủ lạnh')" class="px-3 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold rounded-lg border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Tủ lạnh</span>
@@ -246,7 +231,6 @@
         <p class="text-[11px] text-slate-500 dark:text-slate-500 mb-2 flex items-center font-semibold uppercase tracking-wider">
           <i class="fa-regular fa-lightbulb text-brand-gold mr-1.5"></i> Gợi ý nhu cầu tìm kiếm nhanh:
         </p>
-        <!-- BỘ GỢI Ý NHANH MÀU VÀNG HOÀNG KIM CHUẨN MỤC TIÊU -->
         <div class="flex flex-wrap gap-2">
           <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ cho phòng ngủ')" class="text-xs bg-[#fefce8] hover:bg-[#fef9c3] border border-[#fef08a] text-[#854d0e] font-medium px-4 py-1.5 rounded-full transition-all duration-150 hover:scale-[1.03] active:scale-95 shadow-sm">
             "Mua đh pana dưới 15 củ"
@@ -267,7 +251,6 @@
             class="w-full bg-slate-50 dark:bg-brand-dark border border-slate-200 dark:border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm rounded-xl pl-4 pr-24 py-4 focus:outline-none transition-all duration-200 shadow-inner"
             autocomplete="off" required>
 
-          <!-- NÚT GỬI MÀU ĐỎ CRIMSON ĐẬM CHẤT CHUYÊN NGHIỆP TỪ THIẾT KẾ MỚI -->
           <div class="absolute right-3 flex items-center space-x-2">
             <button type="submit" class="bg-gradient-to-b from-[#dc2626] to-[#b91c1c] hover:from-[#ea580c] hover:to-[#dc2626] text-white font-bold text-sm px-5 py-2 rounded-xl flex items-center space-x-2 transition-all duration-150 shadow-[0_4px_12px_rgba(220,38,38,0.3)] hover:shadow-[0_6px_16px_rgba(220,38,38,0.45)] active:scale-95">
               <span>Gửi</span>

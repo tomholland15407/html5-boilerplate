@@ -115,6 +115,7 @@ const MOCK_FAQ = {
   'giao hàng': 'Dạ, hệ thống miễn phí vận chuyển lắp đặt trong bán kính 10km quanh siêu thị gần nhất ngay trong ngày ạ.',
   'trả góp': 'Dạ, hiện tại có chương trình hỗ trợ trả góp 0% lãi suất qua căn cước công dân gắn chip cực nhanh chóng, xét duyệt chỉ 5 phút ạ.'
 };
+
 const MASCOT_IMAGES = [
   'ChatGPT Image 21_08_20 17 thg 7, 2026 (1).png',
   'ChatGPT Image 21_08_20 17 thg 7, 2026 (2).png',
@@ -134,7 +135,7 @@ const MASCOT_IMAGES = [
   'ChatGPT Image 21_18_22 17 thg 7, 2026 (8).png',
   'ChatGPT Image 21_18_23 17 thg 7, 2026 (9).png'
 ];
-// Cấu trúc quản lý trạng thái ứng dụng nâng cao (Slot-Filling State)
+
 let sessionState = {
   stage: 'INIT', // INIT -> PROBING -> RECOMMENDATION
   category: null, // ac, fridge, laptop
@@ -222,12 +223,18 @@ function formatVND(amount) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount).replace('₫', 'đ');
 }
 
+document.addEventListener('click', function(e) {
+  if (e.target && e.target.classList.contains('custom-btn-select')) {
+    window.handleBuyProduct();
+  }
+});
+
 function scrollChatToBottom() {
   const chatBox = document.getElementById('chat-box');
   if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// MODIFIED: Changed layout to unobtrusive light blue with soft borders
+// INTEGRATED EFFECT: The Liquid Elastic Wave with Glow on typing indicator
 function showTypingIndicator() {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
@@ -276,7 +283,7 @@ function appendUserMessage(text) {
   }
 }
 
-// MODIFIED: Changed layout to unobtrusive light blue with soft borders
+// INTEGRATED EFFECT: The Liquid Elastic Wave with Glow on Assistant Avatar
 function appendAssistantMessage(htmlContent) {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
@@ -306,8 +313,6 @@ window.appendAssistantMessage = appendAssistantMessage;
 // ==========================================
 function createNewChatSession(initialTitle = "Cuộc trò chuyện mới") {
   const newId = 'session_' + Date.now();
-
-  // Pick a random mascot image from the array
   const randomMascot = MASCOT_IMAGES[Math.floor(Math.random() * MASCOT_IMAGES.length)];
 
   const newSession = {
@@ -316,7 +321,7 @@ function createNewChatSession(initialTitle = "Cuộc trò chuyện mới") {
     timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     messages: [],
     category: null,
-    mascot: randomMascot // Persistent storage for this chat block item
+    mascot: randomMascot
   };
   consumerChatSessions.unshift(newSession);
   activeSessionId = newId;
@@ -357,7 +362,6 @@ function renderChatHistoryUI() {
       : 'border-amber-200/70 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-950/10 text-amber-800 dark:text-amber-300 hover:bg-amber-100/60 dark:hover:bg-amber-900/20'
     }`;
 
-    // REPLACED OLD LOGIC: Dynamic custom image avatar instead of generic AI emojis/icons
     const mascotFile = session.mascot || 'mascot.png';
     const iconImageHtml = `<img src="img/${mascotFile}" alt="Mascot" class="w-6 h-6 object-contain rounded-md shadow-sm bg-white" onerror="this.src='img/mascot.png'">`;
 
@@ -379,7 +383,6 @@ function renderChatHistoryUI() {
   });
 }
 
-// MODIFIED: Changed layout to unobtrusive light blue with soft borders for reloaded history messages
 function restoreSessionMessages(session) {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
@@ -388,7 +391,7 @@ function restoreSessionMessages(session) {
     chatBox.innerHTML = `
       <div class="flex items-start space-x-3.5 message-fade-in">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-slate-100 border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] bg-white">
-          <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
+          <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
           <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
@@ -412,7 +415,7 @@ function restoreSessionMessages(session) {
       const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tl-none px-4 py-3 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     } else {
-      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain"></div><div class="max-w-[85%] w-full bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain animate-mascot-idle"></div><div class="max-w-[85%] w-full bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     }
   });
@@ -689,7 +692,7 @@ function dispatchLogicEngine(text) {
           <strong>Điểm đánh đổi (Trade-off):</strong> ${tradeOffAnalysis}
         </div>
 
-        <button onclick="window.handleBuyProduct()" class="w-full custom-btn-select text-xs py-2.5 rounded-xl font-bold transition-all shadow-sm">Đặt Mua Ngay</button>
+        <button class="w-full custom-btn-select text-xs py-2.5 rounded-xl font-bold transition-all shadow-sm">Đặt Mua Ngay</button>
       </div>`;
   });
 
@@ -707,7 +710,6 @@ function dispatchLogicEngine(text) {
 // ==========================================
 // CÁC HÀM KHỞI TẠO VÀ LÀM MỚI PHIÊN
 // ==========================================
-// MODIFIED: Changed layout to unobtrusive light blue with soft borders for empty/fresh state template strings
 window.resetConversation = function() {
   if (activeSessionId) {
     const currentSession = consumerChatSessions.find(item => item.id === activeSessionId);
@@ -734,7 +736,7 @@ window.resetConversation = function() {
       chatBox.innerHTML = `
         <div class="flex items-start space-x-3.5 message-fade-in">
           <div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)]">
-            <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain" onerror="this.src='https://placehold.co/100x100?text=AI'">
+            <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
           </div>
           <div class="space-y-1 max-w-[85%] w-full">
             <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 shadow-sm">
@@ -759,7 +761,6 @@ window.resetConversation = function() {
   }
 };
 
-// MODIFIED: Populates text field and focuses it without automatic submission
 window.fillQuickPrompt = function(promptText) {
   const input = document.getElementById('user-input');
   if (input) {
