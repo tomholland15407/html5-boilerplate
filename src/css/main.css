@@ -86,3 +86,89 @@
   from { opacity: 0; transform: translateX(-10px); }
   to { opacity: 1; transform: translateX(0); }
 }
+
+/* ================================================================= */
+/* CẤU HÌNH GIAO DIỆN NÚT VÀ FOOTER SIDEBAR MỚI (CHỐNG VỠ LAYOUT)     */
+/* ================================================================= */
+
+/* --- Nút Bắt Đầu Tư Vấn Mới --- */
+.custom-btn-new-chat {
+  background: linear-gradient(90deg, #2b5cdd 0%, #3b82f6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(43, 92, 221, 0.25);
+  cursor: pointer;
+}
+
+.custom-btn-new-chat:hover {
+  opacity: 0.95;
+}
+
+.custom-btn-new-chat .plus-icon {
+  font-size: 17px;
+  font-weight: 400;
+}
+
+/* --- Khối Chân Trang Chuyên Nghiệp --- */
+.custom-sidebar-footer {
+  padding-top: 16px;
+}
+
+.custom-divider-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.custom-double-lines {
+  flex: 1;
+  height: 4px;
+  border-top: 1px solid #cbd5e1;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.dark .custom-double-lines {
+  border-top: 1px solid #1e2e4a;
+  border-bottom: 1px solid #1e2e4a;
+}
+
+.custom-hatch-marks {
+  color: #cbd5e1;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 6px;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  user-select: none;
+}
+
+.dark .custom-hatch-marks {
+  color: #1e2e4a;
+}
+
+/* Định dạng kiểu chữ chân trang */
+.custom-footer-secure-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+  margin: 0 0 4px 0;
+}
+
+.dark .custom-footer-secure-text {
+  color: #9ca3af;
+}
+
+.custom-footer-system-text {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.dark .custom-footer-system-text {
+  color: #4b5563;
+}
