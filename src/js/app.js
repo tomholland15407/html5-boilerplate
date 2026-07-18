@@ -244,10 +244,10 @@ function showTypingIndicator() {
         <img src="img/mascot.png" alt="..." class="w-full h-full object-contain p-0.5 animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="bg-blue-50/60 dark:bg-blue-950/30 text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 border border-blue-100 dark:border-blue-900/50 shadow-sm">
-        <div class="flex items-center space-x-1 py-1">
-          <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
-          <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
-          <span class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></span>
+        <div class="flex items-center space-x-1.5 py-1">
+          <span class="w-2 h-2 bg-slate-500 dark:bg-slate-400 rounded-full typing-dot inline-block"></span>
+          <span class="w-2 h-2 bg-slate-500 dark:bg-slate-400 rounded-full typing-dot inline-block"></span>
+          <span class="w-2 h-2 bg-slate-500 dark:bg-slate-400 rounded-full typing-dot inline-block"></span>
         </div>
       </div>
     </div>`;
@@ -505,12 +505,12 @@ function handleFormSubmit(event) {
   input.value = '';
   showTypingIndicator();
 
+  // FIX: Tăng thời gian chờ lên 1.3 giây để vòng lặp animation kịp diễn ra trọn vẹn
   setTimeout(() => {
     removeTypingIndicator();
     dispatchLogicEngine(val);
-  }, 600);
+  }, 1300);
 }
-
 function dispatchLogicEngine(text) {
   const startTime = performance.now();
   const lower = text.toLowerCase();
