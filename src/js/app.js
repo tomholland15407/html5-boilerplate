@@ -202,10 +202,13 @@ function injectJiggleStyles() {
 function triggerMascotJiggle() {
   const allMascots = document.querySelectorAll('img[src*="mascot"]');
   allMascots.forEach(mascot => {
+    // Không rung jiggle cho phần Header Mascot để dành riêng cho chuyển động violent bounce
+    if (mascot.id === 'header-mascot') return;
     mascot.classList.add('animate-jiggle-vivid');
   });
   setTimeout(() => {
     allMascots.forEach(mascot => {
+      if (mascot.id === 'header-mascot') return;
       mascot.classList.remove('animate-jiggle-vivid');
     });
   }, 600);
@@ -214,6 +217,17 @@ function triggerMascotJiggle() {
 window.handleBuyProduct = function() {
   window.appendAssistantMessage('<p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-circle-check mr-1.5"></i>Dạ tuyệt vời, hệ thống Điện Máy Xanh đã ghi nhận yêu cầu đặt mua sản phẩm của anh/chị! Nhân viên tổng đài sẽ liên hệ hỗ trợ mình sau ít phút ạ.</p>');
   triggerMascotJiggle();
+
+  // KÍCH HOẠT HIỆU ỨNG DI CHUYỂN BẬT NHẢY MẠNH BẠO CHO HEADER MASCOT
+  const headerMascot = document.getElementById('header-mascot');
+  if (headerMascot) {
+    headerMascot.classList.remove('animate-glowing-orb');
+    headerMascot.classList.add('animate-violent-bounce');
+    setTimeout(() => {
+      headerMascot.classList.remove('animate-violent-bounce');
+      headerMascot.classList.add('animate-glowing-orb');
+    }, 1000);
+  }
 };
 
 // ==========================================
@@ -795,37 +809,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
   createNewChatSession();
 });
-// ==========================================
-// FORCE INJECT HACKATHON LIVE DOTS ANIMATION
-// ==========================================
-(function injectUltraLivelyDots() {
-  if (document.getElementById('ultra-lively-dots-style')) return;
-  const style = document.createElement('style');
-  style.id = 'ultra-lively-dots-style';
-  style.innerHTML = `
-    .typing-dot {
-      display: inline-block !important;
-      will-change: transform, opacity, background-color, box-shadow;
-      animation: ultra-lively-wave 0.5s infinite cubic-bezier(0.25, 1, 0.5, 1) !important;
-    }
-    .typing-dot:nth-child(2) { animation-delay: 0.08s !important; }
-    .typing-dot:nth-child(3) { animation-delay: 0.16s !important; }
 
-    @keyframes ultra-lively-wave {
+// ==========================================
+// INJECT NEW DYNAMIC MASCOT ANIMATIONS (FLOATING & VIOLENT BOUNCE)
+// ==========================================
+(function injectHeaderMascotAnimations() {
+  if (document.getElementById('header-mascot-animations')) return;
+  const style = document.createElement('style');
+  style.id = 'header-mascot-animations';
+  style.innerHTML = `
+    @keyframes orbFloatGlow {
       0%, 100% {
         transform: translateY(0) scale(1);
-        opacity: 0.4;
+        filter: drop-shadow(0 4px 8px rgba(0,149,218,0.25));
       }
-      35% {
-        transform: translateY(-10px) scaleX(0.8) scaleY(1.25) !important;
-        opacity: 1;
-        background-color: #0095da !important;
-        box-shadow: 0 0 10px #0095da, 0 0 20px rgba(0, 149, 218, 0.4);
+      50% {
+        transform: translateY(-5px) scale(1.05);
+        filter: drop-shadow(0 12px 20px rgba(0,149,218,0.55));
       }
-      70% {
-        transform: translateY(1.5px) scaleX(1.2) scaleY(0.85) !important;
-        opacity: 0.7;
-      }
+    }
+    .animate-glowing-orb {
+      animation: orbFloatGlow 3s ease-in-out infinite !important;
+      will-change: transform, filter;
+    }
+    @keyframes violentBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      10% { transform: translateY(-30px) scaleY(1.3) scaleX(0.85); }
+      20% { transform: translateY(22px) scaleY(0.7) scaleX(1.25); }
+      30% { transform: translateY(-22px) scaleY(1.15) scaleX(0.9); }
+      40% { transform: translateY(16px) scaleY(0.85) scaleX(1.1); }
+      50% { transform: translateY(-12px) scaleY(1.05); }
+      60% { transform: translateY(10px) scaleY(0.95); }
+      70% { transform: translateY(-6px); }
+      80% { transform: translateY(4px); }
+      90% { transform: translateY(-1px); }
+    }
+    .animate-violent-bounce {
+      animation: violentBounce 1s cubic-bezier(.36,.07,.19,.97) both !important;
+      will-change: transform;
     }
   `;
   document.head.appendChild(style);
