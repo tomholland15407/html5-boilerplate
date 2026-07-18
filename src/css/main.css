@@ -5,19 +5,19 @@
 @keyframes liquid-elastic-wave {
   0%, 100% {
     transform: translateY(0) scale(1);
-    filter: drop-shadow(0 4px 6px rgba(0, 149, 218, 0.15));
+    filter: drop-shadow(0 4px 6px rgba(138, 74, 28, 0.18));
   }
   30% {
     transform: translateY(-6px) scaleX(0.95) scaleY(1.05);
-    filter: drop-shadow(0 14px 20px rgba(0, 149, 218, 0.45)) drop-shadow(0 0 12px rgba(0, 149, 218, 0.3));
+    filter: drop-shadow(0 14px 20px rgba(184, 138, 58, 0.5)) drop-shadow(0 0 12px rgba(201, 162, 39, 0.32));
   }
   50% {
     transform: translateY(-1px) scaleX(1.03) scaleY(0.97);
-    filter: drop-shadow(0 6px 10px rgba(0, 149, 218, 0.25)) drop-shadow(0 0 6px rgba(0, 149, 218, 0.15));
+    filter: drop-shadow(0 6px 10px rgba(184, 138, 58, 0.28)) drop-shadow(0 0 6px rgba(201, 162, 39, 0.18));
   }
   70% {
     transform: translateY(-3px) scaleX(0.98) scaleY(1.02);
-    filter: drop-shadow(0 10px 14px rgba(0, 149, 218, 0.35)) drop-shadow(0 0 10px rgba(0, 149, 218, 0.2));
+    filter: drop-shadow(0 10px 14px rgba(184, 138, 58, 0.38)) drop-shadow(0 0 10px rgba(201, 162, 39, 0.22));
   }
 }
 
@@ -66,8 +66,8 @@
   35% {
     transform: translateY(-10px) scaleX(0.8) scaleY(1.25); /* Expressive stretch upwards */
     opacity: 1;
-    background-color: #0095da !important; /* Glows dynamic blue */
-    box-shadow: 0 0 10px #0095da, 0 0 20px rgba(0, 149, 218, 0.4);
+    background-color: #c9a227 !important; /* Glows antique gold */
+    box-shadow: 0 0 10px #c9a227, 0 0 20px rgba(201, 162, 39, 0.4);
   }
   70% {
     transform: translateY(1.5px) scaleX(1.2) scaleY(0.85); /* Snappy squash impact on baseline */
@@ -84,14 +84,14 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #d9c79a;
   border-radius: 10px;
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: #1e2e4a;
+  background: #332a19;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0095da;
+  background: #b8712f;
 }
 
 /* ================================================================= */
@@ -125,54 +125,109 @@
 }
 
 /* ================================================================= */
-/* PHÂN HỆ NÂNG CẤP GIAO DIỆN LIGHT THEME PHONG CÁCH GEMINI AI        */
+/* PHÂN HỆ GIAO DIỆN "GIẤY CỔ HOEN RỈ" (OLD RUSTY PAPER TEXTURE)      */
 /* ================================================================= */
 
-/* Lớp nền mạng lưới kỹ thuật số trừu tượng đan xen ánh sáng trắng */
+/* -------- Nền giấy cổ chính cho khung chat: sợi giấy + úa vàng + vết ố -------- */
 .custom-mesh-bg {
   position: relative;
-  background-color: #edf2f7;
+  background-color: #ecdfbd;
 }
 
-/* Sử dụng kỹ thuật SVG Vector Base64 để vẽ các đường lưới hình học tinh xảo của thiết kế mới */
+/* Lớp 1: Vân sợi giấy (grain) dựng bằng SVG feTurbulence, hoà trộn kiểu multiply */
 .custom-mesh-bg::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.85;
+  inset: 0;
   pointer-events: none;
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1200 800'%3E%3Cpath d='M-100,200 L400,-50 L900,300 L1400,-100 M-50,600 L300,450 L800,700 L1300,400 M200,900 L600,500 L1100,850' fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-opacity='0.6'/%3E%3Ccircle cx='400' cy='-50' r='3' fill='%23ffffff' fill-opacity='0.7'/%3E%3Ccircle cx='900' cy='300' r='4' fill='%23ffffff' fill-opacity='0.8'/%3E%3Ccircle cx='300' cy='450' r='3.5' fill='%23ffffff' fill-opacity='0.7'/%3E%3Ccircle cx='800' cy='700' r='4' fill='%23ffffff' fill-opacity='0.8'/%3E%3Ccircle cx='600' cy='500' r='3' fill='%23ffffff' fill-opacity='0.7'/%3E%3C/svg%3E");
-  background-size: cover;
-  background-position: center;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.29  0 0 0 0 0.20  0 0 0 0 0.10  0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
 }
 
-/* Định nghĩa lại hiệu ứng Glassmorphism cho các hộp thoại động */
+/* Lớp 2: Vết ố rỉ sét loang màu nâu cam ở các góc + vòng tối viền (vignette) mô phỏng giấy cũ */
+.custom-mesh-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 38% at 6% 8%, rgba(146, 84, 28, 0.16), transparent 62%),
+    radial-gradient(ellipse 42% 32% at 96% 18%, rgba(120, 66, 20, 0.12), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 92% 92%, rgba(146, 84, 28, 0.15), transparent 60%),
+    radial-gradient(ellipse 45% 30% at 10% 95%, rgba(120, 66, 20, 0.1), transparent 60%),
+    radial-gradient(ellipse at center, transparent 45%, rgba(58, 42, 24, 0.16) 100%);
+}
+
+.dark .custom-mesh-bg {
+  background-color: #0c0906;
+}
+.dark .custom-mesh-bg::before {
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.79  0 0 0 0 0.64  0 0 0 0 0.31  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.dark .custom-mesh-bg::after {
+  background:
+    radial-gradient(ellipse 55% 38% at 6% 8%, rgba(201, 162, 39, 0.05), transparent 62%),
+    radial-gradient(ellipse 42% 32% at 96% 18%, rgba(201, 162, 39, 0.04), transparent 60%),
+    radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* -------- Vân giấy nhẹ dành cho header & sidebar (không cần vòng tối viền) -------- */
+.paper-panel-texture {
+  position: relative;
+}
+.paper-panel-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.29  0 0 0 0 0.20  0 0 0 0 0.10  0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+}
+.dark .paper-panel-texture::before {
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.79  0 0 0 0 0.64  0 0 0 0 0.31  0 0 0 0.45 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E");
+}
+
+/* Thẻ tin nhắn mang cảm giác "được cắt từ giấy cổ": viền mảnh & bóng ấm thay cho shadow xanh dương mặc định */
+.message-fade-in .rounded-2xl.rounded-tl-none {
+  box-shadow: 0 1px 2px rgba(58, 42, 24, 0.08), 0 5px 16px rgba(58, 42, 24, 0.1), inset 0 0 0 1px rgba(217, 199, 154, 0.35);
+}
+.dark .message-fade-in .rounded-2xl.rounded-tl-none {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 5px 16px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(201, 162, 39, 0.1);
+}
+
+/* Định nghĩa lại hiệu ứng Glassmorphism theo tông giấy da cũ ấm áp */
 .glass-message-card {
-  background: rgba(255, 255, 255, 0.72) !important;
+  background: rgba(251, 245, 230, 0.75) !important;
   backdrop-filter: blur(14px) !important;
   -webkit-backdrop-filter: blur(14px) !important;
-  box-shadow: 0 12px 40px rgba(0, 149, 218, 0.06), inset 0 2px 4px rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 12px 40px rgba(138, 74, 28, 0.08), inset 0 2px 4px rgba(255, 255, 255, 0.5) !important;
 }
 
 .dark .glass-message-card {
-  background: rgba(15, 29, 54, 0.85) !important;
+  background: rgba(24, 19, 16, 0.85) !important;
   backdrop-filter: blur(14px) !important;
   box-shadow: none !important;
 }
 
-/* Cấu trúc nút chọn sản phẩm chuyển thành viền mỏng thanh lịch */
+/* Cấu trúc nút chọn sản phẩm: mực rỉ sét ấm áp trên nền giấy ngà */
 .custom-btn-select {
-  background: #ffffff !important;
-  color: #007be8 !important;
-  border: 1px solid #d1e3f8 !important;
+  background: #fdf8ec !important;
+  color: #8a4a1c !important;
+  border: 1px solid #e3cf9e !important;
   transition: all 0.2s ease-in-out !important;
 }
 
 .custom-btn-select:hover {
-  background: #008bfc !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(0, 139, 252, 0.25) !important;
+  background: linear-gradient(to bottom, #b8712f, #8a4a1c) !important;
+  color: #fbf5e6 !important;
+  box-shadow: 0 4px 12px rgba(138, 74, 28, 0.3) !important;
 }
