@@ -86,3 +86,23 @@
   from { opacity: 0; transform: translateX(-10px); }
   to { opacity: 1; transform: translateX(0); }
 }
+
+/* ================================================================= */
+/* KHUNG NỀN TINH THỂ MẠNG LƯỚI VECTOR (CRYSTAL NETWORK BACKGROUND)  */
+/* THIẾT KẾ ĐỘC QUYỀN CHO LIGHT MODE THEO HÌNH ẢNH CỦA KHÁCH HÀNG     */
+/* ================================================================= */
+.canvas-crystal-network {
+  background-color: #f3f7fc;
+  background-image:
+    radial-gradient(circle at 50% 30%, rgba(235, 243, 255, 0.6) 0%, rgba(243, 247, 252, 1) 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' viewBox='0 0 1200 800'%3E%3Cpath d='M-100,500 L200,650 L450,400 L700,550 L1000,300 L1300,450 M150,750 L500,550 L850,700 M300,250 L650,150 L900,350' fill='none' stroke='rgba(255,255,255,0.85)' stroke-width='2'/%3E%3Cpath d='M-100,500 L150,750 M200,650 L500,550 M450,400 L650,150 M450,400 L500,550 M700,550 L850,700 M700,550 L900,350 M1000,300 L900,350' fill='none' stroke='rgba(215,230,250,0.5)' stroke-width='1.5'/%3E%3Ccircle cx='200' cy='650' r='3' fill='%23ffffff' opacity='0.9'/%3E%3Ccircle cx='450' cy='400' r='3.5' fill='%23ffffff' opacity='0.9'/%3E%3Ccircle cx='700' cy='550' r='3' fill='%23ffffff' opacity='0.9'/%3E%3Ccircle cx='500' cy='550' r='3' fill='%23ffffff' opacity='0.9'/%3E%3Ccircle cx='650' cy='150' r='4' fill='%23ffffff' opacity='0.8'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center bottom;
+}
+
+/* Khi kích hoạt chế độ tối (Dark Mode), triệt tiêu hình nền ảnh tinh thể để trả về giao diện gốc */
+.dark .canvas-crystal-network {
+  background-color: #070f1e;
+  background-image: none !important;
+}
