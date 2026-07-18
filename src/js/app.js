@@ -209,7 +209,6 @@ function scrollChatToBottom() {
   if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Custom simple loading state inside the input card context
 function showTypingIndicator() {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
@@ -310,14 +309,15 @@ function updateActiveSessionTitle(newTitle, categoryCode) {
   }
 }
 
+// MODIFIED: Updated background, border, and text styles to light yellow/amber
 function renderChatHistoryUI() {
   const container = document.getElementById('chat-history-list');
   if (!container) return;
 
   if (consumerChatSessions.length === 0) {
     container.innerHTML = `
-      <div id="history-empty-state" class="text-center py-8 px-4 border border-dashed border-slate-200 dark:border-brand-border/40 rounded-xl">
-        <p class="text-[11px] text-slate-400 italic">Chưa có cuộc trò chuyện cũ.</p>
+      <div id="history-empty-state" class="text-center py-8 px-4 border border-dashed border-amber-200 dark:border-amber-500/20 rounded-xl bg-amber-50/20">
+        <p class="text-[11px] text-amber-600 italic">Chưa có cuộc trò chuyện cũ.</p>
       </div>`;
     return;
   }
@@ -329,11 +329,11 @@ function renderChatHistoryUI() {
 
     pill.className = `group flex items-center justify-between p-3 rounded-xl border transition-all duration-200 cursor-pointer text-xs font-medium history-item-appear ${
       isActive
-      ? 'border-brand-electric/40 bg-brand-electric/5 text-brand-electric dark:bg-brand-electric/10'
-      : 'border-slate-100 dark:border-brand-border/40 bg-slate-50/60 dark:bg-brand-panel/40 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-brand-dark/30'
+      ? 'border-brand-electric/50 bg-brand-electric/5 text-brand-electric dark:bg-brand-electric/10'
+      : 'border-amber-200/70 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-950/10 text-amber-800 dark:text-amber-300 hover:bg-amber-100/60 dark:hover:bg-amber-900/20'
     }`;
 
-    let icon = '<i class="fa-regular fa-comment text-slate-400"></i>';
+    let icon = '<i class="fa-regular fa-comment text-amber-500/70"></i>';
     if (session.category === 'ac') icon = '<i class="fa-solid fa-snowflake text-cyan-500"></i>';
     if (session.category === 'fridge') icon = '<i class="fa-solid fa-carrot text-emerald-500"></i>';
     if (session.category === 'laptop') icon = '<i class="fa-solid fa-laptop text-indigo-500"></i>';
@@ -342,8 +342,8 @@ function renderChatHistoryUI() {
       <div class="flex items-center space-x-2.5 truncate w-[90%]">
         <span class="shrink-0 text-sm">${icon}</span>
         <div class="truncate flex flex-col text-left">
-          <span class="truncate font-semibold text-slate-900 dark:text-slate-100">${session.title}</span>
-          <span class="text-[10px] text-slate-400 mt-0.5">${session.timestamp} • Điện Máy Xanh</span>
+          <span class="truncate font-semibold text-amber-950 dark:text-amber-100">${session.title}</span>
+          <span class="text-[10px] text-amber-600/80 dark:text-amber-400/60 mt-0.5">${session.timestamp} • Điện Máy Xanh</span>
         </div>
       </div>`;
 
@@ -426,7 +426,7 @@ function extractEntitiesFromText(text) {
   }
   if (!result.brand && lower.includes('pana')) result.brand = 'Panasonic';
 
-  // 3. Trích xuất hạn mức tài chính (Budget) - Ví dụ: "dưới 15 củ", "tầm 10tr", "khoảng 8 triệu"
+  // 3. Trích xuất hạn mức tài chính (Budget)
   const priceRegex = /(dưới|trên|tầm|khoảng|~)?\s*(\d+)\s*(triệu|tr|củ)/i;
   const matchPrice = lower.match(priceRegex);
   if (matchPrice) {
@@ -441,9 +441,9 @@ function extractEntitiesFromText(text) {
   if (matchRoom) {
     result.roomSize = parseInt(matchRoom[1], 10);
   } else if (lower.includes('phòng ngủ')) {
-    result.roomSize = 12; // Mức mặc định phòng ngủ phổ thông
+    result.roomSize = 12;
   } else if (lower.includes('phòng khách')) {
-    result.roomSize = 22; // Mức mặc định phòng khách phổ thông
+    result.roomSize = 22;
   }
 
   // 5. Trích xuất số người dùng cho Tủ Lạnh (Family Size)
@@ -494,7 +494,7 @@ function dispatchLogicEngine(text) {
   const startTime = performance.now();
   const lower = text.toLowerCase();
 
-  // BƯỚC 1: QUÉT FAQ ĐỒNG BỘ (Bảo hành, giao hàng, trả góp)
+  // BƯỚC 1: QUÉT FAQ ĐỒNG BỘ
   for (const [key, answer] of Object.entries(MOCK_FAQ)) {
     if (lower.includes(key)) {
       document.getElementById('rag-faq-status').textContent = `Khớp FAQ: [${key}]`;
@@ -505,10 +505,9 @@ function dispatchLogicEngine(text) {
   }
   document.getElementById('rag-faq-status').textContent = 'Không khớp FAQ';
 
-  // BƯỚC 2: NLP TRÍCH XUẤT THỰC THỂ (SLOT-FILLING)
+  // BƯỚC 2: NLP TRÍCH XUẤT THỰC THỂ
   const extracted = extractEntitiesFromText(text);
 
-  // Hợp nhất các slot dữ liệu tìm được vào sessionState hiện hành
   if (extracted.category) sessionState.category = extracted.category;
   if (extracted.brand) sessionState.collectedData.brand = extracted.brand;
   if (extracted.budget) sessionState.collectedData.budget = extracted.budget;
@@ -516,11 +515,10 @@ function dispatchLogicEngine(text) {
   if (extracted.familySize) sessionState.collectedData.familySize = extracted.familySize;
   if (extracted.purpose) sessionState.collectedData.purpose = extracted.purpose;
 
-  // Cập nhật giao diện gỡ lỗi trực quan theo DOM
   document.getElementById('active-category').textContent = sessionState.category || 'Chưa xác định';
   document.getElementById('slang-inspector').textContent = JSON.stringify(sessionState.collectedData);
 
-  // BƯỚC 3: KIỂM TRA TÍNH XÁC ĐỊNH NGÀNH HÀNG (CATEGORY PROBING)
+  // BƯỚC 3: KIỂM TRA TÍNH XÁC ĐỊNH NGÀNH HÀNG
   if (!sessionState.category) {
     sessionState.stage = 'INIT';
     document.getElementById('chat-stage').textContent = sessionState.stage;
@@ -529,16 +527,13 @@ function dispatchLogicEngine(text) {
     return;
   }
 
-  // Đồng bộ tiêu đề Sidebar dựa trên Ngành hàng được khóa
   let categoryLabel = "Trò chuyện";
   if (sessionState.category === 'ac') categoryLabel = "Tư vấn Máy Lạnh";
   if (sessionState.category === 'fridge') categoryLabel = "Tư vấn Tủ Lạnh";
   if (sessionState.category === 'laptop') categoryLabel = "Tư vấn Laptop";
   updateActiveSessionTitle(categoryLabel, sessionState.category);
 
-  // BƯỚC 4: ĐIỀU TRA THÔNG TIN CÒN THIẾU DỰA TRÊN NGÀNH HÀNG (DYNAMIC SLOT PROBING)
-
-  // A. Nếu là Máy Lạnh mà chưa biết không gian / diện tích lắp đặt
+  // BƯỚC 4: ĐIỀU TRA THÔNG TIN CÒN THIẾU
   if (sessionState.category === 'ac' && !sessionState.collectedData.roomSize) {
     if (sessionState.stage === 'PROBING') {
       sessionState.collectedData.roomSize = 12;
@@ -552,7 +547,6 @@ function dispatchLogicEngine(text) {
     }
   }
 
-  // B. Nếu là Tủ Lạnh mà chưa biết nhu cầu thành viên sử dụng
   if (sessionState.category === 'fridge' && !sessionState.collectedData.familySize) {
     if (sessionState.stage === 'PROBING') {
       sessionState.collectedData.familySize = 3;
@@ -566,7 +560,6 @@ function dispatchLogicEngine(text) {
     }
   }
 
-  // C. Nếu là Laptop mà chưa biết phân khúc giá hoặc hãng, hỏi thêm để tăng tính gợi mở
   if (sessionState.category === 'laptop' && !sessionState.collectedData.brand && !sessionState.collectedData.budget) {
     if (sessionState.stage !== 'PROBING') {
       sessionState.stage = 'PROBING';
@@ -577,7 +570,7 @@ function dispatchLogicEngine(text) {
     }
   }
 
-  // BƯỚC 5: KHU VỰC TRUY VẤN DỮ LIỆU KHO HÀNG & PHÂN TÍCH TRADE-OFF (RECOMMENDATION ENGINE)
+  // BƯỚC 5: KHU VỰC TRUY VẤN DỮ LIỆU KHO HÀNG & PHÂN TÍCH TRADE-OFF
   sessionState.stage = 'RECOMMENDATION';
   document.getElementById('chat-stage').textContent = sessionState.stage;
 
@@ -699,7 +692,7 @@ function dispatchLogicEngine(text) {
 }
 
 // ==========================================
-// CÁC HÀM KHỞI TẠO VÀ LÀM MỚI PHIÊN (RESET/PROMPT)
+// CÁC HÀM KHỞI TẠO VÀ LÀM MỚI PHIÊN
 // ==========================================
 window.resetConversation = function() {
   if (activeSessionId) {
@@ -715,14 +708,10 @@ window.resetConversation = function() {
     activeSessionId = newestEmptySession.id;
     restoreSessionMessages(newestEmptySession);
 
-    const slangInspectorEl = document.getElementById('slang-inspector');
-    if (slangInspectorEl) slangInspectorEl.textContent = '';
-    const catalogStatusEl = document.getElementById('rag-catalog-status');
-    if (catalogStatusEl) catalogStatusEl.textContent = '';
-    const promoStatusEl = document.getElementById('rag-promo-status');
-    if (promoStatusEl) promoStatusEl.textContent = '';
-    const faqStatusEl = document.getElementById('rag-faq-status');
-    if (faqStatusEl) faqStatusEl.textContent = '';
+    document.getElementById('slang-inspector').textContent = '';
+    document.getElementById('rag-catalog-status').textContent = '';
+    document.getElementById('rag-promo-status').textContent = '';
+    document.getElementById('rag-faq-status').textContent = '';
 
     renderChatHistoryUI();
   } else {
@@ -756,7 +745,6 @@ window.resetConversation = function() {
   }
 };
 
-// MODIFIED: Quick chips now immediately process through the engine straightaway!
 window.fillQuickPrompt = function(promptText) {
   const input = document.getElementById('user-input');
   if (input) {
