@@ -409,7 +409,7 @@ function restoreSessionMessages(session) {
   chatBox.innerHTML = '';
   session.messages.forEach(msg => {
     if (msg.role === 'user') {
-      const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tr-none px-4 py-3 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-gradient-to-r from-[#1d4ed8] to-[#0095da] text-white rounded-2xl rounded-tl-none px-4 py-3 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     } else {
       const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(0,149,218,0.15)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain"></div><div class="max-w-[85%] w-full bg-blue-50/60 dark:bg-blue-950/30 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-blue-100 dark:border-blue-900/50 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
@@ -759,11 +759,12 @@ window.resetConversation = function() {
   }
 };
 
+// MODIFIED: Populates text field and focuses it without automatic submission
 window.fillQuickPrompt = function(promptText) {
   const input = document.getElementById('user-input');
   if (input) {
     input.value = promptText;
-    handleFormSubmit(null);
+    input.focus();
   }
 };
 
