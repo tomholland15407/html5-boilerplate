@@ -253,3 +253,16 @@ html.dark #sidebar-panel {
   background-position: center !important;
   background-repeat: no-repeat !important;
 }
+/* Force inner layouts to drop their solid backgrounds */
+header *,
+#sidebar-panel * {
+  background-color: transparent !important;
+}
+
+/* Re-protect specific interactive elements like buttons from turning transparent */
+header button,
+#sidebar-panel button,
+header a,
+#sidebar-panel .rounded-2xl {
+  background-color: inherit !important;
+}
