@@ -231,3 +231,25 @@
   color: #fbf5e6 !important;
   box-shadow: 0 4px 12px rgba(138, 74, 28, 0.3) !important;
 }
+
+/* ================================================================= */
+/* STRICT LIGHT/DARK THEME BACKGROUND CONFIGURATIONS                  */
+/* ================================================================= */
+
+/* Strict Light Theme Engine - Displays wall-bg-1 ONLY */
+html:not(.dark) header,
+html:not(.dark) #sidebar-panel {
+  background-image: url('../img/wall-bg-1.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Strict Dark Theme Engine - Displays wall-bg-2 ONLY */
+html.dark header,
+html.dark #sidebar-panel {
+  background-image: url('../img/wall-bg-2.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
