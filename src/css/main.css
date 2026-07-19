@@ -126,58 +126,52 @@
 
 /* ================================================================= */
 /* PHÂN HỆ GIAO DIỆN "GIẤY CỔ HOEN RỈ" (OLD RUSTY PAPER TEXTURE)      */
+/* Sử dụng ảnh nền giấy thật img/bg_wall.avif do người dùng cung cấp */
 /* ================================================================= */
 
-/* -------- Nền giấy cổ chính cho khung chat: sợi giấy + úa vàng + vết ố -------- */
+/* -------- Nền giấy cổ chính cho khung chat -------- */
 .custom-mesh-bg {
   position: relative;
   background-color: #ecdfbd;
+  background-image: url("../img/bg_wall.avif");
+  background-size: 700px auto;
+  background-repeat: repeat;
+  background-position: center;
 }
 
-/* Lớp 1: Vân sợi giấy (grain) dựng bằng SVG feTurbulence, hoà trộn kiểu multiply */
+/* Lớp phủ màu để hài hoà ảnh giấy thật với tông hổ phách của giao diện + vết ố góc + vòng tối viền */
 .custom-mesh-bg::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.5;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.29  0 0 0 0 0.20  0 0 0 0 0.10  0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 240px 240px;
-}
-
-/* Lớp 2: Vết ố rỉ sét loang màu nâu cam ở các góc + vòng tối viền (vignette) mô phỏng giấy cũ */
-.custom-mesh-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
   background:
-    radial-gradient(ellipse 55% 38% at 6% 8%, rgba(146, 84, 28, 0.16), transparent 62%),
-    radial-gradient(ellipse 42% 32% at 96% 18%, rgba(120, 66, 20, 0.12), transparent 60%),
-    radial-gradient(ellipse 50% 40% at 92% 92%, rgba(146, 84, 28, 0.15), transparent 60%),
+    linear-gradient(rgba(242, 230, 201, 0.38), rgba(228, 211, 166, 0.5)),
+    radial-gradient(ellipse 55% 38% at 6% 8%, rgba(146, 84, 28, 0.14), transparent 62%),
+    radial-gradient(ellipse 42% 32% at 96% 18%, rgba(120, 66, 20, 0.1), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 92% 92%, rgba(146, 84, 28, 0.13), transparent 60%),
     radial-gradient(ellipse 45% 30% at 10% 95%, rgba(120, 66, 20, 0.1), transparent 60%),
-    radial-gradient(ellipse at center, transparent 45%, rgba(58, 42, 24, 0.16) 100%);
+    radial-gradient(ellipse at center, transparent 45%, rgba(58, 42, 24, 0.14) 100%);
 }
 
 .dark .custom-mesh-bg {
   background-color: #0c0906;
 }
 .dark .custom-mesh-bg::before {
-  opacity: 0.3;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.79  0 0 0 0 0.64  0 0 0 0 0.31  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.dark .custom-mesh-bg::after {
   background:
+    linear-gradient(rgba(6, 5, 3, 0.82), rgba(6, 5, 3, 0.88)),
     radial-gradient(ellipse 55% 38% at 6% 8%, rgba(201, 162, 39, 0.05), transparent 62%),
     radial-gradient(ellipse 42% 32% at 96% 18%, rgba(201, 162, 39, 0.04), transparent 60%),
-    radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.55) 100%);
+    radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.5) 100%);
 }
 
-/* -------- Vân giấy nhẹ dành cho header & sidebar (không cần vòng tối viền) -------- */
+/* -------- Nền giấy nhẹ dành cho header & sidebar (ảnh mờ hơn, không cần vòng tối viền) -------- */
 .paper-panel-texture {
   position: relative;
+  background-image: url("../img/bg_wall.avif");
+  background-size: 700px auto;
+  background-repeat: repeat;
+  background-position: center;
 }
 .paper-panel-texture::before {
   content: "";
@@ -185,23 +179,51 @@
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.35;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.29  0 0 0 0 0.20  0 0 0 0 0.10  0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E");
-  background-size: 220px 220px;
+  background: linear-gradient(rgba(247, 239, 217, 0.72), rgba(240, 226, 189, 0.78));
 }
 .dark .paper-panel-texture::before {
-  opacity: 0.18;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.79  0 0 0 0 0.64  0 0 0 0 0.31  0 0 0 0.45 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E");
+  background: linear-gradient(rgba(8, 7, 5, 0.86), rgba(8, 7, 5, 0.9));
 }
 
-/* Thẻ tin nhắn mang cảm giác "được cắt từ giấy cổ": viền mảnh & bóng ấm thay cho shadow xanh dương mặc định */
-.message-fade-in .rounded-2xl.rounded-tl-none {
-  box-shadow: 0 1px 2px rgba(58, 42, 24, 0.08), 0 5px 16px rgba(58, 42, 24, 0.1), inset 0 0 0 1px rgba(217, 199, 154, 0.35);
+/* ================================================================= */
+/* HỆ THỐNG KHUNG "GIẤY XÉ TAY" (WAVY DECKLED-EDGE BOXES)             */
+/* clip-path tạo viền lượn sóng thủ công + drop-shadow ôm sát hình dạng */
+/* ================================================================= */
+
+/* Bong bóng trợ lý AI (nền giấy ngà) */
+.deckle-edge {
+  clip-path: polygon(0.00% 1.71%, 16.67% 1.37%, 33.33% 0.21%, 50.00% 2.24%, 66.67% 1.34%, 83.33% 1.17%, 100.00% 1.20%, 99.03% 16.67%, 97.95% 33.33%, 98.55% 50.00%, 99.85% 66.67%, 98.00% 83.33%, 99.12% 100.00%, 83.33% 99.34%, 66.67% 97.71%, 50.00% 99.37%, 33.33% 97.36%, 16.67% 98.55%, 0.00% 99.69%, 2.69% 83.33%, 0.57% 66.67%, 0.43% 50.00%, 2.00% 33.33%, 0.62% 16.67%, 1.62% 0.00%);
+  box-shadow: inset 0 0 0 1px rgba(217, 199, 154, 0.55);
+  filter: drop-shadow(0 2px 3px rgba(58, 42, 24, 0.1)) drop-shadow(0 8px 18px rgba(58, 42, 24, 0.12));
 }
-.dark .message-fade-in .rounded-2xl.rounded-tl-none {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 5px 16px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(201, 162, 39, 0.1);
+.dark .deckle-edge {
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.14);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35));
+}
+
+/* Bong bóng người dùng (nền gradient rỉ sét) - hình dạng lệch nhẹ để không lặp lại y hệt */
+.deckle-edge-alt {
+  clip-path: polygon(0.00% 1.84%, 16.67% 1.45%, 33.33% 0.15%, 50.00% 2.13%, 66.67% 1.14%, 83.33% 1.38%, 100.00% 1.22%, 99.33% 16.67%, 98.56% 33.33%, 99.07% 50.00%, 99.83% 66.67%, 98.21% 83.33%, 99.17% 100.00%, 83.33% 99.56%, 66.67% 98.38%, 50.00% 99.11%, 33.33% 98.56%, 16.67% 99.29%, 0.00% 99.80%, 2.36% 83.33%, 0.64% 66.67%, 0.70% 50.00%, 2.19% 33.33%, 0.78% 16.67%, 1.37% 0.00%);
+  filter: drop-shadow(0 2px 3px rgba(58, 42, 24, 0.16)) drop-shadow(0 8px 18px rgba(58, 42, 24, 0.18));
+}
+
+/* Thẻ sản phẩm đề xuất */
+.deckle-card {
+  clip-path: polygon(0.00% 1.43%, 16.67% 1.09%, 33.33% 0.15%, 50.00% 1.32%, 66.67% 0.68%, 83.33% 0.99%, 100.00% 1.00%, 99.36% 16.67%, 98.33% 33.33%, 99.31% 50.00%, 99.80% 66.67%, 98.31% 83.33%, 99.37% 100.00%, 83.33% 99.49%, 66.67% 98.45%, 50.00% 99.53%, 33.33% 98.22%, 16.67% 99.05%, 0.00% 99.76%, 2.02% 83.33%, 0.74% 66.67%, 0.31% 50.00%, 1.91% 33.33%, 0.72% 16.67%, 1.25% 0.00%);
+  box-shadow: inset 0 0 0 1px rgba(217, 178, 110, 0.55);
+  filter: drop-shadow(0 2px 4px rgba(58, 42, 24, 0.12)) drop-shadow(0 6px 14px rgba(58, 42, 24, 0.1));
+}
+.dark .deckle-card {
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.14);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.3));
+}
+
+/* Nhãn danh mục nhỏ kiểu con dấu giấy xé (Máy lạnh / Tủ lạnh / Laptop) */
+.deckle-tag {
+  clip-path: polygon(0.00% 2.29%, 20.00% 1.77%, 40.00% 1.53%, 60.00% 1.46%, 80.00% 0.50%, 100.00% 2.42%, 99.07% 20.00%, 97.68% 40.00%, 98.74% 60.00%, 96.79% 80.00%, 98.47% 100.00%, 80.00% 98.21%, 60.00% 98.72%, 40.00% 99.38%, 20.00% 97.79%, 0.00% 99.63%, 2.70% 80.00%, 0.98% 60.00%, 3.09% 40.00%, 0.81% 20.00%, 2.73% 0.00%);
+  box-shadow: inset 0 0 0 1px rgba(245, 208, 161, 0.9);
+  filter: drop-shadow(0 2px 4px rgba(58, 42, 24, 0.1));
+  display: inline-block;
 }
 
 /* Định nghĩa lại hiệu ứng Glassmorphism theo tông giấy da cũ ấm áp */

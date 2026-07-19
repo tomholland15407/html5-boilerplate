@@ -257,7 +257,7 @@ function showTypingIndicator() {
       <div class="w-10 h-10 rounded-xl bg-white border border-paper-300 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
         <img src="img/mascot.png" alt="..." class="w-full h-full object-contain p-0.5 animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
-      <div class="bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-500 rounded-2xl rounded-tl-none px-4 py-3 border border-paper-300/70 dark:border-[#3a2f1c]/50 shadow-sm">
+      <div class="deckle-edge bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-500 rounded-2xl rounded-tl-none px-5 py-3.5">
         <div class="flex items-center space-x-1.5 py-1">
           <span class="w-2 h-2 bg-paper-500 dark:bg-stone-500 rounded-full typing-dot inline-block"></span>
           <span class="w-2 h-2 bg-paper-500 dark:bg-stone-500 rounded-full typing-dot inline-block"></span>
@@ -280,7 +280,7 @@ function appendUserMessage(text) {
   const html = `
     <div class="flex items-start space-x-3 justify-end message-fade-in">
       <div class="space-y-1 max-w-[80%]">
-        <div class="bg-gradient-to-r from-[#8a4a1c] to-[#c9862f] text-white rounded-2xl rounded-tl-none px-4 py-3 shadow-md">
+        <div class="deckle-edge-alt bg-gradient-to-r from-[#8a4a1c] to-[#c9862f] text-white rounded-2xl rounded-tl-none px-5 py-3.5">
           <p class="text-sm leading-relaxed">${text}</p>
         </div>
       </div>
@@ -307,9 +307,7 @@ function appendAssistantMessage(htmlContent) {
         <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
-        <div class="bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-paper-300/70 dark:border-[#3a2f1c]/50 shadow-sm">
-          ${htmlContent}
-        </div>
+        <div class="deckle-edge bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 rounded-2xl rounded-tl-none px-6 py-4">
       </div>
     </div>`;
   chatBox.insertAdjacentHTML('beforeend', html);
@@ -408,7 +406,7 @@ function restoreSessionMessages(session) {
           <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
-          <div class="bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-paper-300/70 dark:border-[#3a2f1c]/50 shadow-sm">
+          <div class="deckle-edge bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 rounded-2xl rounded-tl-none px-6 py-4">
             <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
           </div>
         </div>
@@ -426,10 +424,10 @@ function restoreSessionMessages(session) {
   chatBox.innerHTML = '';
   session.messages.forEach(msg => {
     if (msg.role === 'user') {
-      const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] bg-gradient-to-r from-[#8a4a1c] to-[#c9862f] text-white rounded-2xl rounded-tl-none px-4 py-3 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="max-w-[80%] deckle-edge-alt bg-gradient-to-r from-[#8a4a1c] to-[#c9862f] text-white rounded-2xl rounded-tl-none px-5 py-3.5 text-[13.5px]">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     } else {
-      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(184,138,58,0.18)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain animate-mascot-idle"></div><div class="max-w-[85%] w-full bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-paper-300/70 dark:border-[#3a2f1c]/50 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(184,138,58,0.18)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain animate-mascot-idle"></div><div class="max-w-[85%] w-full deckle-edge bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 rounded-2xl rounded-tl-none px-6 py-4 text-[13.5px]">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     }
   });
@@ -686,7 +684,7 @@ function dispatchLogicEngine(text) {
     }
 
     cardsHtml += `
-      <div class="bg-amber-50/60 dark:bg-amber-950/20 rounded-xl p-4 border border-amber-200/80 dark:border-amber-500/20 flex flex-col justify-between space-y-3.5 shadow-sm transition-all hover:shadow-md hover:border-amber-400/80">
+      <div class="deckle-card bg-amber-50/60 dark:bg-amber-950/20 p-4 flex flex-col justify-between space-y-3.5 transition-all hover:brightness-[1.03]">
         <div>
           <div class="flex items-center justify-between">
             <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-200/50 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200 rounded">Đề xuất ${idx + 1}</span>
@@ -753,7 +751,7 @@ window.resetConversation = function() {
             <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
           </div>
           <div class="space-y-1 max-w-[85%] w-full">
-            <div class="bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 rounded-2xl rounded-tl-none px-5 py-3.5 border border-paper-300/70 dark:border-[#3a2f1c]/50 shadow-sm">
+            <div class="deckle-edge bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 rounded-2xl rounded-tl-none px-6 py-4">
               <p class="text-sm">Dạ, phiên hội thoại tư vấn mua sắm mới đã sẵn sàng phục vụ rồi ạ! Anh/chị cần em hỗ trợ tìm kiếm dòng thiết bị công nghệ điện máy nào thế ạ?</p>
             </div>
           </div>
