@@ -308,6 +308,8 @@ function appendAssistantMessage(htmlContent) {
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
         <div class="deckle-edge bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 rounded-2xl rounded-tl-none px-6 py-4">
+          ${htmlContent}
+        </div>
       </div>
     </div>`;
   chatBox.insertAdjacentHTML('beforeend', html);
