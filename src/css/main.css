@@ -243,47 +243,49 @@
 
 :root {
   /* --- Bán kính bất đối xứng, biên độ nhỏ để giữ nét thanh thoát --- */
-  --sk-r-a: 22px 26px 24px 8px / 26px 22px 20px 10px;   /* bong bóng trợ lý */
-  --sk-r-b: 26px 22px 8px 24px / 22px 26px 10px 20px;   /* bong bóng người dùng */
-  --sk-r-c: 18px 22px 16px 20px / 20px 16px 22px 18px;  /* thẻ */
-  --sk-r-d: 22px 16px 20px 18px / 16px 22px 18px 20px;  /* thẻ so le */
-  --sk-r-soft: 16px 13px 15px 12px / 13px 16px 12px 15px;
-  --sk-r-pill: 999px;
-  --sk-r-tag: 12px 10px 13px 9px / 10px 13px 9px 12px;
-  --sk-r-tiny: 9px 7px 10px 7px / 7px 10px 7px 9px;
+  /* Trục ngang dùng px, trục dọc dùng % — nhờ vậy độ cong luôn tỉ lệ với chiều cao
+     phần tử, hình khối hữu cơ vẫn rõ ràng trên cả bong bóng rộng lẫn thẻ tag nhỏ. */
+  --sk-r-a: 60px 18px 52px 20px / 55% 22% 60% 26%;   /* bong bóng trợ lý */
+  --sk-r-b: 18px 60px 20px 52px / 22% 55% 26% 60%;   /* bong bóng người dùng (soi gương) */
+  --sk-r-c: 46px 16px 40px 18px / 48% 20% 52% 24%;   /* thẻ */
+  --sk-r-d: 16px 46px 18px 40px / 20% 48% 24% 52%;   /* thẻ so le */
+  --sk-r-soft: 34px 14px 30px 16px / 40% 18% 44% 20%;
+  --sk-r-pill: 60px 18px 52px 20px / 60% 24% 64% 28%;
+  --sk-r-tag: 30px 10px 26px 12px / 50% 22% 55% 25%;
+  --sk-r-tiny: 18px 7px 15px 8px / 45% 20% 50% 22%;
 
   /* --- Bảng màu giấy & mực (mực nhạt đi nhiều so với bản phác thảo cũ) --- */
   --sk-paper: #fffdf5;
   --sk-paper-2: #fdf6e4;
-  --sk-ink: rgba(122, 82, 38, 0.28);
-  --sk-ink-soft: rgba(122, 82, 38, 0.16);
+  --sk-ink: rgba(88, 56, 20, 0.46);
+  --sk-ink-soft: rgba(110, 74, 34, 0.3);
 
   --sk-brand: linear-gradient(180deg, #b8712f 0%, #8a4a1c 100%);
   --sk-brand-2: linear-gradient(180deg, #b8560f 0%, #8a3b12 100%);
-  --sk-brand-ink: rgba(74, 38, 8, 0.35);
+  --sk-brand-ink: rgba(64, 32, 6, 0.55);
 
   --sk-amber-fill: #fffbf4;
-  --sk-amber-ink: rgba(178, 94, 0, 0.26);
+  --sk-amber-ink: rgba(178, 94, 0, 0.42);
   --sk-lemon-fill: #fefce8;
-  --sk-lemon-ink: rgba(133, 77, 14, 0.24);
+  --sk-lemon-ink: rgba(133, 77, 14, 0.4);
   --sk-accent-fill: rgba(179, 134, 44, 0.1);
-  --sk-accent-ink: rgba(150, 108, 28, 0.4);
+  --sk-accent-ink: rgba(150, 108, 28, 0.6);
 }
 
 .dark {
   --sk-paper: #201810;
   --sk-paper-2: #17110a;
-  --sk-ink: rgba(201, 162, 39, 0.26);
-  --sk-ink-soft: rgba(201, 162, 39, 0.14);
+  --sk-ink: rgba(201, 162, 39, 0.44);
+  --sk-ink-soft: rgba(201, 162, 39, 0.26);
 
-  --sk-brand-ink: rgba(255, 220, 150, 0.24);
+  --sk-brand-ink: rgba(255, 220, 150, 0.4);
 
   --sk-amber-fill: #2a1e10;
-  --sk-amber-ink: rgba(233, 165, 74, 0.28);
+  --sk-amber-ink: rgba(233, 165, 74, 0.45);
   --sk-lemon-fill: #2b2410;
-  --sk-lemon-ink: rgba(240, 208, 110, 0.26);
+  --sk-lemon-ink: rgba(240, 208, 110, 0.42);
   --sk-accent-fill: rgba(201, 162, 39, 0.1);
-  --sk-accent-ink: rgba(201, 162, 39, 0.38);
+  --sk-accent-ink: rgba(201, 162, 39, 0.6);
 }
 
 /* --------------------------------------------------------------------------- */
@@ -293,14 +295,14 @@
 .sk-edge {
   position: relative;
   background: var(--sk-fill, var(--sk-paper)) !important;
-  border: var(--sk-bw, 1px) solid var(--sk-stroke, var(--sk-ink)) !important;
+  border: var(--sk-bw, 1.25px) solid var(--sk-stroke, var(--sk-ink)) !important;
   border-radius: var(--sk-r, var(--sk-r-a)) !important;
   box-shadow: none;
   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Biến thể độ đậm của nét viền */
-.sk-edge-strong { --sk-bw: 1.5px; }
+.sk-edge-strong { --sk-bw: 1.6px; }
 .sk-edge-soft   { --sk-bw: 1px; --sk-stroke: var(--sk-ink-soft); }
 .sk-edge-alt,
 .sk-edge-single { /* giữ lại tên lớp cũ trong HTML, nay chỉ là biến thể hình dạng */ }
@@ -324,10 +326,10 @@
 
 /* Ảnh đại diện: bo tròn mềm, hơi lệch trục cho bớt cứng */
 .sk-avatar {
-  border-radius: 52% 48% 50% 50% / 50% 50% 52% 48% !important;
+  border-radius: 62% 38% 55% 45% / 45% 52% 48% 55% !important;
 }
 .sk-avatar-alt {
-  border-radius: 48% 52% 50% 50% / 50% 50% 48% 52% !important;
+  border-radius: 40% 60% 47% 53% / 55% 42% 58% 45% !important;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -347,6 +349,10 @@
   border-color: var(--sk-brand-ink) !important;
   filter: brightness(1.06);
 }
+
+/* Nhịp lệch rất nhẹ cho vài nhãn nhỏ — dấu vết dán tay, không làm vỡ hàng lối */
+.sk-tilt-a { transform: rotate(-1deg); }
+.sk-tilt-b { transform: rotate(1.2deg); }
 
 /* Khung nét đứt kiểu phác thảo dở dang */
 .sk-dash { border-style: dashed !important; }
