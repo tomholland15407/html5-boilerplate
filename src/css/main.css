@@ -233,41 +233,41 @@
 }
 
 /* ================================================================================= */
-/* PHÂN HỆ "GIẤY CẮT TAY" — SOFT PAPER-CUT SHAPE ENGINE                              */
+/* PHÂN HỆ "GIẤY CẮT TAY" — WAVY HAND-DRAWN OUTLINE ENGINE                           */
 /*                                                                                    */
-/* Không dùng feTurbulence / feDisplacementMap nữa: đường bao gợn sóng cao tần khiến  */
-/* giao diện trông lởm chởm và khó đọc. Thay vào đó mỗi thành phần được bo góc bất    */
-/* đối xứng nhẹ (cú pháp border-radius có dấu "/"), viền mảnh một nét và bóng ấm rất  */
-/* mềm — cảm giác giấy cắt tay nhưng vẫn gọn gàng, dễ đọc.                            */
+/* Hình khối vẫn là chữ nhật bo góc vừa phải như bản mockup, nhưng CHÍNH ĐƯỜNG VIỀN   */
+/* mới là thứ tạo nên chất vẽ tay: nó uốn lượn nhẹ, không bao giờ thẳng tuyệt đối.    */
+/* Không thể tạo hiệu ứng này bằng border-radius, nên khung nền + nét viền được vẽ    */
+/* lại trên lớp giả ::before rồi đẩy qua feDisplacementMap ở biên độ RẤT THẤP         */
+/* (numOctaves=1, scale 2–3.5) — đủ để đường bao gợn sóng mềm mại mà không răng cưa.  */
+/* Chữ nằm ở lớp nội dung, không bị bộ lọc chạm tới nên luôn sắc nét.                 */
 /* ================================================================================= */
 
 :root {
-  /* --- Bán kính bất đối xứng, biên độ nhỏ để giữ nét thanh thoát --- */
-  /* Trục ngang dùng px, trục dọc dùng % — nhờ vậy độ cong luôn tỉ lệ với chiều cao
-     phần tử, hình khối hữu cơ vẫn rõ ràng trên cả bong bóng rộng lẫn thẻ tag nhỏ. */
-  --sk-r-a: 60px 18px 52px 20px / 55% 22% 60% 26%;   /* bong bóng trợ lý */
-  --sk-r-b: 18px 60px 20px 52px / 22% 55% 26% 60%;   /* bong bóng người dùng (soi gương) */
-  --sk-r-c: 46px 16px 40px 18px / 48% 20% 52% 24%;   /* thẻ */
-  --sk-r-d: 16px 46px 18px 40px / 20% 48% 24% 52%;   /* thẻ so le */
-  --sk-r-soft: 34px 14px 30px 16px / 40% 18% 44% 20%;
-  --sk-r-pill: 60px 18px 52px 20px / 60% 24% 64% 28%;
-  --sk-r-tag: 30px 10px 26px 12px / 50% 22% 55% 25%;
-  --sk-r-tiny: 18px 7px 15px 8px / 45% 20% 50% 22%;
+  /* --- Bo góc vừa phải, hơi lệch nhau để không lộ khuôn máy móc --- */
+  --sk-r-a: 18px 14px 16px 12px;   /* bong bóng trợ lý */
+  --sk-r-b: 14px 18px 12px 16px;   /* bong bóng người dùng */
+  --sk-r-c: 14px 11px 13px 12px;   /* thẻ */
+  --sk-r-d: 11px 14px 12px 13px;   /* thẻ so le */
+  --sk-r-soft: 14px 12px 15px 11px;
+  --sk-r-pill: 999px;
+  --sk-r-tag: 11px 9px 10px 8px;
+  --sk-r-tiny: 8px 6px 7px 6px;
 
-  /* --- Bảng màu giấy & mực (mực nhạt đi nhiều so với bản phác thảo cũ) --- */
+  /* --- Bảng màu giấy & mực --- */
   --sk-paper: #fffdf5;
   --sk-paper-2: #fdf6e4;
-  --sk-ink: rgba(88, 56, 20, 0.46);
-  --sk-ink-soft: rgba(110, 74, 34, 0.3);
+  --sk-ink: rgba(88, 56, 20, 0.5);
+  --sk-ink-soft: rgba(110, 74, 34, 0.32);
 
   --sk-brand: linear-gradient(180deg, #b8712f 0%, #8a4a1c 100%);
   --sk-brand-2: linear-gradient(180deg, #b8560f 0%, #8a3b12 100%);
   --sk-brand-ink: rgba(64, 32, 6, 0.55);
 
   --sk-amber-fill: #fffbf4;
-  --sk-amber-ink: rgba(178, 94, 0, 0.42);
+  --sk-amber-ink: rgba(178, 94, 0, 0.45);
   --sk-lemon-fill: #fefce8;
-  --sk-lemon-ink: rgba(133, 77, 14, 0.4);
+  --sk-lemon-ink: rgba(133, 77, 14, 0.42);
   --sk-accent-fill: rgba(179, 134, 44, 0.1);
   --sk-accent-ink: rgba(150, 108, 28, 0.6);
 }
@@ -275,41 +275,54 @@
 .dark {
   --sk-paper: #201810;
   --sk-paper-2: #17110a;
-  --sk-ink: rgba(201, 162, 39, 0.44);
-  --sk-ink-soft: rgba(201, 162, 39, 0.26);
+  --sk-ink: rgba(201, 162, 39, 0.46);
+  --sk-ink-soft: rgba(201, 162, 39, 0.28);
 
   --sk-brand-ink: rgba(255, 220, 150, 0.4);
 
   --sk-amber-fill: #2a1e10;
-  --sk-amber-ink: rgba(233, 165, 74, 0.45);
+  --sk-amber-ink: rgba(233, 165, 74, 0.48);
   --sk-lemon-fill: #2b2410;
-  --sk-lemon-ink: rgba(240, 208, 110, 0.42);
+  --sk-lemon-ink: rgba(240, 208, 110, 0.45);
   --sk-accent-fill: rgba(201, 162, 39, 0.1);
   --sk-accent-ink: rgba(201, 162, 39, 0.6);
 }
 
 /* --------------------------------------------------------------------------- */
-/* 1. ĐỘNG CƠ: .sk-edge — vẽ thẳng trên chính phần tử, không cần lớp giả        */
-/*    => giữ nguyên padding, không có lớp phủ nào che chữ, không có bộ lọc.     */
+/* 1. ĐỘNG CƠ: .sk-edge — phần tử thật trong suốt, hình khối nằm ở lớp ::before  */
 /* --------------------------------------------------------------------------- */
 .sk-edge {
   position: relative;
-  background: var(--sk-fill, var(--sk-paper)) !important;
-  border: var(--sk-bw, 1.25px) solid var(--sk-stroke, var(--sk-ink)) !important;
-  border-radius: var(--sk-r, var(--sk-r-a)) !important;
-  box-shadow: none;
-  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  isolation: isolate;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
-/* Biến thể độ đậm của nét viền */
-.sk-edge-strong { --sk-bw: 1.6px; }
-.sk-edge-soft   { --sk-bw: 1px; --sk-stroke: var(--sk-ink-soft); }
-.sk-edge-alt,
-.sk-edge-single { /* giữ lại tên lớp cũ trong HTML, nay chỉ là biến thể hình dạng */ }
+.sk-edge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--sk-fill, var(--sk-paper));
+  border: var(--sk-bw, 1.25px) solid var(--sk-stroke, var(--sk-ink));
+  border-radius: var(--sk-r, var(--sk-r-a));
+  filter: url(#sk-wave);
+  transition: border-color 0.2s ease;
+}
 
-/* Rê chuột: viền rõ hơn một chút, không đổi hình khối */
-.sk-edge:hover {
-  border-color: var(--sk-stroke-hover, var(--sk-accent-ink)) !important;
+/* Phần tử nhỏ (tag, badge) cần bước sóng ngắn hơn thì độ lượn mới nhìn thấy được */
+.sk-edge-soft           { --sk-r: var(--sk-r-tag); }
+.sk-edge-soft::before   { --sk-bw: 1.15px; filter: url(#sk-wave-fine); }
+.sk-edge-strong::before { --sk-bw: 1.5px; }
+/* Đổi hạt nhiễu để hai thẻ cạnh nhau không lặp lại y hệt một đường lượn */
+.sk-edge-alt::before    { filter: url(#sk-wave-alt); }
+.sk-edge-single::before { /* giữ tên lớp cũ trong HTML; nay chỉ còn một nét duy nhất */ }
+
+.sk-edge:hover::before {
+  border-color: var(--sk-stroke-hover, var(--sk-accent-ink));
 }
 
 /* --------------------------------------------------------------------------- */
@@ -324,12 +337,12 @@
 .sk-chip        { --sk-r: var(--sk-r-tag); }
 .sk-badge       { --sk-r: var(--sk-r-tiny); }
 
-/* Ảnh đại diện: bo tròn mềm, hơi lệch trục cho bớt cứng */
+/* Ảnh đại diện: bo trực tiếp trên phần tử vì bên trong là <img> bị overflow kẹp */
 .sk-avatar {
-  border-radius: 62% 38% 55% 45% / 45% 52% 48% 55% !important;
+  border-radius: 54% 46% 50% 50% / 48% 50% 50% 52% !important;
 }
 .sk-avatar-alt {
-  border-radius: 40% 60% 47% 53% / 55% 42% 58% 45% !important;
+  border-radius: 46% 54% 50% 50% / 52% 48% 50% 50% !important;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -343,27 +356,26 @@
 .sk-fill-paper-2 { --sk-fill: var(--sk-paper-2); }
 .sk-fill-none    { --sk-fill: transparent; }
 
-/* Nút nền đậm: giữ nguyên nền khi rê chuột, chỉ nhấc lên nhẹ */
-.sk-fill-brand:hover,
-.sk-fill-brand-2:hover {
-  border-color: var(--sk-brand-ink) !important;
-  filter: brightness(1.06);
+.sk-fill-brand:hover::before,
+.sk-fill-brand-2:hover::before {
+  border-color: var(--sk-brand-ink);
+  filter: url(#sk-wave) brightness(1.06);
 }
+
+/* Khung nét đứt kiểu phác thảo dở dang */
+.sk-dash::before { border-style: dashed; }
 
 /* Nhịp lệch rất nhẹ cho vài nhãn nhỏ — dấu vết dán tay, không làm vỡ hàng lối */
 .sk-tilt-a { transform: rotate(-1deg); }
 .sk-tilt-b { transform: rotate(1.2deg); }
 
-/* Khung nét đứt kiểu phác thảo dở dang */
-.sk-dash { border-style: dashed !important; }
-
-/* Bóng giấy: rất mềm, đủ để tách lớp mà không tạo cảm giác nặng */
-.sk-lift {
+/* Bóng giấy: đặt trên lớp giả nên bóng cũng uốn theo đường viền */
+.sk-lift::before {
   box-shadow:
     0 1px 2px rgba(58, 42, 24, 0.05),
     0 6px 16px rgba(58, 42, 24, 0.07);
 }
-.dark .sk-lift {
+.dark .sk-lift::before {
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.28),
     0 6px 16px rgba(0, 0, 0, 0.32);
@@ -384,10 +396,9 @@
   --sk-fill: var(--sk-paper);
 }
 
-.sk-input-shell:focus-within {
-  --sk-bw: 1.5px;
-  border-color: var(--sk-accent-ink) !important;
-  box-shadow: 0 0 0 3px rgba(179, 134, 44, 0.12);
+.sk-input-shell:focus-within::before {
+  --sk-bw: 1.6px;
+  border-color: var(--sk-accent-ink);
 }
 
 /* --------------------------------------------------------------------------- */
