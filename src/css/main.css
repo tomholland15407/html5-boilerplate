@@ -267,14 +267,18 @@ header a,
   background-color: inherit !important;
 }
 
-/* ================================================================= */
-/* PHÂN HỆ "GIẤY CẮT TAY" (HAND-DRAWN / PAPER-CUT SHAPE SYSTEM)       */
-/* Thay thế bo góc đối xứng cứng nhắc bằng đường cong hữu cơ lệch nhịp */
-/* ================================================================= */
+
+/* ================================================================================= */
+/* PHÂN HỆ "GIẤY CẮT TAY" — HAND-DRAWN / PAPER-CUT SHAPE ENGINE                       */
+/*                                                                                    */
+/* Nguyên lý: phần tử thật bị làm trong suốt (nền + viền), toàn bộ hình khối được vẽ  */
+/* lại trên hai lớp giả ::before / ::after rồi đẩy qua bộ lọc feTurbulence +          */
+/* feDisplacementMap. Nhờ vậy đường bao trở nên gợn sóng thật sự như nét bút tay,     */
+/* trong khi chữ nằm ở lớp nội dung nên vẫn sắc nét tuyệt đối.                        */
+/* ================================================================================= */
 
 :root {
-  /* Bộ bán kính bất đối xứng: trình duyệt tự co giãn tỉ lệ các giá trị lớn,
-     tạo ra đường cong mềm không lặp lại giống nét bút vẽ tay */
+  /* --- Bán kính bất đối xứng (khung nền trước khi bị bộ lọc làm gợn sóng) --- */
   --sk-r-a: 255px 15px 225px 15px / 15px 225px 15px 255px;
   --sk-r-b: 15px 225px 15px 255px / 225px 15px 255px 15px;
   --sk-r-c: 195px 22px 240px 18px / 20px 210px 16px 230px;
@@ -284,130 +288,232 @@ header a,
   --sk-r-tag: 60px 6px 48px 8px / 8px 44px 6px 56px;
   --sk-r-tiny: 22px 5px 18px 6px / 6px 16px 5px 20px;
 
-  /* Sắc mực cho nét viền phác thảo phụ */
-  --sk-ink: rgba(122, 82, 38, 0.42);
-  --sk-ink-strong: rgba(101, 63, 24, 0.6);
+  /* --- Bảng màu giấy & mực --- */
+  --sk-paper: #fffdf5;
+  --sk-paper-2: #fdf6e4;
+  --sk-ink: rgba(88, 56, 20, 0.72);
+  --sk-ink-soft: rgba(122, 82, 38, 0.34);
+
+  --sk-brand: linear-gradient(180deg, #b8712f 0%, #8a4a1c 100%);
+  --sk-brand-2: linear-gradient(180deg, #b8560f 0%, #8a3b12 100%);
+  --sk-brand-ink: rgba(74, 38, 8, 0.85);
+
+  --sk-amber-fill: #fffbf4;
+  --sk-amber-ink: rgba(178, 94, 0, 0.62);
+  --sk-lemon-fill: #fefce8;
+  --sk-lemon-ink: rgba(133, 77, 14, 0.55);
+  --sk-accent-fill: rgba(179, 134, 44, 0.14);
+  --sk-accent-ink: rgba(150, 108, 28, 0.8);
 }
 
 .dark {
-  --sk-ink: rgba(201, 162, 39, 0.3);
-  --sk-ink-strong: rgba(201, 162, 39, 0.45);
+  --sk-paper: #201810;
+  --sk-paper-2: #17110a;
+  --sk-ink: rgba(201, 162, 39, 0.62);
+  --sk-ink-soft: rgba(201, 162, 39, 0.28);
+
+  --sk-brand-ink: rgba(255, 220, 150, 0.5);
+
+  --sk-amber-fill: #2a1e10;
+  --sk-amber-ink: rgba(233, 165, 74, 0.6);
+  --sk-lemon-fill: #2b2410;
+  --sk-lemon-ink: rgba(240, 208, 110, 0.55);
+  --sk-accent-fill: rgba(201, 162, 39, 0.14);
+  --sk-accent-ink: rgba(201, 162, 39, 0.7);
 }
 
-/* -------- Bộ hình dạng cơ bản -------- */
-.sk-bubble    { border-radius: var(--sk-r-a) !important; }
-.sk-bubble-user { border-radius: var(--sk-r-b) !important; }
-.sk-card      { border-radius: var(--sk-r-c) !important; }
-.sk-card-alt  { border-radius: var(--sk-r-d) !important; }
-.sk-panel     { border-radius: var(--sk-r-soft) !important; }
-.sk-pill      { border-radius: var(--sk-r-pill) !important; }
-.sk-chip      { border-radius: var(--sk-r-tag) !important; }
-.sk-badge     { border-radius: var(--sk-r-tiny) !important; }
-.sk-avatar    { border-radius: 62% 38% 55% 45% / 45% 52% 48% 55% !important; }
-
-/* -------- Nét mực phác thảo thứ hai (double-stroke sketch outline) --------
-   Vẽ trên lớp giả để không làm nhoè chữ khi áp bộ lọc nhiễu SVG.          */
+/* --------------------------------------------------------------------------- */
+/* 1. LỚP ĐỘNG CƠ: .sk-edge — bắt buộc có trên mọi phần tử muốn viền vẽ tay     */
+/* --------------------------------------------------------------------------- */
 .sk-edge {
   position: relative;
+  isolation: isolate;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
+/* Lớp thân: nền giấy + nét mực chính, được bộ lọc bẻ cong thành đường gợn sóng */
+.sk-edge::before {
+  content: "";
+  position: absolute;
+  inset: var(--sk-i, -3px);
+  z-index: -1;
+  pointer-events: none;
+  background: var(--sk-fill, var(--sk-paper));
+  border: var(--sk-bw, 2px) solid var(--sk-stroke, var(--sk-ink));
+  border-radius: var(--sk-r, var(--sk-r-a));
+  filter: url(#sk-rough);
+}
+
+/* Lớp nét mực thứ hai: hơi lệch, nhiễu khác hạt — tạo cảm giác vẽ đi vẽ lại */
 .sk-edge::after {
   content: "";
   position: absolute;
-  inset: -3px;
+  inset: calc(var(--sk-i, -3px) - 3px);
+  z-index: -1;
   pointer-events: none;
-  border: 1.2px solid var(--sk-ink);
-  border-radius: inherit;
-  filter: url(#sketch-wobble);
+  border: 1.4px solid var(--sk-stroke2, var(--sk-ink-soft));
+  border-radius: var(--sk-r2, var(--sk-r-c));
+  filter: url(#sk-rough-2);
   opacity: 0.85;
-  z-index: 1;
 }
 
-/* Nét đậm hơn cho các khối chủ đạo (bong bóng chat, ô nhập liệu) */
-.sk-edge-strong::after {
-  border-color: var(--sk-ink-strong);
-  border-width: 1.4px;
-  inset: -4px;
+/* Biến thể cường độ gợn sóng */
+.sk-edge-strong::before { --sk-bw: 2.4px; filter: url(#sk-rough-hard); }
+.sk-edge-strong::after  { opacity: 1; }
+.sk-edge-soft::before   { --sk-bw: 1.6px; filter: url(#sk-rough-fine); }
+.sk-edge-soft::after    { opacity: 0.55; border-width: 1.1px; }
+.sk-edge-alt::before    { filter: url(#sk-rough-2); }
+.sk-edge-alt::after     { filter: url(#sk-rough); }
+
+/* Chỉ vẽ một nét (bỏ nét chồng) cho các thẻ rất nhỏ */
+.sk-edge-single::after { display: none; }
+
+/* Phản hồi khi rê chuột: đổi sắc độ giấy thay cho hover:bg-* của Tailwind */
+.sk-edge:hover::before        { filter: url(#sk-rough) brightness(0.95); }
+.sk-edge-strong:hover::before { filter: url(#sk-rough-hard) brightness(0.96); }
+.sk-edge-soft:hover::before   { filter: url(#sk-rough-fine) brightness(0.95); }
+.sk-edge-alt:hover::before    { filter: url(#sk-rough-2) brightness(0.95); }
+.dark .sk-edge:hover::before        { filter: url(#sk-rough) brightness(1.35); }
+.dark .sk-edge-strong:hover::before { filter: url(#sk-rough-hard) brightness(1.3); }
+.dark .sk-edge-soft:hover::before   { filter: url(#sk-rough-fine) brightness(1.35); }
+.dark .sk-edge-alt:hover::before    { filter: url(#sk-rough-2) brightness(1.35); }
+
+/* --------------------------------------------------------------------------- */
+/* 2. HÌNH DẠNG: chỉ khai báo bán kính nền cho động cơ ở trên                   */
+/* --------------------------------------------------------------------------- */
+.sk-bubble      { --sk-r: var(--sk-r-a);    --sk-r2: var(--sk-r-c); }
+.sk-bubble-user { --sk-r: var(--sk-r-b);    --sk-r2: var(--sk-r-d); }
+.sk-card        { --sk-r: var(--sk-r-c);    --sk-r2: var(--sk-r-a); }
+.sk-card-alt    { --sk-r: var(--sk-r-d);    --sk-r2: var(--sk-r-b); }
+.sk-panel       { --sk-r: var(--sk-r-soft); --sk-r2: var(--sk-r-tag); }
+.sk-pill        { --sk-r: var(--sk-r-pill); --sk-r2: var(--sk-r-tag); }
+.sk-chip        { --sk-r: var(--sk-r-tag);  --sk-r2: var(--sk-r-pill); }
+.sk-badge       { --sk-r: var(--sk-r-tiny); --sk-r2: var(--sk-r-tag); }
+
+/* Ảnh đại diện: cắt trực tiếp trên phần tử vì bên trong có <img> bị overflow kẹp */
+.sk-avatar {
+  border-radius: 62% 38% 55% 45% / 45% 52% 48% 55% !important;
+}
+.sk-avatar-alt {
+  border-radius: 40% 60% 47% 53% / 55% 42% 58% 45% !important;
 }
 
-/* Nét mảnh, lệch nhịp cho các thẻ nhỏ */
-.sk-edge-soft::after {
-  inset: -2px;
-  border-width: 1px;
-  opacity: 0.6;
+/* --------------------------------------------------------------------------- */
+/* 3. CHẤT LIỆU: màu giấy / mực cho từng nhóm thành phần                        */
+/* --------------------------------------------------------------------------- */
+.sk-fill-brand   { --sk-fill: var(--sk-brand);   --sk-stroke: var(--sk-brand-ink); --sk-stroke2: var(--sk-brand-ink); }
+.sk-fill-brand-2 { --sk-fill: var(--sk-brand-2); --sk-stroke: var(--sk-brand-ink); --sk-stroke2: var(--sk-brand-ink); }
+.sk-fill-amber   { --sk-fill: var(--sk-amber-fill); --sk-stroke: var(--sk-amber-ink); --sk-stroke2: var(--sk-amber-ink); }
+.sk-fill-lemon   { --sk-fill: var(--sk-lemon-fill); --sk-stroke: var(--sk-lemon-ink); --sk-stroke2: var(--sk-lemon-ink); }
+.sk-fill-accent  { --sk-fill: var(--sk-accent-fill); --sk-stroke: var(--sk-accent-ink); --sk-stroke2: var(--sk-accent-ink); }
+.sk-fill-paper-2 { --sk-fill: var(--sk-paper-2); }
+.sk-fill-none    { --sk-fill: transparent; }
+
+/* Khung nét đứt kiểu phác thảo dở dang */
+.sk-dash::before { border-style: dashed; }
+.sk-dash::after  { display: none; }
+
+/* Bóng đổ giấy: đặt trên lớp giả nên bóng cũng gợn sóng theo đường bao */
+.sk-lift::before {
+  box-shadow:
+    0 2px 3px rgba(58, 42, 24, 0.09),
+    0 10px 22px rgba(58, 42, 24, 0.11);
+}
+.dark .sk-lift::before {
+  box-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.4),
+    0 10px 22px rgba(0, 0, 0, 0.45);
 }
 
-/* Đảo chiều nhiễu cho phần tử xen kẽ để không bị lặp khuôn */
-.sk-edge-alt::after {
-  filter: url(#sketch-wobble-2);
+/* --------------------------------------------------------------------------- */
+/* 4. ĐƯỜNG KẺ VẼ TAY thay cho border-b / border-r hình học                     */
+/* --------------------------------------------------------------------------- */
+.sk-rule,
+.sk-rule-top,
+.sk-rule-y {
+  position: relative;
+  border-color: transparent !important;
 }
 
-/* -------- Nhịp lệch nhẹ mô phỏng giấy cắt tay dán không thẳng hàng --------
-   Dùng biến --sk-tilt để keyframes history-item-appear không ghi đè góc xoay */
-#chat-history-list > *:nth-child(odd)  { --sk-tilt: -0.45deg; }
-#chat-history-list > *:nth-child(even) { --sk-tilt: 0.4deg; }
+.sk-rule::after,
+.sk-rule-top::after,
+.sk-rule-y::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  background: var(--sk-ink);
+  filter: url(#sk-rough-line);
+  z-index: 5;
+}
+
+.sk-rule::after     { left: -1%; right: -1%; bottom: -2px; height: 3px; }
+.sk-rule-top::after { left: -1%; right: -1%; top: -2px;    height: 3px; }
+.sk-rule-y::after   { top: -1%;  bottom: -1%; right: -2px; width: 3px; }
+
+/* Nét kẻ chồng thứ hai, mảnh và mờ hơn — dấu vết của bàn tay đưa lại lần nữa.
+   Dùng box-shadow (bị bộ lọc bẻ cong cùng nét chính) thay vì ::before, vì
+   .paper-panel-texture đã chiếm lớp ::before của header và sidebar. */
+.sk-rule::after     { box-shadow: 0 5px 0 -1px var(--sk-ink-soft); }
+.sk-rule-top::after { box-shadow: 0 -5px 0 -1px var(--sk-ink-soft); }
+.sk-rule-y::after   { box-shadow: -5px 0 0 -1px var(--sk-ink-soft); }
+
+/* --------------------------------------------------------------------------- */
+/* 5. Ô NHẬP LIỆU: input trần, vỏ form gánh toàn bộ hình khối                   */
+/* --------------------------------------------------------------------------- */
+.sk-input {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.sk-input-shell {
+  --sk-r: var(--sk-r-c);
+  --sk-r2: var(--sk-r-d);
+  --sk-fill: var(--sk-paper);
+  --sk-i: -4px;
+}
+
+/* Khi con trỏ vào ô nhập: nét mực đậm lên, đường bao đổi nhịp gợn sóng */
+.sk-input-shell:focus-within::before {
+  --sk-bw: 2.8px;
+  --sk-stroke: var(--sk-accent-ink);
+  filter: url(#sk-rough-2);
+}
+.sk-input-shell:focus-within::after {
+  --sk-stroke2: var(--sk-accent-ink);
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------- */
+/* 6. NHỊP LỆCH: giấy cắt dán không bao giờ thẳng hàng                          */
+/* --------------------------------------------------------------------------- */
+#chat-history-list > *:nth-child(odd)  { --sk-tilt: -0.7deg; }
+#chat-history-list > *:nth-child(even) { --sk-tilt: 0.6deg; }
 #chat-history-list > *                 { transform: rotate(var(--sk-tilt, 0deg)); }
 #chat-history-list > *:hover           { --sk-tilt: 0deg; }
 
-.sk-tilt-a { transform: rotate(-0.5deg); }
-.sk-tilt-b { transform: rotate(0.55deg); }
+.sk-tilt-a { transform: rotate(-0.8deg); }
+.sk-tilt-b { transform: rotate(0.9deg); }
 
-/* Xoay luân phiên cho dải thẻ danh mục & gợi ý nhanh */
-.sk-row > *:nth-child(3n+1) { border-radius: var(--sk-r-tag) !important; }
-.sk-row > *:nth-child(3n+2) { border-radius: var(--sk-r-tiny) !important; }
-.sk-row > *:nth-child(3n+3) { border-radius: var(--sk-r-pill) !important; }
+/* Mỗi thẻ trong một dải nhận một hình dạng khác nhau để không lộ khuôn lặp */
+.sk-row > *:nth-child(3n+1) { --sk-r: var(--sk-r-tag);  --sk-r2: var(--sk-r-pill); }
+.sk-row > *:nth-child(3n+2) { --sk-r: var(--sk-r-tiny); --sk-r2: var(--sk-r-tag);  transform: rotate(0.7deg); }
+.sk-row > *:nth-child(3n+3) { --sk-r: var(--sk-r-pill); --sk-r2: var(--sk-r-soft); transform: rotate(-0.6deg); }
 
-/* -------- Ô nhập liệu: viền hữu cơ + nét mực bao ngoài -------- */
-.sk-input {
-  border-radius: var(--sk-r-c) !important;
-}
-
-.sk-input:focus {
-  border-radius: var(--sk-r-d) !important;
-}
-
-/* Bọc ngoài form nhập liệu: nét vẽ tay bao quanh cả thanh gửi tin */
-.sk-input-shell::after {
-  inset: -5px -6px;
-  border-radius: var(--sk-r-c);
-}
-
-/* -------- Bóng đổ ấm kiểu giấy cắt dán, thay bóng hình học đều -------- */
-.sk-paper-shadow {
-  box-shadow:
-    0 2px 3px rgba(58, 42, 24, 0.07),
-    0 8px 20px rgba(58, 42, 24, 0.09);
-}
-
-.dark .sk-paper-shadow {
-  box-shadow:
-    0 2px 3px rgba(0, 0, 0, 0.35),
-    0 8px 20px rgba(0, 0, 0, 0.4);
-}
-
-/* Bong bóng chat kế thừa bán kính hữu cơ thay cho .rounded-2xl cũ */
-.message-fade-in .sk-bubble,
-.message-fade-in .sk-bubble-user {
-  box-shadow:
-    0 1px 2px rgba(58, 42, 24, 0.08),
-    0 6px 18px rgba(58, 42, 24, 0.1);
-}
-
-.dark .message-fade-in .sk-bubble,
-.dark .message-fade-in .sk-bubble-user {
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 6px 18px rgba(0, 0, 0, 0.38);
-}
-
-/* Vô hiệu hoá quy tắc bóng cũ gắn với lớp .rounded-2xl.rounded-tl-none */
+/* --------------------------------------------------------------------------- */
+/* 7. Trung hoà các quy tắc cũ gắn với lớp bo góc hình học đã bị gỡ bỏ          */
+/* --------------------------------------------------------------------------- */
 .message-fade-in .rounded-2xl.rounded-tl-none {
   box-shadow: none;
 }
 
-/* -------- Giảm hiệu ứng cho người dùng ưu tiên chuyển động tối thiểu -------- */
 @media (prefers-reduced-motion: reduce) {
   #chat-history-list > *,
+  .sk-row > *,
   .sk-tilt-a,
   .sk-tilt-b {
     transform: none !important;

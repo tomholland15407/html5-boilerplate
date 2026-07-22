@@ -73,26 +73,47 @@
   <!-- ========================================================================= -->
   <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
     <defs>
-      <filter id="sketch-wobble" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
-        <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="4" seed="7" result="noise" />
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4.5" xChannelSelector="R" yChannelSelector="G" />
+      <!-- Nét chính: sóng dài, biên độ lớn — dáng bút chì đưa tay -->
+      <filter id="sk-rough" x="-20%" y="-35%" width="140%" height="170%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.011 0.021" numOctaves="2" seed="11" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" />
       </filter>
-      <filter id="sketch-wobble-2" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
-        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="23" result="noise" />
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.2" xChannelSelector="R" yChannelSelector="G" />
+
+      <!-- Nét chồng: hạt nhiễu khác, lệch pha so với nét chính -->
+      <filter id="sk-rough-2" x="-20%" y="-35%" width="140%" height="170%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.014 0.028" numOctaves="2" seed="47" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="7.5" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+
+      <!-- Nét đậm cho khối chủ đạo: gợn sóng mạnh nhất -->
+      <filter id="sk-rough-hard" x="-22%" y="-40%" width="144%" height="180%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.009 0.019" numOctaves="2" seed="3" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="12" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+
+      <!-- Nét mảnh cho thẻ nhỏ: biên độ vừa đủ để không nuốt mất chữ -->
+      <filter id="sk-rough-fine" x="-25%" y="-45%" width="150%" height="190%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.02 0.045" numOctaves="2" seed="29" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+
+      <!-- Đường kẻ ngang/dọc vẽ tay thay cho border thẳng tắp -->
+      <filter id="sk-rough-line" x="-5%" y="-600%" width="110%" height="1300%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.006 0.06" numOctaves="2" seed="17" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G" />
       </filter>
     </defs>
   </svg>
 
   <!-- PHẦN ĐẦU TRANG (HEADER BAR) -->
-  <header class="paper-panel-texture bg-paper-100 dark:bg-brand-panel border-b border-paper-400 dark:border-brand-border px-6 py-4 flex justify-between items-center shrink-0 transition-colors duration-300 shadow-sm dark:shadow-none z-10 relative">
+  <header class="sk-rule paper-panel-texture bg-paper-100 dark:bg-brand-panel border-b border-paper-400 dark:border-brand-border px-6 py-4 flex justify-between items-center shrink-0 transition-colors duration-300 shadow-sm dark:shadow-none z-10 relative">
     <div class="flex items-center space-x-3 relative z-10">
       <!-- MASCOT THAY THẾ KHỐI CẦU VỚI HIỆU ỨNG FLOATING CHUYỂN ĐỘNG -->
       <img id="header-mascot" src="img/mascot.png" alt="Mascot" class="w-11 h-11 object-contain shrink-0 transition-transform duration-500 hover:scale-105 animate-glowing-orb" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       <div>
         <h1 class="font-serif italic font-bold text-xl md:text-2xl tracking-wide text-paper-ink dark:text-[#f1e7ce] flex items-center transition-colors duration-300">
           Trợ Lý Mua Sắm Thông Thái
-          <span class="sk-badge sk-edge sk-edge-soft sk-tilt-b ml-2.5 px-2.5 py-0.5 text-[11px] not-italic font-sans bg-brand-electric/10 text-brand-electric border border-brand-electric/25 font-semibold tracking-wider">v1.5-Customer</span>
+          <span class="sk-badge sk-edge sk-edge-soft sk-fill-accent sk-tilt-b ml-2.5 px-2.5 py-0.5 text-[11px] not-italic font-sans bg-brand-electric/10 text-brand-electric border border-brand-electric/25 font-semibold tracking-wider">v1.5-Customer</span>
         </h1>
         <p class="text-xs text-paper-inksoft dark:text-[#b8a67e] transition-colors duration-300">Tư vấn chọn sản phẩm Điện máy &amp; Công nghệ tối ưu theo nhu cầu thực tế</p>
       </div>
@@ -106,7 +127,7 @@
       </span>
       <span class="text-paper-400 dark:text-brand-border hidden sm:inline">|</span>
 
-      <button id="theme-toggle-btn" class="sk-chip sk-edge sk-edge-soft flex items-center space-x-2 bg-paper-50 dark:bg-brand-dark/80 hover:bg-paper-200 dark:hover:bg-brand-border px-3.5 py-2 border border-paper-400 dark:border-brand-border text-paper-ink dark:text-slate-300 transition-all duration-300 shadow-sm active:scale-95" title="Chuyển đổi giao diện Sáng/Tối">
+      <button id="theme-toggle-btn" class="sk-chip sk-edge sk-edge-soft sk-lift flex items-center space-x-2 bg-paper-50 dark:bg-brand-dark/80 hover:bg-paper-200 dark:hover:bg-brand-border px-3.5 py-2 border border-paper-400 dark:border-brand-border text-paper-ink dark:text-slate-300 transition-all duration-300 shadow-sm active:scale-95" title="Chuyển đổi giao diện Sáng/Tối">
         <span id="theme-icon-container" class="flex items-center">
           <i class="fa-solid fa-moon text-[#4a3a22] dark:text-brand-gold text-sm"></i>
         </span>
@@ -119,24 +140,24 @@
   <main class="flex-1 flex overflow-hidden relative">
 
     <!-- BÊN TRÁI: DANH SÁCH LỊCH SỬ TRÒ CHUYỆN (COLLAPSIBLE SIDEBAR) -->
-    <aside id="sidebar-panel" class="paper-panel-texture w-80 bg-paper-100 dark:bg-brand-panel border-r border-paper-400 dark:border-brand-border p-5 flex flex-col justify-between shrink-0 transition-colors duration-300 sidebar-transition relative z-20">
+    <aside id="sidebar-panel" class="sk-rule-y paper-panel-texture w-80 bg-paper-100 dark:bg-brand-panel border-r border-paper-400 dark:border-brand-border p-5 flex flex-col justify-between shrink-0 transition-colors duration-300 sidebar-transition relative z-20">
 
       <!-- Vỏ bọc kiểm soát cuộn nội dung khi thu nhỏ chiều rộng -->
       <div class="space-y-5 w-72 flex flex-col flex-1 overflow-hidden relative z-10">
 
         <!-- Header Sidebar chứa tiêu đề thân thiện và nút thu gọn -->
-        <div class="flex items-center justify-between border-b border-paper-300 dark:border-brand-border/60 pb-3 shrink-0">
+        <div class="sk-rule flex items-center justify-between border-b border-paper-300 dark:border-brand-border/60 pb-3 shrink-0">
           <div class="flex items-center space-x-2 text-paper-ink dark:text-white">
             <i class="fa-solid fa-clock-rotate-left text-brand-electric"></i>
             <h2 class="text-sm font-bold tracking-wide">Lịch sử tư vấn</h2>
           </div>
-          <button id="btn-close-sidebar" class="sk-badge text-paper-500 hover:text-brand-coral dark:hover:text-white p-1.5 hover:bg-paper-200 dark:hover:bg-brand-dark/60 transition-all" title="Thu gọn thanh lịch sử">
+          <button id="btn-close-sidebar" class="sk-badge sk-edge sk-edge-soft sk-edge-single sk-fill-none text-paper-500 hover:text-brand-coral dark:hover:text-white p-1.5 hover:bg-paper-200 dark:hover:bg-brand-dark/60 transition-all" title="Thu gọn thanh lịch sử">
             <i class="fa-solid fa-angles-left"></i>
           </button>
         </div>
 
         <!-- NÚT GRADIENT CAO CẤP TẠO ĐIỂM NHẤN HOÀN HẢO CHO SIDEBAR -->
-        <button onclick="window.resetConversation()" class="sk-panel sk-edge sk-edge-alt w-full bg-gradient-to-b from-[#b8712f] to-[#8a4a1c] hover:from-[#c9862f] hover:to-[#9c5a22] text-[#fbf5e6] font-bold text-xs py-3.5 px-4 flex items-center justify-center space-x-2 transition-all duration-200 shadow-[0_4px_12px_rgba(138,74,28,0.3)] hover:shadow-[0_6px_16px_rgba(138,74,28,0.4)] shrink-0 active:scale-[0.97]">
+        <button onclick="window.resetConversation()" class="sk-panel sk-edge sk-edge-strong sk-fill-brand sk-lift w-full bg-gradient-to-b from-[#b8712f] to-[#8a4a1c] hover:from-[#c9862f] hover:to-[#9c5a22] text-[#fbf5e6] font-bold text-xs py-3.5 px-4 flex items-center justify-center space-x-2 transition-all duration-200 shadow-[0_4px_12px_rgba(138,74,28,0.3)] hover:shadow-[0_6px_16px_rgba(138,74,28,0.4)] shrink-0 active:scale-[0.97]">
           <i class="fa-solid fa-plus text-sm"></i>
           <span class="tracking-wide">Bắt đầu tư vấn mới</span>
         </button>
@@ -145,7 +166,7 @@
         <div class="flex-1 overflow-y-auto pr-1">
           <div id="chat-history-list" class="space-y-2">
             <!-- Được render động từ app.js -->
-            <div id="history-empty-state" class="sk-card text-center py-8 px-4 border border-dashed border-paper-400 dark:border-brand-border/40">
+            <div id="history-empty-state" class="sk-card sk-edge sk-edge-soft sk-dash sk-fill-none text-center py-8 px-4 border border-dashed border-paper-400 dark:border-brand-border/40">
               <i class="fa-regular fa-comments text-paper-300 dark:text-slate-600 text-2xl mb-2 block"></i>
               <p class="text-[11px] text-paper-500 dark:text-slate-500 italic">Chưa có cuộc trò chuyện cũ nào tại phiên này.</p>
             </div>
@@ -204,9 +225,9 @@
       <!-- ========================================================================= -->
 
       <!-- Banner Thông báo + Nút Mở rộng Sidebar khi bị thu gọn -->
-      <div class="bg-paper-100/80 dark:bg-brand-panel/40 border-b border-paper-400 dark:border-brand-border px-4 py-2 flex justify-between items-center text-xs text-paper-inksoft dark:text-slate-400 shrink-0 transition-colors duration-300 min-h-[45px] relative z-10">
+      <div class="sk-rule bg-paper-100/80 dark:bg-brand-panel/40 border-b border-paper-400 dark:border-brand-border px-4 py-2 flex justify-between items-center text-xs text-paper-inksoft dark:text-slate-400 shrink-0 transition-colors duration-300 min-h-[45px] relative z-10">
         <div class="flex items-center space-x-3">
-          <button id="btn-open-sidebar" class="sk-chip sk-edge sk-edge-soft hidden flex items-center space-x-1 px-3.5 py-1.5 bg-paper-50 border border-paper-400 text-xs text-[#8a4a1c] font-semibold shadow-sm hover:bg-paper-200 transition-all dark:bg-brand-panel dark:border-brand-border dark:text-brand-electric">
+          <button id="btn-open-sidebar" class="sk-chip sk-edge sk-edge-soft sk-lift hidden flex items-center space-x-1 px-3.5 py-1.5 bg-paper-50 border border-paper-400 text-xs text-[#8a4a1c] font-semibold shadow-sm hover:bg-paper-200 transition-all dark:bg-brand-panel dark:border-brand-border dark:text-brand-electric">
             <i class="fa-solid fa-angles-right mr-1"></i> Lịch sử
           </button>
           <div class="flex items-center space-x-2">
@@ -214,7 +235,7 @@
             <span class="truncate max-w-[250px] sm:max-w-none">Mẹo: Nhập nhu cầu mua sắm bằng tiếng Việt tự nhiên để nhận tư vấn tốt nhất.</span>
           </div>
         </div>
-        <button onclick="window.resetConversation()" class="sk-chip sk-edge sk-edge-soft sk-tilt-a hover:text-paper-ink dark:hover:text-white transition-colors flex items-center space-x-1 text-[11px] bg-paper-50 dark:bg-brand-panel hover:bg-paper-200 dark:hover:bg-brand-border px-3 py-1 border border-paper-400 dark:border-brand-border/40 shadow-sm shrink-0">
+        <button onclick="window.resetConversation()" class="sk-chip sk-edge sk-edge-soft sk-lift sk-tilt-a hover:text-paper-ink dark:hover:text-white transition-colors flex items-center space-x-1 text-[11px] bg-paper-50 dark:bg-brand-panel hover:bg-paper-200 dark:hover:bg-brand-border px-3 py-1 border border-paper-400 dark:border-brand-border/40 shadow-sm shrink-0">
           <i class="fa-solid fa-rotate-left"></i>
           <span class="hidden sm:inline">Làm mới cuộc trò chuyện</span>
         </button>
@@ -230,7 +251,7 @@
           </div>
 
           <div class="space-y-1.5 max-w-[85%] w-full sm:w-auto">
-            <div class="sk-bubble sk-edge sk-edge-strong bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 px-5 py-3.5 border border-paper-300/70 dark:border-[#3a2f1c]/50 transition-all">
+            <div class="sk-bubble sk-edge sk-edge-strong sk-lift bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 px-5 py-3.5 border border-paper-300/70 dark:border-[#3a2f1c]/50 transition-all">
               <p class="text-[13.5px] leading-relaxed text-paper-ink dark:text-slate-100">
                 Dạ, em xin chào anh/chị ạ! Em là <strong class="font-serif italic text-[15px] text-[#8a4a1c] dark:text-brand-electric font-bold">Trợ lý Mua sắm Thông thái</strong> đồng hành cùng anh/chị tại hệ thống Điện Máy Xanh.
               </p>
@@ -243,9 +264,9 @@
 
               <!-- CÁC THẺ DANH MỤC ĐƯỢC GIỮ NGUYÊN MÀU CAM ẤM -->
               <div class="sk-row mt-4 flex gap-2.5 flex-wrap">
-                <span onclick="window.fillQuickPrompt('Tư vấn mua máy lạnh')" class="sk-edge sk-edge-soft px-3.5 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Máy lạnh</span>
-                <span onclick="window.fillQuickPrompt('Tư vấn mua tủ lạnh')" class="sk-edge sk-edge-soft sk-edge-alt px-3.5 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Tủ lạnh</span>
-                <span onclick="window.fillQuickPrompt('Tư vấn mua laptop')" class="sk-edge sk-edge-soft px-3.5 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Laptop</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua máy lạnh')" class="sk-edge sk-edge-soft sk-edge-single sk-fill-amber px-3.5 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Máy lạnh</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua tủ lạnh')" class="sk-edge sk-edge-soft sk-edge-alt sk-edge-single sk-fill-amber px-3.5 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Tủ lạnh</span>
+                <span onclick="window.fillQuickPrompt('Tư vấn mua laptop')" class="sk-edge sk-edge-soft sk-edge-single sk-fill-amber px-3.5 py-1 bg-[#fffbf4] hover:bg-[#fff3db] text-[#b25e00] text-xs font-semibold border border-[#f5d0a1] cursor-pointer transition-all duration-150 shadow-sm active:scale-95">Laptop</span>
               </div>
             </div>
             <span class="text-[10px] text-paper-500 font-medium pl-1.5 block">Vừa mới gửi</span>
@@ -255,32 +276,32 @@
       </div>
 
       <!-- Thẻ Gợi ý Kịch bản nhanh (Quick Prompts) -->
-      <div class="px-6 py-3 bg-paper-100/60 dark:bg-brand-panel/30 border-t border-paper-400 dark:border-brand-border/40 shrink-0 transition-colors duration-300 relative z-10">
+      <div class="sk-rule-top px-6 py-3 bg-paper-100/60 dark:bg-brand-panel/30 border-t border-paper-400 dark:border-brand-border/40 shrink-0 transition-colors duration-300 relative z-10">
         <p class="text-[11px] text-paper-inksoft dark:text-slate-500 mb-2 flex items-center font-semibold uppercase tracking-wider">
           <i class="fa-regular fa-lightbulb text-brand-gold mr-1.5"></i> Gợi ý nhu cầu tìm kiếm nhanh:
         </p>
         <div class="sk-row flex flex-wrap gap-2.5">
-          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ cho phòng ngủ')" class="sk-edge sk-edge-soft text-xs bg-[#fefce8] hover:bg-[#fef9c3] border border-[#fef08a] text-[#854d0e] font-medium px-4 py-1.5 transition-all duration-150 hover:scale-[1.03] active:scale-95 shadow-sm">
+          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ cho phòng ngủ')" class="sk-edge sk-edge-soft sk-fill-lemon text-xs bg-[#fefce8] hover:bg-[#fef9c3] border border-[#fef08a] text-[#854d0e] font-medium px-4 py-1.5 transition-all duration-150 hover:scale-[1.03] active:scale-95 shadow-sm">
             "Mua đh pana dưới 15 củ"
           </button>
-          <button onclick="window.fillQuickPrompt('Tìm tủ lạnh tầm 10tr cho nhà 4 người')" class="sk-edge sk-edge-soft sk-edge-alt text-xs bg-[#fefce8] hover:bg-[#fef9c3] border border-[#fef08a] text-[#854d0e] font-medium px-4 py-1.5 transition-all duration-150 hover:scale-[1.03] active:scale-95 shadow-sm">
+          <button onclick="window.fillQuickPrompt('Tìm tủ lạnh tầm 10tr cho nhà 4 người')" class="sk-edge sk-edge-soft sk-edge-alt sk-fill-lemon text-xs bg-[#fefce8] hover:bg-[#fef9c3] border border-[#fef08a] text-[#854d0e] font-medium px-4 py-1.5 transition-all duration-150 hover:scale-[1.03] active:scale-95 shadow-sm">
             "Tủ lạnh tầm 10tr cho 4 người"
           </button>
-          <button onclick="window.fillQuickPrompt('Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học')" class="sk-edge sk-edge-soft text-xs bg-[#fefce8] hover:bg-[#fef9c3] border border-[#fef08a] text-[#854d0e] font-medium px-4 py-1.5 transition-all duration-150 hover:scale-[1.03] active:scale-95 shadow-sm">
+          <button onclick="window.fillQuickPrompt('Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học')" class="sk-edge sk-edge-soft sk-fill-lemon text-xs bg-[#fefce8] hover:bg-[#fef9c3] border border-[#fef08a] text-[#854d0e] font-medium px-4 py-1.5 transition-all duration-150 hover:scale-[1.03] active:scale-95 shadow-sm">
             "Laptop mỏng nhẹ ~15tr"
           </button>
         </div>
       </div>
 
       <!-- Ô NHẬP LIỆU GỬI TIN NHẮN (INPUT BAR) -->
-      <footer class="p-4 bg-paper-100 dark:bg-brand-panel border-t border-paper-400 dark:border-brand-border shrink-0 transition-colors duration-300 shadow-lg dark:shadow-none relative z-10">
+      <footer class="sk-rule-top p-4 bg-paper-100 dark:bg-brand-panel border-t border-paper-400 dark:border-brand-border shrink-0 transition-colors duration-300 shadow-lg dark:shadow-none relative z-10">
         <form id="chat-form" class="sk-edge sk-edge-strong sk-input-shell relative flex items-center">
           <input type="text" id="user-input" placeholder="Nhập câu hỏi bằng tiếng Việt... (Ví dụ: 'Cần tìm tủ lạnh tầm 8 triệu cho gia đình 3 người tiết kiệm điện')"
             class="sk-input w-full bg-paper-50 dark:bg-brand-dark border border-paper-400 dark:border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-paper-ink dark:text-slate-100 placeholder-paper-500 dark:placeholder-slate-500 text-sm pl-5 pr-28 py-4 focus:outline-none transition-all duration-200 shadow-inner"
             autocomplete="off" required>
 
           <div class="absolute right-3 flex items-center space-x-2 z-[2]">
-            <button type="submit" class="sk-pill sk-edge sk-edge-alt bg-gradient-to-b from-[#b8560f] to-[#8a3b12] hover:from-[#d4700f] hover:to-[#a8481b] text-[#fbf5e6] font-bold text-sm px-6 py-2 flex items-center space-x-2 transition-all duration-150 shadow-[0_4px_12px_rgba(184,86,15,0.3)] hover:shadow-[0_6px_16px_rgba(184,86,15,0.45)] active:scale-95">
+            <button type="submit" class="sk-pill sk-edge sk-edge-strong sk-fill-brand-2 sk-lift bg-gradient-to-b from-[#b8560f] to-[#8a3b12] hover:from-[#d4700f] hover:to-[#a8481b] text-[#fbf5e6] font-bold text-sm px-6 py-2 flex items-center space-x-2 transition-all duration-150 shadow-[0_4px_12px_rgba(184,86,15,0.3)] hover:shadow-[0_6px_16px_rgba(184,86,15,0.45)] active:scale-95">
               <span>Gửi</span>
               <i class="fa-solid fa-paper-plane text-xs"></i>
             </button>
