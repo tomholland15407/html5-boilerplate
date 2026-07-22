@@ -75,21 +75,21 @@
   <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
     <defs>
       <!-- Khung lớn: bong bóng chat, thẻ, vỏ ô nhập liệu -->
-      <filter id="sk-wave" x="-10%" y="-25%" width="120%" height="150%" color-interpolation-filters="sRGB">
+      <filter id="sk-wave" x="-14%" y="-40%" width="128%" height="180%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.005 0.02" numOctaves="1" seed="31" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" />
       </filter>
 
       <!-- Cùng nhịp sóng nhưng khác hạt nhiễu, để các thẻ cạnh nhau không lặp lại -->
-      <filter id="sk-wave-alt" x="-10%" y="-25%" width="120%" height="150%" color-interpolation-filters="sRGB">
+      <filter id="sk-wave-alt" x="-14%" y="-40%" width="128%" height="180%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.006 0.018" numOctaves="1" seed="8" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G" />
       </filter>
 
       <!-- Phần tử nhỏ (tag, badge, nút): bước sóng ngắn hơn thì độ lượn mới thấy rõ -->
-      <filter id="sk-wave-fine" x="-14%" y="-30%" width="128%" height="160%" color-interpolation-filters="sRGB">
+      <filter id="sk-wave-fine" x="-20%" y="-45%" width="140%" height="190%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.02 0.03" numOctaves="1" seed="3" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="2" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G" />
       </filter>
     </defs>
   </svg>

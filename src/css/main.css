@@ -303,11 +303,11 @@
 .sk-edge::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: var(--sk-i, -2px);
   z-index: -1;
   pointer-events: none;
   background: var(--sk-fill, var(--sk-paper));
-  border: var(--sk-bw, 1.25px) solid var(--sk-stroke, var(--sk-ink));
+  border: var(--sk-bw, 1.4px) solid var(--sk-stroke, var(--sk-ink));
   border-radius: var(--sk-r, var(--sk-r-a));
   filter: url(#sk-wave);
   transition: border-color 0.2s ease;
@@ -315,8 +315,8 @@
 
 /* Phần tử nhỏ (tag, badge) cần bước sóng ngắn hơn thì độ lượn mới nhìn thấy được */
 .sk-edge-soft           { --sk-r: var(--sk-r-tag); }
-.sk-edge-soft::before   { --sk-bw: 1.15px; filter: url(#sk-wave-fine); }
-.sk-edge-strong::before { --sk-bw: 1.5px; }
+.sk-edge-soft::before   { --sk-bw: 1.2px; filter: url(#sk-wave-fine); }
+.sk-edge-strong::before { --sk-bw: 1.7px; }
 /* Đổi hạt nhiễu để hai thẻ cạnh nhau không lặp lại y hệt một đường lượn */
 .sk-edge-alt::before    { filter: url(#sk-wave-alt); }
 .sk-edge-single::before { /* giữ tên lớp cũ trong HTML; nay chỉ còn một nét duy nhất */ }
@@ -397,7 +397,7 @@
 }
 
 .sk-input-shell:focus-within::before {
-  --sk-bw: 1.6px;
+  --sk-bw: 1.9px;
   border-color: var(--sk-accent-ink);
 }
 
