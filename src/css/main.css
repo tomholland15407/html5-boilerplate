@@ -242,14 +242,10 @@
 
 :root {
   --sk-badge-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='rgba(179,134,44,.12)' stroke='rgba(150,108,28,.6)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-  --sk-cta-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8712f'/><stop offset='1' stop-color='%238a4a1c'/></linearGradient></defs><path d='M30.0 4.5 C50.0 4.5 50.0 6.9 70.0 6.9 C90.0 6.9 90.0 4.5 110.0 4.5 C130.0 4.5 130.0 6.9 150.0 6.9 C170.0 6.9 170.0 4.5 190.0 4.5 C210.0 4.5 210.0 6.9 230.0 6.9 C250.0 6.9 250.0 4.5 270.0 4.5 A25.5 25.5 0 0 1 270.0 55.5 C240.0 55.5 240.0 53.1 210.0 53.1 C180.0 53.1 180.0 55.5 150.0 55.5 C120.0 55.5 120.0 53.1 90.0 53.1 C60.0 53.1 60.0 55.5 30.0 55.5 A25.5 25.5 0 0 1 30.0 4.5 Z' fill='url(%23g)' stroke='rgba(64,32,6,.5)' stroke-width='1.8'/></svg>");
-  --sk-cta-src-hover: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23c9862f'/><stop offset='1' stop-color='%239c5a22'/></linearGradient></defs><path d='M30.0 4.5 C50.0 4.5 50.0 6.9 70.0 6.9 C90.0 6.9 90.0 4.5 110.0 4.5 C130.0 4.5 130.0 6.9 150.0 6.9 C170.0 6.9 170.0 4.5 190.0 4.5 C210.0 4.5 210.0 6.9 230.0 6.9 C250.0 6.9 250.0 4.5 270.0 4.5 A25.5 25.5 0 0 1 270.0 55.5 C240.0 55.5 240.0 53.1 210.0 53.1 C180.0 53.1 180.0 55.5 150.0 55.5 C120.0 55.5 120.0 53.1 90.0 53.1 C60.0 53.1 60.0 55.5 30.0 55.5 A25.5 25.5 0 0 1 30.0 4.5 Z' fill='url(%23g)' stroke='rgba(64,32,6,.5)' stroke-width='1.8'/></svg>");
   --sk-line: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='14' viewBox='0 0 150 14'><path d='M0 7.0 Q37.5 1.8 75.0 7.0 Q112.5 12.2 150.0 7.0' fill='none' stroke='rgba(88,56,20,.5)' stroke-width='1.6' stroke-linecap='round'/></svg>");
 }
 .dark {
   --sk-badge-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='rgba(201,162,39,.12)' stroke='rgba(201,162,39,.62)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-  --sk-cta-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8712f'/><stop offset='1' stop-color='%238a4a1c'/></linearGradient></defs><path d='M30.0 4.5 C50.0 4.5 50.0 6.9 70.0 6.9 C90.0 6.9 90.0 4.5 110.0 4.5 C130.0 4.5 130.0 6.9 150.0 6.9 C170.0 6.9 170.0 4.5 190.0 4.5 C210.0 4.5 210.0 6.9 230.0 6.9 C250.0 6.9 250.0 4.5 270.0 4.5 A25.5 25.5 0 0 1 270.0 55.5 C240.0 55.5 240.0 53.1 210.0 53.1 C180.0 53.1 180.0 55.5 150.0 55.5 C120.0 55.5 120.0 53.1 90.0 53.1 C60.0 53.1 60.0 55.5 30.0 55.5 A25.5 25.5 0 0 1 30.0 4.5 Z' fill='url(%23g)' stroke='rgba(255,220,150,.35)' stroke-width='1.8'/></svg>");
-  --sk-cta-src-hover: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23c9862f'/><stop offset='1' stop-color='%239c5a22'/></linearGradient></defs><path d='M30.0 4.5 C50.0 4.5 50.0 6.9 70.0 6.9 C90.0 6.9 90.0 4.5 110.0 4.5 C130.0 4.5 130.0 6.9 150.0 6.9 C170.0 6.9 170.0 4.5 190.0 4.5 C210.0 4.5 210.0 6.9 230.0 6.9 C250.0 6.9 250.0 4.5 270.0 4.5 A25.5 25.5 0 0 1 270.0 55.5 C240.0 55.5 240.0 53.1 210.0 53.1 C180.0 53.1 180.0 55.5 150.0 55.5 C120.0 55.5 120.0 53.1 90.0 53.1 C60.0 53.1 60.0 55.5 30.0 55.5 A25.5 25.5 0 0 1 30.0 4.5 Z' fill='url(%23g)' stroke='rgba(255,220,150,.35)' stroke-width='1.8'/></svg>");
   --sk-line: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='14' viewBox='0 0 150 14'><path d='M0 7.0 Q37.5 1.8 75.0 7.0 Q112.5 12.2 150.0 7.0' fill='none' stroke='rgba(201,162,39,.46)' stroke-width='1.6' stroke-linecap='round'/></svg>");
 }
 :root {
@@ -408,31 +404,37 @@ header.sk-rule::after {
   border-image-source: var(--sk-badge-src);
 }
 
-/* 2c. Nút "Bắt đầu tư vấn mới": hai đầu là nửa hình tròn thật, mép trên và mép
-       dưới uốn sóng. Cung tròn và sóng gặp nhau ở đúng đỉnh sóng nên tiếp tuyến
-       cả hai đều nằm ngang — mối nối liền mạch, không có điểm gãy. */
+/* 2c. Nút "Bắt đầu tư vấn mới": hình chữ nhật bo góc, không uốn sóng.
+       Nền gradient và bóng đổ do lớp tiện ích Tailwind trên thẻ button lo;
+       ở đây chỉ thêm viền mảnh, vệt sáng ở mép trên và bóng đổ ấm hơn. */
 .sk-cta {
-  background: transparent !important;
-  background-image: none !important;
-  border-color: transparent !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
   position: relative;
-  isolation: isolate;
+  border-radius: 14px !important;
+  border: 1.2px solid rgba(64, 32, 6, 0.42) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 210, 0.22),
+    0 2px 4px rgba(138, 74, 28, 0.18),
+    0 8px 18px rgba(138, 74, 28, 0.22) !important;
 }
-.sk-cta::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  z-index: -1;
-  pointer-events: none;
-  background-image: var(--sk-cta-src);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  filter: drop-shadow(0 3px 6px rgba(58, 42, 24, 0.18));
+.sk-cta:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 210, 0.28),
+    0 3px 6px rgba(138, 74, 28, 0.22),
+    0 10px 22px rgba(138, 74, 28, 0.28) !important;
 }
-.dark .sk-cta::before { filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45)); }
-.sk-cta:hover::before { background-image: var(--sk-cta-src-hover); }
+.dark .sk-cta {
+  border-color: rgba(255, 220, 150, 0.26) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 210, 0.16),
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 8px 18px rgba(0, 0, 0, 0.45) !important;
+}
+.dark .sk-cta:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 210, 0.2),
+    0 3px 6px rgba(0, 0, 0, 0.45),
+    0 10px 22px rgba(0, 0, 0, 0.5) !important;
+}
 
 /* Trung hoà quy tắc cũ gắn với lớp bo góc hình học đã bị thay thế */
 .message-fade-in .rounded-2xl.rounded-tl-none {
