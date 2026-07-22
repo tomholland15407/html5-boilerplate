@@ -83,17 +83,10 @@
 
     <!-- KHU VỰC TRẠNG THÁI VÀ TOGGLE GIAO DIỆN -->
     <div class="flex items-center space-x-4 text-xs relative z-10">
-      <span class="flex items-center text-brand-success font-medium">
-        <span class="w-2 h-2 rounded-full bg-brand-success inline-block mr-2 animate-ping"></span>
-        Hệ thống Sẵn Sàng
-      </span>
-      <span class="text-paper-400 dark:text-brand-border hidden sm:inline">|</span>
-
-      <button id="theme-toggle-btn" class="sk-chip sk-edge sk-edge-soft sk-lift flex items-center space-x-2 bg-paper-50 dark:bg-brand-dark/80 hover:bg-paper-200 dark:hover:bg-brand-border px-3.5 py-2 border border-paper-400 dark:border-brand-border text-paper-ink dark:text-slate-300 transition-all duration-300 shadow-sm active:scale-95" title="Chuyển đổi giao diện Sáng/Tối">
-        <span id="theme-icon-container" class="flex items-center">
-          <i class="fa-solid fa-moon text-[#4a3a22] dark:text-brand-gold text-sm"></i>
-        </span>
-        <span class="font-semibold text-[11px] hidden md:inline" id="theme-text-status">Giao diện: Tối</span>
+      <button id="theme-toggle-btn" class="theme-pill" role="switch" title="Chuyển đổi giao diện Sáng/Tối" aria-label="Chuyển đổi giao diện Sáng/Tối">
+        <span class="theme-pill-knob" aria-hidden="true"></span>
+        <i class="fa-solid fa-sun" aria-hidden="true"></i>
+        <i class="fa-solid fa-moon" aria-hidden="true"></i>
       </button>
     </div>
   </header>
@@ -279,21 +272,14 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const themeToggleBtn = document.getElementById('theme-toggle-btn');
-      const themeIconContainer = document.getElementById('theme-icon-container');
-      const themeTextStatus = document.getElementById('theme-text-status');
 
+      // Hình dáng nút do CSS lo (bám theo lớp `dark` trên <html>), JS chỉ cần
+      // lật lớp đó, ghi nhớ lựa chọn và cập nhật aria-checked.
       function updateToggleButton(isDark) {
-        if (isDark) {
-          themeIconContainer.innerHTML = '<i class="fa-solid fa-sun text-brand-gold text-sm animate-pulse"></i>';
-          themeTextStatus.textContent = 'Giao diện: Tối';
-        } else {
-          themeIconContainer.innerHTML = '<i class="fa-solid fa-moon text-[#4a3a22] text-sm"></i>';
-          themeTextStatus.textContent = 'Giao diện: Sáng';
-        }
+        themeToggleBtn.setAttribute('aria-checked', isDark ? 'true' : 'false');
       }
 
-      const isCurrentlyDark = document.documentElement.classList.contains('dark');
-      updateToggleButton(isCurrentlyDark);
+      updateToggleButton(document.documentElement.classList.contains('dark'));
 
       themeToggleBtn.addEventListener('click', () => {
         const isDark = document.documentElement.classList.toggle('dark');
