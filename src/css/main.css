@@ -233,211 +233,203 @@
 }
 
 /* ================================================================================= */
-/* PHÂN HỆ "GIẤY CẮT TAY" — HAND-DRAWN OUTLINE DỰNG BẰNG ĐƯỜNG CONG BÉZIER            */
+/* PHÂN HỆ "GIẤY CẮT TAY"                                                            */
 /*                                                                                    */
-/* Không còn feDisplacementMap: dịch chuyển pixel cho ra nét gãy, thiếu tự nhiên.     */
-/* Nay đường bao là HÌNH HỌC THẬT — một path SVG khép kín gồm các đoạn Bézier, dựng   */
-/* từ một đơn vị "sóng cạnh + góc" xoay bốn lần quanh tâm nên tiếp tuyến tại mọi mối  */
-/* nối đều trùng khớp: đường cong liên tục, mượt tuyệt đối, không một điểm gãy.       */
-/*                                                                                    */
-/* Path đó được dùng làm border-image: bốn góc giữ nguyên kích thước, cạnh lặp theo   */
-/* kiểu `round` nên bước sóng không đổi dù phần tử rộng hay hẹp. Nền giấy nằm trong   */
-/* chính path (từ khoá `fill`) nên mép nền luôn ôm khít nét viền.                     */
+/* Chỉ BA vị trí mang nét uốn lượn vẽ tay: thanh header, nhãn phiên bản, và nút       */
+/* "Bắt đầu tư vấn mới". Tất cả khối còn lại giữ dáng chữ nhật bo góc sạch sẽ.        */
+/* Mọi đường cong đều là path Bézier thật (không có bộ lọc dịch chuyển điểm ảnh).     */
 /* ================================================================================= */
 
 :root {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='%23fffdf5' stroke='rgba(88,56,20,.5)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='%23fffdf5' stroke='rgba(88,56,20,.5)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
+  --sk-badge-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='rgba(179,134,44,.12)' stroke='rgba(150,108,28,.6)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
+  --sk-cta-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8712f'/><stop offset='1' stop-color='%238a4a1c'/></linearGradient></defs><path d='M30.0 4.5 C50.0 4.5 50.0 11.7 70.0 11.7 C90.0 11.7 90.0 4.5 110.0 4.5 C130.0 4.5 130.0 11.7 150.0 11.7 C170.0 11.7 170.0 4.5 190.0 4.5 C210.0 4.5 210.0 11.7 230.0 11.7 C250.0 11.7 250.0 4.5 270.0 4.5 A25.5 25.5 0 0 1 270.0 55.5 C240.0 55.5 240.0 48.3 210.0 48.3 C180.0 48.3 180.0 55.5 150.0 55.5 C120.0 55.5 120.0 48.3 90.0 48.3 C60.0 48.3 60.0 55.5 30.0 55.5 A25.5 25.5 0 0 1 30.0 4.5 Z' fill='url(%23g)' stroke='rgba(64,32,6,.5)' stroke-width='1.8'/></svg>");
+  --sk-cta-src-hover: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23c9862f'/><stop offset='1' stop-color='%239c5a22'/></linearGradient></defs><path d='M30.0 4.5 C50.0 4.5 50.0 11.7 70.0 11.7 C90.0 11.7 90.0 4.5 110.0 4.5 C130.0 4.5 130.0 11.7 150.0 11.7 C170.0 11.7 170.0 4.5 190.0 4.5 C210.0 4.5 210.0 11.7 230.0 11.7 C250.0 11.7 250.0 4.5 270.0 4.5 A25.5 25.5 0 0 1 270.0 55.5 C240.0 55.5 240.0 48.3 210.0 48.3 C180.0 48.3 180.0 55.5 150.0 55.5 C120.0 55.5 120.0 48.3 90.0 48.3 C60.0 48.3 60.0 55.5 30.0 55.5 A25.5 25.5 0 0 1 30.0 4.5 Z' fill='url(%23g)' stroke='rgba(64,32,6,.5)' stroke-width='1.8'/></svg>");
+  --sk-line: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='14' viewBox='0 0 150 14'><path d='M0 7.0 Q37.5 1.8 75.0 7.0 Q112.5 12.2 150.0 7.0' fill='none' stroke='rgba(88,56,20,.5)' stroke-width='1.6' stroke-linecap='round'/></svg>");
 }
 .dark {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='%23201810' stroke='rgba(201,162,39,.46)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='%23201810' stroke='rgba(201,162,39,.46)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.sk-fill-paper-2 {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='%23fdf6e4' stroke='rgba(110,74,34,.34)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='%23fdf6e4' stroke='rgba(110,74,34,.34)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.dark .sk-fill-paper-2 {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='%2317110a' stroke='rgba(201,162,39,.28)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='%2317110a' stroke='rgba(201,162,39,.28)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.sk-fill-amber {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='%23fffbf4' stroke='rgba(178,94,0,.45)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='%23fffbf4' stroke='rgba(178,94,0,.45)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.dark .sk-fill-amber {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='%232a1e10' stroke='rgba(233,165,74,.48)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='%232a1e10' stroke='rgba(233,165,74,.48)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.sk-fill-lemon {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='%23fefce8' stroke='rgba(133,77,14,.42)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='%23fefce8' stroke='rgba(133,77,14,.42)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.dark .sk-fill-lemon {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='%232b2410' stroke='rgba(240,208,110,.45)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='%232b2410' stroke='rgba(240,208,110,.45)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.sk-fill-accent {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='rgba(179,134,44,.12)' stroke='rgba(150,108,28,.55)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='rgba(179,134,44,.12)' stroke='rgba(150,108,28,.55)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.dark .sk-fill-accent {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='rgba(201,162,39,.12)' stroke='rgba(201,162,39,.6)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='rgba(201,162,39,.12)' stroke='rgba(201,162,39,.6)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.sk-fill-none {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='none' stroke='rgba(88,56,20,.5)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='none' stroke='rgba(88,56,20,.5)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.dark .sk-fill-none {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='none' stroke='rgba(201,162,39,.46)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='none' stroke='rgba(201,162,39,.46)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.sk-fill-brand {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8712f'/><stop offset='1' stop-color='%238a4a1c'/></linearGradient></defs><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='url(%23g)' stroke='rgba(64,32,6,.5)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8712f'/><stop offset='1' stop-color='%238a4a1c'/></linearGradient></defs><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='url(%23g)' stroke='rgba(64,32,6,.5)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.dark .sk-fill-brand {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8712f'/><stop offset='1' stop-color='%238a4a1c'/></linearGradient></defs><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='url(%23g)' stroke='rgba(255,220,150,.4)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8712f'/><stop offset='1' stop-color='%238a4a1c'/></linearGradient></defs><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='url(%23g)' stroke='rgba(255,220,150,.4)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.sk-fill-brand-2 {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8560f'/><stop offset='1' stop-color='%238a3b12'/></linearGradient></defs><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='url(%23g)' stroke='rgba(64,32,6,.5)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8560f'/><stop offset='1' stop-color='%238a3b12'/></linearGradient></defs><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='url(%23g)' stroke='rgba(64,32,6,.5)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.dark .sk-fill-brand-2 {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8560f'/><stop offset='1' stop-color='%238a3b12'/></linearGradient></defs><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='url(%23g)' stroke='rgba(255,220,150,.4)' stroke-width='2.0' stroke-linejoin='round'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8560f'/><stop offset='1' stop-color='%238a3b12'/></linearGradient></defs><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='url(%23g)' stroke='rgba(255,220,150,.4)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
-}
-.sk-dash {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='none' stroke='rgba(110,74,34,.34)' stroke-width='2.0' stroke-linejoin='round' stroke-dasharray='9 7'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='none' stroke='rgba(110,74,34,.34)' stroke-width='2.8' stroke-linejoin='round' stroke-dasharray='7 5'/></svg>");
-}
-.dark .sk-dash {
-  --sk-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -6.00 100.00 8.00 Q137.50 22.00 175.00 8.00 C189.05 2.75 186.75 10.95 192.00 25.00 Q206.00 62.50 192.00 100.00 Q178.00 137.50 192.00 175.00 C197.25 189.05 189.05 186.75 175.00 192.00 Q137.50 206.00 100.00 192.00 Q62.50 178.00 25.00 192.00 C10.95 197.25 13.25 189.05 8.00 175.00 Q-6.00 137.50 8.00 100.00 Q22.00 62.50 8.00 25.00 C2.75 10.95 10.95 13.25 25.00 8.00 Z' fill='none' stroke='rgba(201,162,39,.28)' stroke-width='2.0' stroke-linejoin='round' stroke-dasharray='9 7'/></svg>");
-  --sk-src-s: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='none' stroke='rgba(201,162,39,.28)' stroke-width='2.8' stroke-linejoin='round' stroke-dasharray='7 5'/></svg>");
+  --sk-badge-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><path d='M25.00 8.00 Q62.50 -2.00 100.00 8.00 Q137.50 18.00 175.00 8.00 C189.49 4.14 188.14 10.51 192.00 25.00 Q202.00 62.50 192.00 100.00 Q182.00 137.50 192.00 175.00 C195.86 189.49 189.49 188.14 175.00 192.00 Q137.50 202.00 100.00 192.00 Q62.50 182.00 25.00 192.00 C10.51 195.86 11.86 189.49 8.00 175.00 Q-2.00 137.50 8.00 100.00 Q18.00 62.50 8.00 25.00 C4.14 10.51 10.51 11.86 25.00 8.00 Z' fill='rgba(201,162,39,.12)' stroke='rgba(201,162,39,.62)' stroke-width='2.8' stroke-linejoin='round'/></svg>");
+  --sk-cta-src: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23b8712f'/><stop offset='1' stop-color='%238a4a1c'/></linearGradient></defs><path d='M30.0 4.5 C50.0 4.5 50.0 11.7 70.0 11.7 C90.0 11.7 90.0 4.5 110.0 4.5 C130.0 4.5 130.0 11.7 150.0 11.7 C170.0 11.7 170.0 4.5 190.0 4.5 C210.0 4.5 210.0 11.7 230.0 11.7 C250.0 11.7 250.0 4.5 270.0 4.5 A25.5 25.5 0 0 1 270.0 55.5 C240.0 55.5 240.0 48.3 210.0 48.3 C180.0 48.3 180.0 55.5 150.0 55.5 C120.0 55.5 120.0 48.3 90.0 48.3 C60.0 48.3 60.0 55.5 30.0 55.5 A25.5 25.5 0 0 1 30.0 4.5 Z' fill='url(%23g)' stroke='rgba(255,220,150,.35)' stroke-width='1.8'/></svg>");
+  --sk-cta-src-hover: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23c9862f'/><stop offset='1' stop-color='%239c5a22'/></linearGradient></defs><path d='M30.0 4.5 C50.0 4.5 50.0 11.7 70.0 11.7 C90.0 11.7 90.0 4.5 110.0 4.5 C130.0 4.5 130.0 11.7 150.0 11.7 C170.0 11.7 170.0 4.5 190.0 4.5 C210.0 4.5 210.0 11.7 230.0 11.7 C250.0 11.7 250.0 4.5 270.0 4.5 A25.5 25.5 0 0 1 270.0 55.5 C240.0 55.5 240.0 48.3 210.0 48.3 C180.0 48.3 180.0 55.5 150.0 55.5 C120.0 55.5 120.0 48.3 90.0 48.3 C60.0 48.3 60.0 55.5 30.0 55.5 A25.5 25.5 0 0 1 30.0 4.5 Z' fill='url(%23g)' stroke='rgba(255,220,150,.35)' stroke-width='1.8'/></svg>");
+  --sk-line: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='14' viewBox='0 0 150 14'><path d='M0 7.0 Q37.5 1.8 75.0 7.0 Q112.5 12.2 150.0 7.0' fill='none' stroke='rgba(201,162,39,.46)' stroke-width='1.6' stroke-linecap='round'/></svg>");
 }
 :root {
-  --sk-line: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='14' viewBox='0 0 150 14'><path d='M0 7.0 Q37.5 1.8 75.0 7.0 Q112.5 12.2 150.0 7.0' fill='none' stroke='rgba(88,56,20,.5)' stroke-width='1.6' stroke-linecap='round'/></svg>");
-  --sk-line-y: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='150' viewBox='0 0 14 150'><path d='M0 7.0 Q37.5 1.8 75.0 7.0 Q112.5 12.2 150.0 7.0' transform='rotate(90 0 0) translate(0 -14)' fill='none' stroke='rgba(88,56,20,.5)' stroke-width='1.6' stroke-linecap='round'/></svg>");
+  --sk-r-a: 18px 14px 16px 12px;
+  --sk-r-b: 14px 18px 12px 16px;
+  --sk-r-c: 14px 11px 13px 12px;
+  --sk-r-d: 11px 14px 12px 13px;
+  --sk-r-soft: 14px 12px 15px 11px;
+  --sk-r-pill: 999px;
+  --sk-r-tag: 11px 9px 10px 8px;
+  --sk-r-tiny: 8px 6px 7px 6px;
+
+  --sk-paper: #fffdf5;
+  --sk-paper-2: #fdf6e4;
+  --sk-ink: rgba(88, 56, 20, 0.34);
+  --sk-ink-soft: rgba(110, 74, 34, 0.22);
+
+  --sk-brand: linear-gradient(180deg, #b8712f 0%, #8a4a1c 100%);
+  --sk-brand-2: linear-gradient(180deg, #b8560f 0%, #8a3b12 100%);
+  --sk-brand-ink: rgba(64, 32, 6, 0.4);
+
+  --sk-amber-fill: #fffbf4;
+  --sk-amber-ink: rgba(178, 94, 0, 0.32);
+  --sk-lemon-fill: #fefce8;
+  --sk-lemon-ink: rgba(133, 77, 14, 0.3);
+  --sk-accent-fill: rgba(179, 134, 44, 0.1);
+  --sk-accent-ink: rgba(150, 108, 28, 0.45);
 }
+
 .dark {
-  --sk-line: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='14' viewBox='0 0 150 14'><path d='M0 7.0 Q37.5 1.8 75.0 7.0 Q112.5 12.2 150.0 7.0' fill='none' stroke='rgba(201,162,39,.46)' stroke-width='1.6' stroke-linecap='round'/></svg>");
-  --sk-line-y: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='150' viewBox='0 0 14 150'><path d='M0 7.0 Q37.5 1.8 75.0 7.0 Q112.5 12.2 150.0 7.0' transform='rotate(90 0 0) translate(0 -14)' fill='none' stroke='rgba(201,162,39,.46)' stroke-width='1.6' stroke-linecap='round'/></svg>");
+  --sk-paper: #201810;
+  --sk-paper-2: #17110a;
+  --sk-ink: rgba(201, 162, 39, 0.32);
+  --sk-ink-soft: rgba(201, 162, 39, 0.2);
+
+  --sk-brand-ink: rgba(255, 220, 150, 0.3);
+
+  --sk-amber-fill: #2a1e10;
+  --sk-amber-ink: rgba(233, 165, 74, 0.36);
+  --sk-lemon-fill: #2b2410;
+  --sk-lemon-ink: rgba(240, 208, 110, 0.34);
+  --sk-accent-fill: rgba(201, 162, 39, 0.1);
+  --sk-accent-ink: rgba(201, 162, 39, 0.45);
 }
 
 /* --------------------------------------------------------------------------- */
-/* ĐỘNG CƠ: .sk-edge — phần tử thật trong suốt, hình khối nằm ở lớp ::before     */
+/* 1. KHỐI THƯỜNG: chữ nhật bo góc sạch, viền mảnh — không uốn lượn             */
 /* --------------------------------------------------------------------------- */
 .sk-edge {
   position: relative;
-  isolation: isolate;
-  background-color: transparent !important;
-  background-image: none !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
+  background: var(--sk-fill, var(--sk-paper)) !important;
+  border: var(--sk-bw, 1px) solid var(--sk-stroke, var(--sk-ink)) !important;
+  border-radius: var(--sk-r, var(--sk-r-a)) !important;
+  box-shadow: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.sk-edge::before {
-  content: "";
-  position: absolute;
-  inset: var(--sk-i, -8px);
-  z-index: -1;
-  pointer-events: none;
-  border-style: solid;
-  border-color: transparent;
-  border-width: var(--sk-bw, 22px);
-  border-image-slice: 25 fill;
-  border-image-repeat: round;
-  border-image-source: var(--sk-src);
-  filter: var(--sk-fx, none);
-  transition: filter 0.2s ease;
-}
+.sk-edge-strong { --sk-bw: 1.2px; }
+.sk-edge-soft   { --sk-r: var(--sk-r-tag); --sk-stroke: var(--sk-ink-soft); }
 
-/* Khối trung bình (thẻ, nút, vỏ ô nhập): thu nhỏ khung => bước sóng và biên độ
-   giảm theo tỉ lệ, nhờ vậy sóng không lấn át những phần tử thấp. */
-.sk-panel,
-.sk-pill,
-.sk-card,
-.sk-card-alt,
-.sk-input-shell { --sk-bw: 15px; --sk-i: -6px; }
+.sk-edge:hover { border-color: var(--sk-stroke-hover, var(--sk-accent-ink)) !important; }
 
-/* Phần tử nhỏ (tag, badge, nút phụ) dùng bản vẽ biên độ thấp hơn và khung mảnh hơn */
-.sk-edge-soft::before {
-  --sk-i: -4px;
-  --sk-bw: 12px;
-  border-image-source: var(--sk-src-s);
-}
+.sk-bubble      { --sk-r: var(--sk-r-a); }
+.sk-bubble-user { --sk-r: var(--sk-r-b); }
+.sk-card        { --sk-r: var(--sk-r-c); }
+.sk-card-alt    { --sk-r: var(--sk-r-d); }
+.sk-panel       { --sk-r: var(--sk-r-soft); }
+.sk-pill        { --sk-r: var(--sk-r-pill); }
+.sk-chip        { --sk-r: var(--sk-r-tag); }
+.sk-badge       { --sk-r: var(--sk-r-tiny); }
 
-/* Bóng giấy: drop-shadow bám theo đúng đường cong, khác với box-shadow hình chữ nhật */
-.sk-lift::before   { --sk-fx: drop-shadow(0 3px 6px rgba(58, 42, 24, 0.12)); }
-.dark .sk-lift::before { --sk-fx: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.42)); }
-
-.sk-edge:hover::before       { --sk-fx: brightness(0.97); }
-.dark .sk-edge:hover::before { --sk-fx: brightness(1.18); }
-.sk-lift:hover::before       { --sk-fx: drop-shadow(0 4px 8px rgba(58, 42, 24, 0.16)) brightness(0.97); }
-.dark .sk-lift:hover::before { --sk-fx: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)) brightness(1.18); }
-
-/* Ảnh đại diện: bo trực tiếp trên phần tử vì bên trong là <img> bị overflow kẹp */
 .sk-avatar     { border-radius: 54% 46% 50% 50% / 48% 50% 50% 52% !important; }
 .sk-avatar-alt { border-radius: 46% 54% 50% 50% / 52% 48% 50% 50% !important; }
 
-/* --------------------------------------------------------------------------- */
-/* ĐƯỜNG KẺ UỐN LƯỢN thay cho border-b / border-r của header, sidebar, footer   */
-/* Cũng là path Bézier, lặp ngang/dọc bằng background-repeat.                    */
-/* --------------------------------------------------------------------------- */
-.sk-rule,
-.sk-rule-top,
-.sk-rule-y {
-  position: relative;
-  border-color: transparent !important;
+.sk-fill-brand   { --sk-fill: var(--sk-brand);      --sk-stroke: var(--sk-brand-ink); }
+.sk-fill-brand-2 { --sk-fill: var(--sk-brand-2);    --sk-stroke: var(--sk-brand-ink); }
+.sk-fill-amber   { --sk-fill: var(--sk-amber-fill); --sk-stroke: var(--sk-amber-ink); }
+.sk-fill-lemon   { --sk-fill: var(--sk-lemon-fill); --sk-stroke: var(--sk-lemon-ink); }
+.sk-fill-accent  { --sk-fill: var(--sk-accent-fill);--sk-stroke: var(--sk-accent-ink); }
+.sk-fill-paper-2 { --sk-fill: var(--sk-paper-2); }
+.sk-fill-none    { --sk-fill: transparent; }
+
+.sk-fill-brand:hover,
+.sk-fill-brand-2:hover { border-color: var(--sk-brand-ink) !important; filter: brightness(1.06); }
+
+.sk-dash { border-style: dashed !important; }
+
+.sk-lift {
+  box-shadow: 0 1px 2px rgba(58, 42, 24, 0.05), 0 6px 16px rgba(58, 42, 24, 0.07);
+}
+.dark .sk-lift {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28), 0 6px 16px rgba(0, 0, 0, 0.32);
 }
 
-.sk-rule::after,
-.sk-rule-top::after,
-.sk-rule-y::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  z-index: 5;
-}
-
-.sk-rule::after {
-  left: 0; right: 0; bottom: -7px; height: 14px;
-  background-image: var(--sk-line);
-  background-repeat: repeat-x;
-  background-size: 150px 14px;
-}
-.sk-rule-top::after {
-  left: 0; right: 0; top: -7px; height: 14px;
-  background-image: var(--sk-line);
-  background-repeat: repeat-x;
-  background-size: 150px 14px;
-}
-.sk-rule-y::after {
-  top: 0; bottom: 0; right: -7px; width: 14px;
-  background-image: var(--sk-line-y);
-  background-repeat: repeat-y;
-  background-size: 14px 150px;
-}
-
-/* --------------------------------------------------------------------------- */
-/* Ô NHẬP LIỆU: input trần, vỏ form gánh toàn bộ hình khối                      */
-/* --------------------------------------------------------------------------- */
 .sk-input {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
   border-radius: 0 !important;
 }
-
-.sk-input-shell:focus-within::before {
-  --sk-fx: drop-shadow(0 0 3px rgba(179, 134, 44, 0.55));
+.sk-input-shell { --sk-r: var(--sk-r-c); --sk-fill: var(--sk-paper); }
+.sk-input-shell:focus-within {
+  --sk-bw: 1.4px;
+  border-color: var(--sk-accent-ink) !important;
+  box-shadow: 0 0 0 3px rgba(179, 134, 44, 0.12);
 }
 
-/* Nhịp lệch rất nhẹ cho vài nhãn nhỏ — dấu vết dán tay, không làm vỡ hàng lối */
 .sk-tilt-a { transform: rotate(-1deg); }
 .sk-tilt-b { transform: rotate(1.2deg); }
+
+/* --------------------------------------------------------------------------- */
+/* 2. NÉT UỐN LƯỢN — chỉ ba vị trí                                             */
+/* --------------------------------------------------------------------------- */
+
+/* 2a. Thanh header: đường kẻ chân header là một path Bézier lặp ngang */
+header.sk-rule {
+  position: relative;
+  border-bottom-color: transparent !important;
+}
+header.sk-rule::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 14px;
+  z-index: 5;
+  pointer-events: none;
+  background-image: var(--sk-line);
+  background-repeat: repeat-x;
+  background-size: 150px 14px;
+}
+
+/* 2b. Nhãn phiên bản: khung gợn sóng vẽ bằng border-image (bốn góc giữ nguyên,
+       cạnh lặp kiểu `round` nên bước sóng không đổi theo bề rộng nhãn) */
+.sk-wob {
+  background: transparent !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  position: relative;
+  isolation: isolate;
+}
+.sk-wob::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  z-index: -1;
+  pointer-events: none;
+  border: 12px solid transparent;
+  border-image-slice: 25 fill;
+  border-image-repeat: round;
+  border-image-source: var(--sk-badge-src);
+}
+
+/* 2c. Nút "Bắt đầu tư vấn mới": hai đầu là nửa hình tròn thật, mép trên và mép
+       dưới uốn sóng. Cung tròn và sóng gặp nhau ở đúng đỉnh sóng nên tiếp tuyến
+       cả hai đều nằm ngang — mối nối liền mạch, không có điểm gãy. */
+.sk-cta {
+  background: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  position: relative;
+  isolation: isolate;
+}
+.sk-cta::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--sk-cta-src);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 3px 6px rgba(58, 42, 24, 0.18));
+}
+.dark .sk-cta::before { filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45)); }
+.sk-cta:hover::before { background-image: var(--sk-cta-src-hover); }
 
 /* Trung hoà quy tắc cũ gắn với lớp bo góc hình học đã bị thay thế */
 .message-fade-in .rounded-2xl.rounded-tl-none {
