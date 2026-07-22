@@ -67,44 +67,6 @@
 
 <body class="bg-paper-100 dark:bg-brand-dark text-paper-ink dark:text-[#ece0c4] font-sans h-screen flex flex-col overflow-hidden transition-colors duration-300">
 
-  <!-- ========================================================================= -->
-  <!-- BỘ LỌC SVG TẠO NÉT VIỀN RUNG NHẸ KIỂU VẼ TAY (HAND-DRAWN EDGE FILTERS)    -->
-  <!-- Được tham chiếu bởi .sk-edge::after trong main.css                        -->
-  <!-- ========================================================================= -->
-  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
-    <defs>
-      <!-- Nét chính: sóng dài, biên độ lớn — dáng bút chì đưa tay -->
-      <filter id="sk-rough" x="-20%" y="-35%" width="140%" height="170%" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.011 0.021" numOctaves="2" seed="11" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
-
-      <!-- Nét chồng: hạt nhiễu khác, lệch pha so với nét chính -->
-      <filter id="sk-rough-2" x="-20%" y="-35%" width="140%" height="170%" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.014 0.028" numOctaves="2" seed="47" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="7.5" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
-
-      <!-- Nét đậm cho khối chủ đạo: gợn sóng mạnh nhất -->
-      <filter id="sk-rough-hard" x="-22%" y="-40%" width="144%" height="180%" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.009 0.019" numOctaves="2" seed="3" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="12" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
-
-      <!-- Nét mảnh cho thẻ nhỏ: biên độ vừa đủ để không nuốt mất chữ -->
-      <filter id="sk-rough-fine" x="-25%" y="-45%" width="150%" height="190%" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.02 0.045" numOctaves="2" seed="29" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
-
-      <!-- Đường kẻ ngang/dọc vẽ tay thay cho border thẳng tắp -->
-      <filter id="sk-rough-line" x="-5%" y="-600%" width="110%" height="1300%" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.006 0.06" numOctaves="2" seed="17" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
-    </defs>
-  </svg>
-
   <!-- PHẦN ĐẦU TRANG (HEADER BAR) -->
   <header class="sk-rule paper-panel-texture bg-paper-100 dark:bg-brand-panel border-b border-paper-400 dark:border-brand-border px-6 py-4 flex justify-between items-center shrink-0 transition-colors duration-300 shadow-sm dark:shadow-none z-10 relative">
     <div class="flex items-center space-x-3 relative z-10">

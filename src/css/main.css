@@ -131,7 +131,7 @@
 /* -------- Nền giấy cổ chính cho khung chat: sợi giấy + úa vàng + vết ố -------- */
 .custom-mesh-bg {
   position: relative;
-  background-color: #ecdfbd;
+  background-color: #f6eed9;
 }
 
 /* Lớp 1: Vân sợi giấy (grain) dựng bằng SVG feTurbulence, hoà trộn kiểu multiply */
@@ -140,7 +140,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.3;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 0.29  0 0 0 0 0.20  0 0 0 0 0.10  0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 240px 240px;
@@ -153,11 +153,11 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 55% 38% at 6% 8%, rgba(146, 84, 28, 0.16), transparent 62%),
-    radial-gradient(ellipse 42% 32% at 96% 18%, rgba(120, 66, 20, 0.12), transparent 60%),
-    radial-gradient(ellipse 50% 40% at 92% 92%, rgba(146, 84, 28, 0.15), transparent 60%),
-    radial-gradient(ellipse 45% 30% at 10% 95%, rgba(120, 66, 20, 0.1), transparent 60%),
-    radial-gradient(ellipse at center, transparent 45%, rgba(58, 42, 24, 0.16) 100%);
+    radial-gradient(ellipse 55% 38% at 6% 8%, rgba(146, 84, 28, 0.06), transparent 62%),
+    radial-gradient(ellipse 42% 32% at 96% 18%, rgba(120, 66, 20, 0.05), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 92% 92%, rgba(146, 84, 28, 0.06), transparent 60%),
+    radial-gradient(ellipse 45% 30% at 10% 95%, rgba(120, 66, 20, 0.04), transparent 60%),
+    radial-gradient(ellipse at center, transparent 62%, rgba(58, 42, 24, 0.07) 100%);
 }
 
 .dark .custom-mesh-bg {
@@ -232,236 +232,139 @@
   box-shadow: 0 4px 12px rgba(138, 74, 28, 0.3) !important;
 }
 
-/* ================================================================= */
-/* STRICT LIGHT/DARK THEME BACKGROUND CONFIGURATIONS                  */
-/* ================================================================= */
-
-/* Strict Light Theme Engine - Displays wall-bg-1 ONLY */
-html:not(.dark) header,
-html:not(.dark) #sidebar-panel {
-  background-image: url('../img/wall-bg-1.jpg') !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-}
-
-/* Strict Dark Theme Engine - Displays wall-bg-2 ONLY */
-html.dark header,
-html.dark #sidebar-panel {
-  background-image: url('../img/wall-bg-2.jpg') !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-}
-/* Force inner layouts to drop their solid backgrounds */
-header *,
-#sidebar-panel * {
-  background-color: transparent !important;
-}
-
-/* Re-protect specific interactive elements like buttons from turning transparent */
-header button,
-#sidebar-panel button,
-header a,
-#sidebar-panel .rounded-2xl {
-  background-color: inherit !important;
-}
-
-
 /* ================================================================================= */
-/* PHÂN HỆ "GIẤY CẮT TAY" — HAND-DRAWN / PAPER-CUT SHAPE ENGINE                       */
+/* PHÂN HỆ "GIẤY CẮT TAY" — SOFT PAPER-CUT SHAPE ENGINE                              */
 /*                                                                                    */
-/* Nguyên lý: phần tử thật bị làm trong suốt (nền + viền), toàn bộ hình khối được vẽ  */
-/* lại trên hai lớp giả ::before / ::after rồi đẩy qua bộ lọc feTurbulence +          */
-/* feDisplacementMap. Nhờ vậy đường bao trở nên gợn sóng thật sự như nét bút tay,     */
-/* trong khi chữ nằm ở lớp nội dung nên vẫn sắc nét tuyệt đối.                        */
+/* Không dùng feTurbulence / feDisplacementMap nữa: đường bao gợn sóng cao tần khiến  */
+/* giao diện trông lởm chởm và khó đọc. Thay vào đó mỗi thành phần được bo góc bất    */
+/* đối xứng nhẹ (cú pháp border-radius có dấu "/"), viền mảnh một nét và bóng ấm rất  */
+/* mềm — cảm giác giấy cắt tay nhưng vẫn gọn gàng, dễ đọc.                            */
 /* ================================================================================= */
 
 :root {
-  /* --- Bán kính bất đối xứng (khung nền trước khi bị bộ lọc làm gợn sóng) --- */
-  --sk-r-a: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  --sk-r-b: 15px 225px 15px 255px / 225px 15px 255px 15px;
-  --sk-r-c: 195px 22px 240px 18px / 20px 210px 16px 230px;
-  --sk-r-d: 28px 180px 20px 200px / 190px 24px 205px 18px;
-  --sk-r-soft: 42px 12px 36px 14px / 14px 34px 12px 40px;
-  --sk-r-pill: 120px 8px 100px 10px / 10px 90px 8px 110px;
-  --sk-r-tag: 60px 6px 48px 8px / 8px 44px 6px 56px;
-  --sk-r-tiny: 22px 5px 18px 6px / 6px 16px 5px 20px;
+  /* --- Bán kính bất đối xứng, biên độ nhỏ để giữ nét thanh thoát --- */
+  --sk-r-a: 22px 26px 24px 8px / 26px 22px 20px 10px;   /* bong bóng trợ lý */
+  --sk-r-b: 26px 22px 8px 24px / 22px 26px 10px 20px;   /* bong bóng người dùng */
+  --sk-r-c: 18px 22px 16px 20px / 20px 16px 22px 18px;  /* thẻ */
+  --sk-r-d: 22px 16px 20px 18px / 16px 22px 18px 20px;  /* thẻ so le */
+  --sk-r-soft: 16px 13px 15px 12px / 13px 16px 12px 15px;
+  --sk-r-pill: 999px;
+  --sk-r-tag: 12px 10px 13px 9px / 10px 13px 9px 12px;
+  --sk-r-tiny: 9px 7px 10px 7px / 7px 10px 7px 9px;
 
-  /* --- Bảng màu giấy & mực --- */
+  /* --- Bảng màu giấy & mực (mực nhạt đi nhiều so với bản phác thảo cũ) --- */
   --sk-paper: #fffdf5;
   --sk-paper-2: #fdf6e4;
-  --sk-ink: rgba(88, 56, 20, 0.72);
-  --sk-ink-soft: rgba(122, 82, 38, 0.34);
+  --sk-ink: rgba(122, 82, 38, 0.28);
+  --sk-ink-soft: rgba(122, 82, 38, 0.16);
 
   --sk-brand: linear-gradient(180deg, #b8712f 0%, #8a4a1c 100%);
   --sk-brand-2: linear-gradient(180deg, #b8560f 0%, #8a3b12 100%);
-  --sk-brand-ink: rgba(74, 38, 8, 0.85);
+  --sk-brand-ink: rgba(74, 38, 8, 0.35);
 
   --sk-amber-fill: #fffbf4;
-  --sk-amber-ink: rgba(178, 94, 0, 0.62);
+  --sk-amber-ink: rgba(178, 94, 0, 0.26);
   --sk-lemon-fill: #fefce8;
-  --sk-lemon-ink: rgba(133, 77, 14, 0.55);
-  --sk-accent-fill: rgba(179, 134, 44, 0.14);
-  --sk-accent-ink: rgba(150, 108, 28, 0.8);
+  --sk-lemon-ink: rgba(133, 77, 14, 0.24);
+  --sk-accent-fill: rgba(179, 134, 44, 0.1);
+  --sk-accent-ink: rgba(150, 108, 28, 0.4);
 }
 
 .dark {
   --sk-paper: #201810;
   --sk-paper-2: #17110a;
-  --sk-ink: rgba(201, 162, 39, 0.62);
-  --sk-ink-soft: rgba(201, 162, 39, 0.28);
+  --sk-ink: rgba(201, 162, 39, 0.26);
+  --sk-ink-soft: rgba(201, 162, 39, 0.14);
 
-  --sk-brand-ink: rgba(255, 220, 150, 0.5);
+  --sk-brand-ink: rgba(255, 220, 150, 0.24);
 
   --sk-amber-fill: #2a1e10;
-  --sk-amber-ink: rgba(233, 165, 74, 0.6);
+  --sk-amber-ink: rgba(233, 165, 74, 0.28);
   --sk-lemon-fill: #2b2410;
-  --sk-lemon-ink: rgba(240, 208, 110, 0.55);
-  --sk-accent-fill: rgba(201, 162, 39, 0.14);
-  --sk-accent-ink: rgba(201, 162, 39, 0.7);
+  --sk-lemon-ink: rgba(240, 208, 110, 0.26);
+  --sk-accent-fill: rgba(201, 162, 39, 0.1);
+  --sk-accent-ink: rgba(201, 162, 39, 0.38);
 }
 
 /* --------------------------------------------------------------------------- */
-/* 1. LỚP ĐỘNG CƠ: .sk-edge — bắt buộc có trên mọi phần tử muốn viền vẽ tay     */
+/* 1. ĐỘNG CƠ: .sk-edge — vẽ thẳng trên chính phần tử, không cần lớp giả        */
+/*    => giữ nguyên padding, không có lớp phủ nào che chữ, không có bộ lọc.     */
 /* --------------------------------------------------------------------------- */
 .sk-edge {
   position: relative;
-  isolation: isolate;
-  background-color: transparent !important;
-  background-image: none !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
+  background: var(--sk-fill, var(--sk-paper)) !important;
+  border: var(--sk-bw, 1px) solid var(--sk-stroke, var(--sk-ink)) !important;
+  border-radius: var(--sk-r, var(--sk-r-a)) !important;
+  box-shadow: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Lớp thân: nền giấy + nét mực chính, được bộ lọc bẻ cong thành đường gợn sóng */
-.sk-edge::before {
-  content: "";
-  position: absolute;
-  inset: var(--sk-i, -3px);
-  z-index: -1;
-  pointer-events: none;
-  background: var(--sk-fill, var(--sk-paper));
-  border: var(--sk-bw, 2px) solid var(--sk-stroke, var(--sk-ink));
-  border-radius: var(--sk-r, var(--sk-r-a));
-  filter: url(#sk-rough);
+/* Biến thể độ đậm của nét viền */
+.sk-edge-strong { --sk-bw: 1.5px; }
+.sk-edge-soft   { --sk-bw: 1px; --sk-stroke: var(--sk-ink-soft); }
+.sk-edge-alt,
+.sk-edge-single { /* giữ lại tên lớp cũ trong HTML, nay chỉ là biến thể hình dạng */ }
+
+/* Rê chuột: viền rõ hơn một chút, không đổi hình khối */
+.sk-edge:hover {
+  border-color: var(--sk-stroke-hover, var(--sk-accent-ink)) !important;
 }
-
-/* Lớp nét mực thứ hai: hơi lệch, nhiễu khác hạt — tạo cảm giác vẽ đi vẽ lại */
-.sk-edge::after {
-  content: "";
-  position: absolute;
-  inset: calc(var(--sk-i, -3px) - 3px);
-  z-index: -1;
-  pointer-events: none;
-  border: 1.4px solid var(--sk-stroke2, var(--sk-ink-soft));
-  border-radius: var(--sk-r2, var(--sk-r-c));
-  filter: url(#sk-rough-2);
-  opacity: 0.85;
-}
-
-/* Biến thể cường độ gợn sóng */
-.sk-edge-strong::before { --sk-bw: 2.4px; filter: url(#sk-rough-hard); }
-.sk-edge-strong::after  { opacity: 1; }
-.sk-edge-soft::before   { --sk-bw: 1.6px; filter: url(#sk-rough-fine); }
-.sk-edge-soft::after    { opacity: 0.55; border-width: 1.1px; }
-.sk-edge-alt::before    { filter: url(#sk-rough-2); }
-.sk-edge-alt::after     { filter: url(#sk-rough); }
-
-/* Chỉ vẽ một nét (bỏ nét chồng) cho các thẻ rất nhỏ */
-.sk-edge-single::after { display: none; }
-
-/* Phản hồi khi rê chuột: đổi sắc độ giấy thay cho hover:bg-* của Tailwind */
-.sk-edge:hover::before        { filter: url(#sk-rough) brightness(0.95); }
-.sk-edge-strong:hover::before { filter: url(#sk-rough-hard) brightness(0.96); }
-.sk-edge-soft:hover::before   { filter: url(#sk-rough-fine) brightness(0.95); }
-.sk-edge-alt:hover::before    { filter: url(#sk-rough-2) brightness(0.95); }
-.dark .sk-edge:hover::before        { filter: url(#sk-rough) brightness(1.35); }
-.dark .sk-edge-strong:hover::before { filter: url(#sk-rough-hard) brightness(1.3); }
-.dark .sk-edge-soft:hover::before   { filter: url(#sk-rough-fine) brightness(1.35); }
-.dark .sk-edge-alt:hover::before    { filter: url(#sk-rough-2) brightness(1.35); }
 
 /* --------------------------------------------------------------------------- */
-/* 2. HÌNH DẠNG: chỉ khai báo bán kính nền cho động cơ ở trên                   */
+/* 2. HÌNH DẠNG                                                                 */
 /* --------------------------------------------------------------------------- */
-.sk-bubble      { --sk-r: var(--sk-r-a);    --sk-r2: var(--sk-r-c); }
-.sk-bubble-user { --sk-r: var(--sk-r-b);    --sk-r2: var(--sk-r-d); }
-.sk-card        { --sk-r: var(--sk-r-c);    --sk-r2: var(--sk-r-a); }
-.sk-card-alt    { --sk-r: var(--sk-r-d);    --sk-r2: var(--sk-r-b); }
-.sk-panel       { --sk-r: var(--sk-r-soft); --sk-r2: var(--sk-r-tag); }
-.sk-pill        { --sk-r: var(--sk-r-pill); --sk-r2: var(--sk-r-tag); }
-.sk-chip        { --sk-r: var(--sk-r-tag);  --sk-r2: var(--sk-r-pill); }
-.sk-badge       { --sk-r: var(--sk-r-tiny); --sk-r2: var(--sk-r-tag); }
+.sk-bubble      { --sk-r: var(--sk-r-a); }
+.sk-bubble-user { --sk-r: var(--sk-r-b); }
+.sk-card        { --sk-r: var(--sk-r-c); }
+.sk-card-alt    { --sk-r: var(--sk-r-d); }
+.sk-panel       { --sk-r: var(--sk-r-soft); }
+.sk-pill        { --sk-r: var(--sk-r-pill); }
+.sk-chip        { --sk-r: var(--sk-r-tag); }
+.sk-badge       { --sk-r: var(--sk-r-tiny); }
 
-/* Ảnh đại diện: cắt trực tiếp trên phần tử vì bên trong có <img> bị overflow kẹp */
+/* Ảnh đại diện: bo tròn mềm, hơi lệch trục cho bớt cứng */
 .sk-avatar {
-  border-radius: 62% 38% 55% 45% / 45% 52% 48% 55% !important;
+  border-radius: 52% 48% 50% 50% / 50% 50% 52% 48% !important;
 }
 .sk-avatar-alt {
-  border-radius: 40% 60% 47% 53% / 55% 42% 58% 45% !important;
+  border-radius: 48% 52% 50% 50% / 50% 50% 48% 52% !important;
 }
 
 /* --------------------------------------------------------------------------- */
 /* 3. CHẤT LIỆU: màu giấy / mực cho từng nhóm thành phần                        */
 /* --------------------------------------------------------------------------- */
-.sk-fill-brand   { --sk-fill: var(--sk-brand);   --sk-stroke: var(--sk-brand-ink); --sk-stroke2: var(--sk-brand-ink); }
-.sk-fill-brand-2 { --sk-fill: var(--sk-brand-2); --sk-stroke: var(--sk-brand-ink); --sk-stroke2: var(--sk-brand-ink); }
-.sk-fill-amber   { --sk-fill: var(--sk-amber-fill); --sk-stroke: var(--sk-amber-ink); --sk-stroke2: var(--sk-amber-ink); }
-.sk-fill-lemon   { --sk-fill: var(--sk-lemon-fill); --sk-stroke: var(--sk-lemon-ink); --sk-stroke2: var(--sk-lemon-ink); }
-.sk-fill-accent  { --sk-fill: var(--sk-accent-fill); --sk-stroke: var(--sk-accent-ink); --sk-stroke2: var(--sk-accent-ink); }
+.sk-fill-brand   { --sk-fill: var(--sk-brand);      --sk-stroke: var(--sk-brand-ink); }
+.sk-fill-brand-2 { --sk-fill: var(--sk-brand-2);    --sk-stroke: var(--sk-brand-ink); }
+.sk-fill-amber   { --sk-fill: var(--sk-amber-fill); --sk-stroke: var(--sk-amber-ink); }
+.sk-fill-lemon   { --sk-fill: var(--sk-lemon-fill); --sk-stroke: var(--sk-lemon-ink); }
+.sk-fill-accent  { --sk-fill: var(--sk-accent-fill);--sk-stroke: var(--sk-accent-ink); }
 .sk-fill-paper-2 { --sk-fill: var(--sk-paper-2); }
 .sk-fill-none    { --sk-fill: transparent; }
 
+/* Nút nền đậm: giữ nguyên nền khi rê chuột, chỉ nhấc lên nhẹ */
+.sk-fill-brand:hover,
+.sk-fill-brand-2:hover {
+  border-color: var(--sk-brand-ink) !important;
+  filter: brightness(1.06);
+}
+
 /* Khung nét đứt kiểu phác thảo dở dang */
-.sk-dash::before { border-style: dashed; }
-.sk-dash::after  { display: none; }
+.sk-dash { border-style: dashed !important; }
 
-/* Bóng đổ giấy: đặt trên lớp giả nên bóng cũng gợn sóng theo đường bao */
-.sk-lift::before {
+/* Bóng giấy: rất mềm, đủ để tách lớp mà không tạo cảm giác nặng */
+.sk-lift {
   box-shadow:
-    0 2px 3px rgba(58, 42, 24, 0.09),
-    0 10px 22px rgba(58, 42, 24, 0.11);
+    0 1px 2px rgba(58, 42, 24, 0.05),
+    0 6px 16px rgba(58, 42, 24, 0.07);
 }
-.dark .sk-lift::before {
+.dark .sk-lift {
   box-shadow:
-    0 2px 3px rgba(0, 0, 0, 0.4),
-    0 10px 22px rgba(0, 0, 0, 0.45);
+    0 1px 2px rgba(0, 0, 0, 0.28),
+    0 6px 16px rgba(0, 0, 0, 0.32);
 }
 
 /* --------------------------------------------------------------------------- */
-/* 4. ĐƯỜNG KẺ VẼ TAY thay cho border-b / border-r hình học                     */
-/* --------------------------------------------------------------------------- */
-.sk-rule,
-.sk-rule-top,
-.sk-rule-y {
-  position: relative;
-  border-color: transparent !important;
-}
-
-.sk-rule::after,
-.sk-rule-top::after,
-.sk-rule-y::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  background: var(--sk-ink);
-  filter: url(#sk-rough-line);
-  z-index: 5;
-}
-
-.sk-rule::after     { left: -1%; right: -1%; bottom: -2px; height: 3px; }
-.sk-rule-top::after { left: -1%; right: -1%; top: -2px;    height: 3px; }
-.sk-rule-y::after   { top: -1%;  bottom: -1%; right: -2px; width: 3px; }
-
-/* Nét kẻ chồng thứ hai, mảnh và mờ hơn — dấu vết của bàn tay đưa lại lần nữa.
-   Dùng box-shadow (bị bộ lọc bẻ cong cùng nét chính) thay vì ::before, vì
-   .paper-panel-texture đã chiếm lớp ::before của header và sidebar. */
-.sk-rule::after     { box-shadow: 0 5px 0 -1px var(--sk-ink-soft); }
-.sk-rule-top::after { box-shadow: 0 -5px 0 -1px var(--sk-ink-soft); }
-.sk-rule-y::after   { box-shadow: -5px 0 0 -1px var(--sk-ink-soft); }
-
-/* --------------------------------------------------------------------------- */
-/* 5. Ô NHẬP LIỆU: input trần, vỏ form gánh toàn bộ hình khối                   */
+/* 4. Ô NHẬP LIỆU: input trần, vỏ form gánh toàn bộ hình khối                   */
 /* --------------------------------------------------------------------------- */
 .sk-input {
   background: transparent !important;
@@ -472,50 +375,18 @@ header a,
 
 .sk-input-shell {
   --sk-r: var(--sk-r-c);
-  --sk-r2: var(--sk-r-d);
   --sk-fill: var(--sk-paper);
-  --sk-i: -4px;
 }
 
-/* Khi con trỏ vào ô nhập: nét mực đậm lên, đường bao đổi nhịp gợn sóng */
-.sk-input-shell:focus-within::before {
-  --sk-bw: 2.8px;
-  --sk-stroke: var(--sk-accent-ink);
-  filter: url(#sk-rough-2);
-}
-.sk-input-shell:focus-within::after {
-  --sk-stroke2: var(--sk-accent-ink);
-  opacity: 1;
+.sk-input-shell:focus-within {
+  --sk-bw: 1.5px;
+  border-color: var(--sk-accent-ink) !important;
+  box-shadow: 0 0 0 3px rgba(179, 134, 44, 0.12);
 }
 
 /* --------------------------------------------------------------------------- */
-/* 6. NHỊP LỆCH: giấy cắt dán không bao giờ thẳng hàng                          */
-/* --------------------------------------------------------------------------- */
-#chat-history-list > *:nth-child(odd)  { --sk-tilt: -0.7deg; }
-#chat-history-list > *:nth-child(even) { --sk-tilt: 0.6deg; }
-#chat-history-list > *                 { transform: rotate(var(--sk-tilt, 0deg)); }
-#chat-history-list > *:hover           { --sk-tilt: 0deg; }
-
-.sk-tilt-a { transform: rotate(-0.8deg); }
-.sk-tilt-b { transform: rotate(0.9deg); }
-
-/* Mỗi thẻ trong một dải nhận một hình dạng khác nhau để không lộ khuôn lặp */
-.sk-row > *:nth-child(3n+1) { --sk-r: var(--sk-r-tag);  --sk-r2: var(--sk-r-pill); }
-.sk-row > *:nth-child(3n+2) { --sk-r: var(--sk-r-tiny); --sk-r2: var(--sk-r-tag);  transform: rotate(0.7deg); }
-.sk-row > *:nth-child(3n+3) { --sk-r: var(--sk-r-pill); --sk-r2: var(--sk-r-soft); transform: rotate(-0.6deg); }
-
-/* --------------------------------------------------------------------------- */
-/* 7. Trung hoà các quy tắc cũ gắn với lớp bo góc hình học đã bị gỡ bỏ          */
+/* 5. Trung hoà các quy tắc cũ gắn với lớp bo góc hình học đã bị thay thế       */
 /* --------------------------------------------------------------------------- */
 .message-fade-in .rounded-2xl.rounded-tl-none {
   box-shadow: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #chat-history-list > *,
-  .sk-row > *,
-  .sk-tilt-a,
-  .sk-tilt-b {
-    transform: none !important;
-  }
 }
