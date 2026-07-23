@@ -849,29 +849,39 @@ header.sk-rule::after {
 }
 
 /* --------------------------------------------------------------------------- */
-/* GỢI Ý NHANH: vòng cung cầu vồng phía trên ô nhập liệu                        */
-/* Không dùng .sk-edge ở đây — nó đặt background/border bằng !important, mà     */
-/* khai báo !important thắng cả animation, nên màu sẽ không đổi được.           */
+/* GỢI Ý NHANH: băng chuyền cầu vồng bay theo vòng cung trên ô nhập liệu        */
+/*                                                                              */
+/* Mười viên gợi ý bay thành MỘT dòng liên tục: hiện ra ở mép trái, đi lên theo */
+/* vòng cung, qua đỉnh ở giữa rồi hạ xuống và tan ở mép phải. Đường đi là một    */
+/* parabol thật (9 mốc chia đều theo thời gian, độ cao tính theo 1-4(t-0.5)²)    */
+/* nên nhìn là một cung tròn mượt chứ không phải mấy viên nhấp nhô rời rạc.      */
+/*                                                                              */
+/* Không dùng .sk-edge ở đây — nó đặt background/border bằng !important, mà      */
+/* khai báo !important thắng cả animation.                                      */
 /* --------------------------------------------------------------------------- */
 .sk-suggest-arc {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 10px;
+  position: relative;
   width: 100%;
-  /* Thụt vào bằng bán kính bo góc của ô nhập liệu để hai viên ngoài cùng
-     thẳng hàng với hai đầu ô nhập, tạo vòng cung trải hết chiều ngang.
-     Lề dưới đủ rộng để cả quầng sáng của hai viên thấp nhất cũng không
-     chạm vào mép trên ô nhập liệu. */
-  padding: 6px 14px 0;
-  margin: 0 0 26px;
+  /* Đủ cao để chứa trọn vòng cung (từ đỉnh --peak tới đáy --base) cùng quầng
+     sáng của viên thấp nhất. overflow:hidden cắt hai viên ở hai đầu — lúc đó
+     chúng đã trong suốt hoàn toàn nên không thấy vết cắt. */
+  height: 100px;
+  overflow: hidden;
+  padding: 0;
+  margin: 0 0 6px;
 }
 
 .sk-suggest-pill {
-  --lift: 0px;
-  --tilt: 0deg;
-  flex-shrink: 1;
-  min-width: 0;
+  /* --base: độ cao ở hai đầu cung; --peak: ở đỉnh giữa (âm = cao hơn).
+     --turn: độ nghiêng tối đa, viên nghiêng theo tiếp tuyến của cung. */
+  --base: 26px;
+  --peak: -22px;
+  --turn: 9deg;
+  --sat: 1;
+  position: absolute;
+  top: 34px;
+  left: -12%;
+  opacity: 0;
   padding: 6px 13px;
   border-radius: 999px;
   border: 1px solid transparent;
@@ -879,163 +889,142 @@ header.sk-rule::after {
   font-weight: 500;
   line-height: 1.3;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   cursor: pointer;
-  transform: translateY(var(--lift)) rotate(var(--tilt)) scale(var(--swap-s, 1));
-  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.26s ease;
-  animation: sk-suggest-rainbow 14s linear infinite;
+  will-change: transform, opacity;
+  background-color: hsl(var(--h) calc(66% * var(--sat)) 95.5%);
+  border-color: hsl(var(--h) calc(64% * var(--sat)) 72%);
+  color: hsl(var(--h) calc(50% * var(--sat)) 30%);
+  box-shadow: 0 0 0 3px hsl(var(--h) calc(64% * var(--sat)) 70% / 0.14),
+              0 8px 18px -6px hsl(var(--h) calc(64% * var(--sat)) 55% / 0.45);
+  transition: filter 0.2s ease;
+  animation: sk-suggest-orbit 56s linear infinite;
 }
 
-/* Vòng cung trải hết bề ngang: hai bên hạ thấp và nghiêng ra ngoài, giữa nhô lên.
-   Lệch pha 1/8 chu kỳ nên năm viên luôn là năm dải màu KỀ NHAU của cầu vồng,
-   trải khoảng nửa quang phổ — đọc như một dải cầu vồng chạy từ đầu này sang
-   đầu kia chứ không phải năm màu rời rạc. */
-.sk-suggest-pill:nth-child(1) { --lift: 14px; --tilt: -7deg;   animation-delay: 0s; }
-.sk-suggest-pill:nth-child(2) { --lift: 3px;  --tilt: -3.5deg; animation-delay: -1.75s; }
-.sk-suggest-pill:nth-child(3) { --lift: -7px; --tilt: 0deg;    animation-delay: -3.5s; }
-.sk-suggest-pill:nth-child(4) { --lift: 3px;  --tilt: 3.5deg;  animation-delay: -5.25s; }
-.sk-suggest-pill:nth-child(5) { --lift: 14px; --tilt: 7deg;    animation-delay: -7s; }
+.dark .sk-suggest-pill {
+  background-color: hsl(var(--h) 48% 14% / 0.7);
+  border-color: hsl(var(--h) calc(64% * var(--sat)) 56% / 0.48);
+  color: hsl(var(--h) 78% 80%);
+  box-shadow: 0 0 0 3px hsl(var(--h) calc(64% * var(--sat)) 55% / 0.12),
+              0 8px 22px -6px hsl(var(--h) calc(64% * var(--sat)) 58% / 0.5);
+}
 
-/* Khoảnh khắc đổi câu gợi ý: thu nhỏ + mờ đi rồi hiện lại với nội dung mới */
-.sk-suggest-pill.is-swapping { opacity: 0; --swap-s: 0.8; }
+/* Mỗi viên một dải màu, xếp đúng thứ tự cầu vồng theo thứ tự bay vào. Viên
+   lệch pha 1/10 chu kỳ nên năm viên đang thấy luôn là năm dải KỀ NHAU —
+   đọc như một dải cầu vồng trôi từ trái sang phải. Sau tím lại vòng về đỏ,
+   hai màu này nối nhau tự nhiên nên vòng lặp không thấy mối. */
+.sk-suggest-pill:nth-child(1)  { --h: 0;   --sat: 0.95; animation-delay: 0s; }
+.sk-suggest-pill:nth-child(2)  { --h: 22;  --sat: 1;    animation-delay: -5.6s; }
+.sk-suggest-pill:nth-child(3)  { --h: 40;  --sat: 1;    animation-delay: -11.2s; }
+.sk-suggest-pill:nth-child(4)  { --h: 54;  --sat: 1;    animation-delay: -16.8s; }
+.sk-suggest-pill:nth-child(5)  { --h: 88;  --sat: 0.8;  animation-delay: -22.4s; }
+.sk-suggest-pill:nth-child(6)  { --h: 132; --sat: 0.78; animation-delay: -28s; }
+.sk-suggest-pill:nth-child(7)  { --h: 168; --sat: 0.78; animation-delay: -33.6s; }
+.sk-suggest-pill:nth-child(8)  { --h: 192; --sat: 0.82; animation-delay: -39.2s; }
+.sk-suggest-pill:nth-child(9)  { --h: 222; --sat: 0.9;  animation-delay: -44.8s; }
+.sk-suggest-pill:nth-child(10) { --h: 272; --sat: 0.85; animation-delay: -50.4s; }
 
-.sk-suggest-pill:hover  { transform: translateY(calc(var(--lift) - 3px)) rotate(var(--tilt)) scale(1.04); }
-.sk-suggest-pill:active { transform: translateY(var(--lift)) rotate(var(--tilt)) scale(0.96); }
+/* Bấm vào một viên đang bay thì khó, nên rê chuột (hoặc tab tới) là cả dòng
+   đứng lại cho tới khi rời đi. */
+.sk-suggest-arc:hover .sk-suggest-pill,
+.sk-suggest-arc:focus-within .sk-suggest-pill { animation-play-state: paused; }
+
+.sk-suggest-pill:hover { filter: brightness(1.06) saturate(1.08); }
 .sk-suggest-pill:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 
-/* Dải màu đi theo thứ tự cầu vồng thật (đỏ → cam → hổ phách → lá → lục →
-   lam → xanh → tím), độ bão hoà hạ xuống và ngả ấm để hoà với nền giấy. */
-@keyframes sk-suggest-rainbow {
-  0%, 100% {
-    background-color: hsl(0 66% 95.5%);
-    border-color: hsl(0 62% 78%);
-    color: hsl(0 48% 36%);
-    box-shadow: 0 0 0 3px hsl(0 62% 70% / 0.14), 0 8px 18px -6px hsl(0 62% 55% / 0.45);
+/* Nửa chu kỳ đầu là hành trình đi qua cung, nửa sau viên "đỗ" ngoài mép phải
+   và trong suốt — nhờ vậy 10 viên lệch pha đều nhau thì luôn có 5 viên trên
+   cung, phần còn lại chờ tới lượt. */
+@keyframes sk-suggest-orbit {
+  0% {
+    left: -12%;
+    transform: translate(-50%, var(--base)) rotate(calc(var(--turn) * -1));
+    opacity: 0;
+  }
+  4% { opacity: 1; }
+  6.25% {
+    left: 3.5%;
+    transform: translate(-50%, calc(var(--base) + (var(--peak) - var(--base)) * 0.4375)) rotate(calc(var(--turn) * -0.75));
   }
   12.5% {
-    background-color: hsl(26 78% 95.5%);
-    border-color: hsl(26 70% 74%);
-    color: hsl(26 55% 33%);
-    box-shadow: 0 0 0 3px hsl(26 70% 70% / 0.14), 0 8px 18px -6px hsl(26 70% 55% / 0.45);
+    left: 19%;
+    transform: translate(-50%, calc(var(--base) + (var(--peak) - var(--base)) * 0.75)) rotate(calc(var(--turn) * -0.5));
   }
-  25.0% {
-    background-color: hsl(45 82% 94.5%);
-    border-color: hsl(45 72% 66%);
-    color: hsl(45 62% 26%);
-    box-shadow: 0 0 0 3px hsl(45 72% 70% / 0.14), 0 8px 18px -6px hsl(45 72% 55% / 0.45);
+  18.75% {
+    left: 34.5%;
+    transform: translate(-50%, calc(var(--base) + (var(--peak) - var(--base)) * 0.9375)) rotate(calc(var(--turn) * -0.25));
   }
-  37.5% {
-    background-color: hsl(96 55% 95.0%);
-    border-color: hsl(96 48% 70%);
-    color: hsl(96 45% 26%);
-    box-shadow: 0 0 0 3px hsl(96 48% 70% / 0.14), 0 8px 18px -6px hsl(96 48% 55% / 0.45);
+  25% {
+    left: 50%;
+    transform: translate(-50%, var(--peak)) rotate(0deg);
   }
-  50.0% {
-    background-color: hsl(158 52% 95.0%);
-    border-color: hsl(158 46% 68%);
-    color: hsl(158 45% 25%);
-    box-shadow: 0 0 0 3px hsl(158 46% 70% / 0.14), 0 8px 18px -6px hsl(158 46% 55% / 0.45);
-  }
-  62.5% {
-    background-color: hsl(192 55% 95.0%);
-    border-color: hsl(192 48% 68%);
-    color: hsl(192 48% 27%);
-    box-shadow: 0 0 0 3px hsl(192 48% 70% / 0.14), 0 8px 18px -6px hsl(192 48% 55% / 0.45);
-  }
-  75.0% {
-    background-color: hsl(226 58% 95.5%);
-    border-color: hsl(226 52% 76%);
-    color: hsl(226 48% 40%);
-    box-shadow: 0 0 0 3px hsl(226 52% 70% / 0.14), 0 8px 18px -6px hsl(226 52% 55% / 0.45);
-  }
-  87.5% {
-    background-color: hsl(280 55% 96.0%);
-    border-color: hsl(280 50% 80%);
-    color: hsl(280 45% 42%);
-    box-shadow: 0 0 0 3px hsl(280 50% 70% / 0.14), 0 8px 18px -6px hsl(280 50% 55% / 0.45);
-  }
-}
-
-.dark .sk-suggest-pill { animation-name: sk-suggest-rainbow-dark; }
-
-@keyframes sk-suggest-rainbow-dark {
-  0%, 100% {
-    background-color: hsl(0 48% 14% / 0.7);
-    border-color: hsl(0 62% 56% / 0.48);
-    color: hsl(0 78% 80%);
-    box-shadow: 0 0 0 3px hsl(0 62% 55% / 0.12), 0 8px 22px -6px hsl(0 62% 58% / 0.5);
-  }
-  12.5% {
-    background-color: hsl(26 48% 14% / 0.7);
-    border-color: hsl(26 70% 56% / 0.48);
-    color: hsl(26 78% 80%);
-    box-shadow: 0 0 0 3px hsl(26 70% 55% / 0.12), 0 8px 22px -6px hsl(26 70% 58% / 0.5);
-  }
-  25.0% {
-    background-color: hsl(45 48% 14% / 0.7);
-    border-color: hsl(45 72% 56% / 0.48);
-    color: hsl(45 78% 80%);
-    box-shadow: 0 0 0 3px hsl(45 72% 55% / 0.12), 0 8px 22px -6px hsl(45 72% 58% / 0.5);
+  31.25% {
+    left: 65.5%;
+    transform: translate(-50%, calc(var(--base) + (var(--peak) - var(--base)) * 0.9375)) rotate(calc(var(--turn) * 0.25));
   }
   37.5% {
-    background-color: hsl(96 48% 14% / 0.7);
-    border-color: hsl(96 48% 56% / 0.48);
-    color: hsl(96 78% 80%);
-    box-shadow: 0 0 0 3px hsl(96 48% 55% / 0.12), 0 8px 22px -6px hsl(96 48% 58% / 0.5);
+    left: 81%;
+    transform: translate(-50%, calc(var(--base) + (var(--peak) - var(--base)) * 0.75)) rotate(calc(var(--turn) * 0.5));
   }
-  50.0% {
-    background-color: hsl(158 48% 14% / 0.7);
-    border-color: hsl(158 46% 56% / 0.48);
-    color: hsl(158 78% 80%);
-    box-shadow: 0 0 0 3px hsl(158 46% 55% / 0.12), 0 8px 22px -6px hsl(158 46% 58% / 0.5);
+  43.75% {
+    left: 96.5%;
+    transform: translate(-50%, calc(var(--base) + (var(--peak) - var(--base)) * 0.4375)) rotate(calc(var(--turn) * 0.75));
   }
-  62.5% {
-    background-color: hsl(192 48% 14% / 0.7);
-    border-color: hsl(192 48% 56% / 0.48);
-    color: hsl(192 78% 80%);
-    box-shadow: 0 0 0 3px hsl(192 48% 55% / 0.12), 0 8px 22px -6px hsl(192 48% 58% / 0.5);
+  46% { opacity: 1; }
+  50% {
+    left: 112%;
+    transform: translate(-50%, var(--base)) rotate(var(--turn));
+    opacity: 0;
   }
-  75.0% {
-    background-color: hsl(226 48% 14% / 0.7);
-    border-color: hsl(226 52% 56% / 0.48);
-    color: hsl(226 78% 80%);
-    box-shadow: 0 0 0 3px hsl(226 52% 55% / 0.12), 0 8px 22px -6px hsl(226 52% 58% / 0.5);
-  }
-  87.5% {
-    background-color: hsl(280 48% 14% / 0.7);
-    border-color: hsl(280 50% 56% / 0.48);
-    color: hsl(280 78% 80%);
-    box-shadow: 0 0 0 3px hsl(280 50% 55% / 0.12), 0 8px 22px -6px hsl(280 50% 58% / 0.5);
+  100% {
+    left: 112%;
+    transform: translate(-50%, var(--base)) rotate(var(--turn));
+    opacity: 0;
   }
 }
 
-/* Khung vừa: 5 viên bắt đầu bị cắt chữ nên giấu hai viên ngoài cùng, còn 3 */
-@media (max-width: 980px) {
-  .sk-suggest-pill:nth-child(1),
-  .sk-suggest-pill:nth-child(5) { display: none; }
-  .sk-suggest-pill:nth-child(2) { --lift: 10px; --tilt: -5deg; }
-  .sk-suggest-pill:nth-child(4) { --lift: 10px; --tilt: 5deg; }
+/* Màn hình hẹp: cung thấp hơn, chữ nhỏ hơn, và bỏ bớt một nửa số viên để
+   chúng không chồng lên nhau khi bề ngang co lại. */
+@media (max-width: 700px) {
+  .sk-suggest-arc { height: 82px; margin-bottom: 4px; }
+  .sk-suggest-pill {
+    --base: 20px;
+    --peak: -16px;
+    --turn: 7deg;
+    top: 28px;
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+  .sk-suggest-pill:nth-child(2n) { display: none; }
 }
 
-/* Màn hình hẹp: bỏ vòng cung, cho phép xuống dòng */
-@media (max-width: 640px) {
-  .sk-suggest-arc { flex-wrap: wrap; justify-content: center; gap: 8px; padding: 2px 4px 0; margin-bottom: 16px; }
-  .sk-suggest-pill { --lift: 0px; --tilt: 0deg; font-size: 11px; padding: 6px 12px; }
-}
-
+/* Tôn trọng cài đặt giảm chuyển động: dựng lại vòng cung tĩnh 5 viên như cũ */
 @media (prefers-reduced-motion: reduce) {
-  .sk-suggest-pill { animation: none; }
-  .sk-suggest-pill:nth-child(1) { background-color: hsl(26 78% 95.5%);  border-color: hsl(26 70% 74%);  color: hsl(26 55% 33%);  box-shadow: 0 6px 16px -6px hsl(26 70% 55% / 0.45); }
-  .sk-suggest-pill:nth-child(2) { background-color: hsl(48 80% 94.5%);  border-color: hsl(48 70% 66%);  color: hsl(48 60% 26%);  box-shadow: 0 6px 16px -6px hsl(48 70% 55% / 0.45); }
-  .sk-suggest-pill:nth-child(3) { background-color: hsl(130 54% 95%);   border-color: hsl(130 47% 69%); color: hsl(130 45% 25%); box-shadow: 0 6px 16px -6px hsl(130 47% 55% / 0.45); }
-  .sk-suggest-pill:nth-child(4) { background-color: hsl(186 55% 95%);   border-color: hsl(186 48% 68%); color: hsl(186 48% 26%); box-shadow: 0 6px 16px -6px hsl(186 48% 55% / 0.45); }
-  .sk-suggest-pill:nth-child(5) { background-color: hsl(226 58% 95.5%); border-color: hsl(226 52% 76%); color: hsl(226 48% 40%); box-shadow: 0 6px 16px -6px hsl(226 52% 55% / 0.45); }
-  .dark .sk-suggest-pill:nth-child(1) { background-color: hsl(26 48% 14% / 0.7);  border-color: hsl(26 70% 56% / 0.48);  color: hsl(26 78% 80%); }
-  .dark .sk-suggest-pill:nth-child(2) { background-color: hsl(48 48% 14% / 0.7);  border-color: hsl(48 70% 56% / 0.48);  color: hsl(48 78% 80%); }
-  .dark .sk-suggest-pill:nth-child(3) { background-color: hsl(130 48% 14% / 0.7); border-color: hsl(130 47% 56% / 0.48); color: hsl(130 78% 80%); }
-  .dark .sk-suggest-pill:nth-child(4) { background-color: hsl(186 48% 14% / 0.7); border-color: hsl(186 48% 56% / 0.48); color: hsl(186 78% 80%); }
-  .dark .sk-suggest-pill:nth-child(5) { background-color: hsl(226 48% 14% / 0.7); border-color: hsl(226 52% 56% / 0.48); color: hsl(226 78% 80%); }
+  .sk-suggest-arc {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    height: auto;
+    overflow: visible;
+    padding: 6px 14px 0;
+    margin-bottom: 22px;
+  }
+  .sk-suggest-pill {
+    position: static;
+    opacity: 1;
+    animation: none;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform: translateY(var(--lift, 0px)) rotate(var(--tilt, 0deg));
+  }
+  .sk-suggest-pill:nth-child(1) { --lift: 14px; --tilt: -7deg; }
+  .sk-suggest-pill:nth-child(2) { --lift: 3px;  --tilt: -3.5deg; }
+  .sk-suggest-pill:nth-child(3) { --lift: -7px; --tilt: 0deg; }
+  .sk-suggest-pill:nth-child(4) { --lift: 3px;  --tilt: 3.5deg; }
+  .sk-suggest-pill:nth-child(5) { --lift: 14px; --tilt: 7deg; }
+  .sk-suggest-pill:nth-child(n + 6) { display: none; }
 }
 
 /* --------------------------------------------------------------------------- */

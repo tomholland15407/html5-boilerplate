@@ -800,63 +800,79 @@ window.resetConversation = function() {
 
 // ==========================================
 // BĂNG CHUYỀN GỢI Ý NHANH
-// 10 câu gợi ý luân phiên qua 5 ô hiển thị của vòng cung cầu vồng. Mỗi câu đều
-// chứa từ khoá mà parseUserIntent() đã nhận diện sẵn (máy lạnh/điều hòa/đh, tủ
-// lạnh, laptop, hãng, phòng ngủ/phòng khách, sinh viên, gaming, mức giá) nên
-// không cần thêm luồng trả lời mới.
+// Mười viên gợi ý bay vòng cung trên ô nhập liệu. Đường bay, thứ tự màu và việc
+// dừng lại khi rê chuột đều do CSS lo (@keyframes sk-suggest-orbit +
+// animation-play-state). Mỗi câu trong data-prompt đều chứa từ khoá mà
+// parseUserIntent() đã nhận diện sẵn (máy lạnh/điều hòa/đh, tủ lạnh, laptop,
+// hãng, phòng ngủ/phòng khách, sinh viên, gaming, mức giá) nên không cần thêm
+// luồng trả lời mới.
+//
+// Phần JS dưới đây chỉ lo MỘT việc: khi con trỏ nằm trên vòng cung, băng chuyền
+// đứng lại và quay theo hướng di chuyển của chuột — kéo sang phải thì đi tới,
+// kéo sang trái thì lùi lại.
 // ==========================================
-const QUICK_PROMPT_POOL = [
-  { label: '"Đh Panasonic dưới 15 củ"',     prompt: 'Mua đh pana dưới 15 củ cho phòng ngủ' },
-  { label: '"Tủ lạnh 10tr cho 4 người"',    prompt: 'Tìm tủ lạnh tầm 10tr cho nhà 4 người' },
-  { label: '"Laptop mỏng nhẹ ~15tr"',       prompt: 'Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học' },
-  { label: '"Máy lạnh phòng khách 20m²"',   prompt: 'Tư vấn máy lạnh cho phòng khách rộng 20m²' },
-  { label: '"Laptop gaming ~25tr"',         prompt: 'Tìm laptop gaming đồ họa tầm 25tr' },
-  { label: '"Tủ lạnh Samsung 3 người"',     prompt: 'Tủ lạnh Samsung tiết kiệm điện cho gia đình 3 người' },
-  { label: '"Đh inverter dưới 10tr"',       prompt: 'Máy lạnh inverter giá dưới 10tr cho phòng ngủ nhỏ' },
-  { label: '"Tủ lạnh nhỏ cho sinh viên"',   prompt: 'Tủ lạnh nhỏ cho sinh viên ở trọ một mình' },
-  { label: '"Laptop văn phòng ~12tr"',      prompt: 'Laptop Asus văn phòng mỏng nhẹ tầm 12tr' },
-  { label: '"Điều hòa LG cho phòng ngủ"',   prompt: 'Điều hòa LG cho phòng ngủ dưới 15m²' }
-];
 
-const SUGGEST_SWAP_INTERVAL = 2600; // đổi 1 ô mỗi 2.6s → mỗi câu đứng trên màn ~13s
+const SUGGEST_CYCLE = 56;        // khớp với animation-duration trong main.css
+const SUGGEST_STAGGER = 5.6;     // SUGGEST_CYCLE / 10, độ lệch pha giữa hai viên
+const SUGGEST_SCRUB_DEADZONE = 3; // px: chống rung tay làm viên trượt khỏi con trỏ
 
-function initSuggestionCarousel() {
+function initSuggestionScrub() {
   const arc = document.getElementById('suggest-arc');
   if (!arc) return;
 
-  const slots = Array.from(arc.querySelectorAll('.sk-suggest-pill'));
-  if (slots.length === 0) return;
+  const pills = Array.from(arc.querySelectorAll('.sk-suggest-pill'));
+  if (pills.length === 0) return;
 
-  // Người dùng đang chọn/di chuột vào một gợi ý thì đừng đổi chữ dưới tay họ
-  let paused = false;
-  arc.addEventListener('mouseenter', () => { paused = true; });
-  arc.addEventListener('mouseleave', () => { paused = false; });
-  arc.addEventListener('focusin', () => { paused = true; });
-  arc.addEventListener('focusout', () => { paused = false; });
-
+  // Chế độ giảm chuyển động: vòng cung đứng yên, không có gì để kéo.
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  // Con trỏ chạy vòng quanh danh sách: mỗi lần chỉ thay MỘT ô, và luôn lấy câu
-  // kế tiếp trong danh sách nên 5 câu đang hiện không bao giờ trùng nhau.
-  let nextPrompt = slots.length % QUICK_PROMPT_POOL.length;
-  let slotCursor = 0;
+  // Vị trí hiện tại của cả băng chuyền trên dòng thời gian 56s. Giữ nguyên giữa
+  // các lần rê chuột nên thả tay ra là chạy tiếp từ đúng chỗ đó.
+  let phase = 0;
+  let lastX = null;
+  let travelled = 0;   // tổng quãng đường đã rê, để vượt vùng chết mới bắt đầu kéo
+  let secPerPx = 0;
+  let frame = 0;
 
-  setInterval(() => {
-    if (paused || document.hidden) return;
+  // Hoạt ảnh đang tạm dừng thì animation-delay âm chính là "tua" tới thời điểm
+  // bất kỳ trong chu kỳ — kéo tới hay lùi lại đều được, và dùng lại đúng
+  // @keyframes của CSS nên không phải chép lại hình học vòng cung sang JS.
+  function render() {
+    frame = 0;
+    pills.forEach((pill, i) => {
+      const at = ((phase + i * SUGGEST_STAGGER) % SUGGEST_CYCLE + SUGGEST_CYCLE) % SUGGEST_CYCLE;
+      pill.style.animationDelay = `-${at.toFixed(3)}s`;
+    });
+  }
 
-    const slot = slots[slotCursor];
-    const item = QUICK_PROMPT_POOL[nextPrompt];
+  arc.addEventListener('mouseenter', (e) => {
+    // Rê hết bề ngang vòng cung = băng chuyền đi trọn một lượt (nửa chu kỳ,
+    // vì nửa sau là lúc viên đang "đỗ" ngoài mép phải).
+    const width = arc.getBoundingClientRect().width || 1;
+    secPerPx = (SUGGEST_CYCLE / 2) / width;
+    lastX = e.clientX;
+    travelled = 0;
+  });
 
-    slot.classList.add('is-swapping');
-    setTimeout(() => {
-      slot.textContent = item.label;
-      slot.dataset.prompt = item.prompt;
-      slot.classList.remove('is-swapping');
-    }, 260); // khớp với thời lượng transition của .is-swapping
+  arc.addEventListener('mousemove', (e) => {
+    if (lastX === null) return;
 
-    nextPrompt = (nextPrompt + 1) % QUICK_PROMPT_POOL.length;
-    slotCursor = (slotCursor + 1) % slots.length;
-  }, SUGGEST_SWAP_INTERVAL);
+    const dx = e.clientX - lastX;
+    lastX = e.clientX;
+
+    travelled += Math.abs(dx);
+    if (travelled < SUGGEST_SCRUB_DEADZONE) return;
+
+    phase += dx * secPerPx;
+    if (!frame) frame = requestAnimationFrame(render);
+  });
+
+  arc.addEventListener('mouseleave', () => {
+    lastX = null;
+    // Ghi lại vị trí lần cuối rồi để CSS chạy tiếp — không giật về chỗ cũ.
+    if (frame) { cancelAnimationFrame(frame); }
+    render();
+  });
 }
 
 window.fillQuickPrompt = function(promptText) {
@@ -875,7 +891,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCollapsibleSidebarLogic();
   initHistorySearch();
   initSidebarThemeToggle();
-  initSuggestionCarousel();
+  initSuggestionScrub();
   injectJiggleStyles();
 
   createNewChatSession();
