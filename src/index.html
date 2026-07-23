@@ -80,6 +80,14 @@
       </div>
     </div>
 
+    <!-- Ô TÌM KIẾM LỊCH SỬ: một dải bo tròn bán trong suốt với kính lúp -->
+    <form id="history-search-form" class="sk-search hidden md:flex items-center relative z-10 flex-1 max-w-sm mx-8" role="search" onsubmit="return false;">
+      <i class="fa-solid fa-magnifying-glass sk-search-icon" aria-hidden="true"></i>
+      <input id="history-search" type="search" autocomplete="off"
+             class="sk-search-input" placeholder="Tìm trong lịch sử trò chuyện"
+             aria-label="Tìm trong lịch sử trò chuyện">
+    </form>
+
     <!-- KHU VỰC TRẠNG THÁI VÀ TOGGLE GIAO DIỆN -->
     <div class="flex items-center space-x-4 text-xs relative z-10">
       <button id="theme-toggle-btn" class="theme-pill" role="switch" title="Chuyển đổi giao diện Sáng/Tối" aria-label="Chuyển đổi giao diện Sáng/Tối">
@@ -94,63 +102,79 @@
   <main class="flex-1 flex overflow-hidden relative">
 
     <!-- BÊN TRÁI: DANH SÁCH LỊCH SỬ TRÒ CHUYỆN (COLLAPSIBLE SIDEBAR) -->
-    <aside id="sidebar-panel" class="sk-rule-y paper-panel-texture w-80 bg-paper-100 dark:bg-brand-panel border-r border-paper-400 dark:border-brand-border p-5 flex flex-col justify-between shrink-0 transition-colors duration-300 sidebar-transition relative z-20">
+    <aside id="sidebar-panel" class="sidebar-panel sidebar-transition w-80 flex flex-col shrink-0 relative z-20">
 
       <!-- Vỏ bọc kiểm soát cuộn nội dung khi thu nhỏ chiều rộng -->
-      <div class="space-y-5 w-72 flex flex-col flex-1 overflow-hidden relative z-10">
+      <div class="w-80 flex flex-col flex-1 overflow-hidden relative z-10 px-3 pt-4">
 
-        <!-- Header Sidebar chứa tiêu đề thân thiện và nút thu gọn -->
-        <div class="sk-rule flex items-center justify-between border-b border-paper-300 dark:border-brand-border/60 pb-3 shrink-0">
-          <div class="flex items-center space-x-2 text-paper-ink dark:text-white">
-            <i class="fa-solid fa-clock-rotate-left text-brand-electric"></i>
-            <h2 class="text-sm font-bold tracking-wide">Lịch sử tư vấn</h2>
-          </div>
-          <button id="btn-close-sidebar" class="sk-badge sk-edge sk-edge-soft sk-edge-single sk-fill-none text-paper-500 hover:text-brand-coral dark:hover:text-white p-1.5 hover:bg-paper-200 dark:hover:bg-brand-dark/60 transition-all" title="Thu gọn thanh lịch sử">
+        <!-- Nhóm điều hướng chính -->
+        <div class="flex items-center justify-between px-3 mb-1.5 shrink-0">
+          <span class="side-label">Công cụ</span>
+          <button id="btn-close-sidebar" class="side-icon-btn" title="Thu gọn thanh bên" aria-label="Thu gọn thanh bên">
             <i class="fa-solid fa-angles-left"></i>
           </button>
         </div>
 
-        <!-- NÚT GRADIENT CAO CẤP TẠO ĐIỂM NHẤN HOÀN HẢO CHO SIDEBAR -->
-        <button onclick="window.resetConversation()" class="sk-cta w-full bg-gradient-to-b from-[#b8712f] to-[#8a4a1c] hover:from-[#c9862f] hover:to-[#9c5a22] text-[#fbf5e6] font-bold text-xs py-3.5 px-4 flex items-center justify-center space-x-2 transition-all duration-200 shadow-[0_4px_12px_rgba(138,74,28,0.3)] hover:shadow-[0_6px_16px_rgba(138,74,28,0.4)] shrink-0 active:scale-[0.97]">
-          <i class="fa-solid fa-plus text-sm"></i>
-          <span class="tracking-wide">Bắt đầu tư vấn mới</span>
-        </button>
+        <nav class="space-y-0.5 shrink-0">
+          <button type="button" onclick="window.resetConversation()" class="side-item is-active">
+            <i class="fa-regular fa-comment"></i>
+            <span>Trò chuyện</span>
+          </button>
+          <button type="button" class="side-item">
+            <i class="fa-regular fa-credit-card"></i>
+            <span>Gói dịch vụ</span>
+          </button>
+          <button type="button" class="side-item">
+            <i class="fa-regular fa-clock"></i>
+            <span>Cập nhật</span>
+            <span class="side-badge">Mới</span>
+          </button>
+          <button type="button" class="side-item">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Cài đặt</span>
+          </button>
+          <button type="button" id="side-theme-toggle" class="side-item">
+            <i class="fa-regular fa-sun"></i>
+            <span>Đổi giao diện</span>
+          </button>
+          <button type="button" class="side-item">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Đăng xuất</span>
+          </button>
+        </nav>
 
-        <!-- Container chứa các danh mục lịch sử trò chuyện được cập nhật động -->
-        <div class="flex-1 overflow-y-auto pr-1">
-          <div id="chat-history-list" class="space-y-2">
+        <div class="side-divider"></div>
+
+        <!-- Danh sách lịch sử trò chuyện được cập nhật động -->
+        <div class="flex items-center justify-between px-3 mb-1.5 shrink-0">
+          <span class="side-label">Lịch sử trò chuyện</span>
+          <button onclick="window.resetConversation()" class="side-icon-btn" title="Bắt đầu tư vấn mới" aria-label="Bắt đầu tư vấn mới">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto pb-4">
+          <div id="chat-history-list" class="space-y-0.5">
             <!-- Được render động từ app.js -->
-            <div id="history-empty-state" class="sk-card sk-edge sk-edge-soft sk-dash sk-fill-none text-center py-8 px-4 border border-dashed border-paper-400 dark:border-brand-border/40">
-              <i class="fa-regular fa-comments text-paper-300 dark:text-slate-600 text-2xl mb-2 block"></i>
-              <p class="text-[11px] text-paper-500 dark:text-slate-500 italic">Chưa có cuộc trò chuyện cũ nào tại phiên này.</p>
+            <div id="history-empty-state" class="px-3 py-6">
+              <p class="text-[11.5px] text-paper-inksoft/70 dark:text-stone-500">Chưa có cuộc trò chuyện nào.</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- FOOTER SIDEBAR NÂNG CẤP VỚI HỌA TIẾT ĐỒ HỌA SỌC CHÉO PHONG CÁCH DIGITAL -->
-      <div class="w-full font-sans select-none px-4 pb-4 text-center">
-
-        <!-- GOLD-FOIL ORNAMENTAL DIVIDER VỚI HỌA TIẾT KIM CƯƠNG PHONG CÁCH GIẤY CỔ -->
-        <div class="w-full flex items-center justify-center space-x-2 py-4 select-none">
-          <div class="h-px flex-1 bg-gradient-to-r from-transparent to-brand-electric/40 dark:to-brand-border"></div>
-          <div class="flex items-center space-x-1.5 shrink-0 px-1">
-            <span class="w-1 h-1 bg-brand-electric/40 rounded-full"></span>
-            <span class="w-2 h-2 border border-brand-electric rotate-45 shadow-[0_0_8px_rgba(179,134,44,0.5)]"></span>
-            <span class="w-1 h-1 bg-brand-electric/40 rounded-full"></span>
-          </div>
-          <div class="h-px flex-1 bg-gradient-to-l from-transparent to-brand-electric/40 dark:to-brand-border"></div>
-        </div>
-
-        <!-- Content Block -->
-        <div class="mt-3 space-y-1">
-          <div class="font-serif italic text-[13px] font-semibold tracking-wide text-amber-900 dark:text-amber-200">
-            Dữ liệu bảo mật &amp; chính xác 100%
-          </div>
-          <div class="text-[10px] tracking-normal text-paper-inksoft/70 dark:text-stone-500 font-light">
-            Hệ thống CSKH tự động Điện Máy Xanh 2026.
-          </div>
-        </div>
+      <!-- FOOTER SIDEBAR: THẺ TÀI KHOẢN KHÁCH HÀNG -->
+      <div class="w-80 shrink-0 select-none px-3 pb-3 pt-3 relative z-10 side-account-wrap">
+        <button type="button" class="side-account">
+          <img src="img/mascot.png" alt="Ảnh đại diện" class="side-account-avatar" onerror="this.src='https://placehold.co/80x80?text=C'">
+          <span class="side-account-text">
+            <span class="side-account-name">
+              Customer
+              <span class="side-account-plan">Free</span>
+            </span>
+            <span class="side-account-mail">customer@dienmayxanh.vn</span>
+          </span>
+        </button>
       </div>
 
       <!-- HỘP ĐEN GỠ LỖI ẨN -->
@@ -251,13 +275,16 @@
       <footer class="sk-rule-top p-4 bg-paper-100 dark:bg-brand-panel border-t border-paper-400 dark:border-brand-border shrink-0 transition-colors duration-300 shadow-lg dark:shadow-none relative z-10">
         <form id="chat-form" class="sk-edge sk-edge-strong sk-input-shell relative flex items-center">
           <input type="text" id="user-input" placeholder="Nhập câu hỏi bằng tiếng Việt... (Ví dụ: 'Cần tìm tủ lạnh tầm 8 triệu cho gia đình 3 người tiết kiệm điện')"
-            class="sk-input w-full bg-paper-50 dark:bg-brand-dark border border-paper-400 dark:border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-paper-ink dark:text-slate-100 placeholder-paper-500 dark:placeholder-slate-500 text-sm pl-5 pr-28 py-4 focus:outline-none transition-all duration-200 shadow-inner"
+            class="sk-input w-full bg-paper-50 dark:bg-brand-dark border border-paper-400 dark:border-brand-border focus:border-brand-electric focus:ring-1 focus:ring-brand-electric text-paper-ink dark:text-slate-100 placeholder-paper-500 dark:placeholder-slate-500 text-sm pl-5 pr-16 py-4 focus:outline-none transition-all duration-200 shadow-inner"
             autocomplete="off" required>
 
-          <div class="absolute right-3 flex items-center space-x-2 z-[2]">
-            <button type="submit" class="sk-pill sk-edge sk-edge-strong sk-fill-brand-2 sk-lift bg-gradient-to-b from-[#b8560f] to-[#8a3b12] hover:from-[#d4700f] hover:to-[#a8481b] text-[#fbf5e6] font-bold text-sm px-6 py-2 flex items-center space-x-2 transition-all duration-150 shadow-[0_4px_12px_rgba(184,86,15,0.3)] hover:shadow-[0_6px_16px_rgba(184,86,15,0.45)] active:scale-95">
-              <span>Gửi</span>
-              <i class="fa-solid fa-paper-plane text-xs"></i>
+          <div class="absolute right-2.5 flex items-center z-[2]">
+            <button type="submit" class="sk-send" title="Gửi" aria-label="Gửi">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 19.5V5.5M12 5.5L5.5 12M12 5.5L18.5 12"
+                      stroke="currentColor" stroke-width="1.7"
+                      stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </button>
           </div>
         </form>

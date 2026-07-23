@@ -150,6 +150,7 @@ let sessionState = {
 
 let consumerChatSessions = [];
 let activeSessionId = null;
+let historySearchQuery = '';
 
 // ==========================================
 // HỆ THỐNG ĐIỀU KHIỂN ĐÓNG/MỞ SIDEBAR
@@ -162,16 +163,38 @@ function initCollapsibleSidebarLogic() {
   if (!sidebarPanel || !btnClose || !btnOpen) return;
 
   btnClose.addEventListener('click', () => {
-    sidebarPanel.classList.remove('w-80', 'p-5', 'border-r');
-    sidebarPanel.classList.add('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
+    sidebarPanel.classList.add('sidebar-collapsed');
     btnOpen.classList.remove('hidden');
   });
 
   btnOpen.addEventListener('click', () => {
-    sidebarPanel.classList.remove('w-0', 'p-0', 'border-r-0', 'opacity-0', 'pointer-events-none');
-    sidebarPanel.classList.add('w-80', 'p-5', 'border-r');
+    sidebarPanel.classList.remove('sidebar-collapsed');
     btnOpen.classList.add('hidden');
   });
+}
+
+// ==========================================
+// Ô TÌM KIẾM LỊCH SỬ TRÊN HEADER
+// ==========================================
+function initHistorySearch() {
+  const input = document.getElementById('history-search');
+  if (!input) return;
+
+  input.addEventListener('input', () => {
+    historySearchQuery = input.value.trim().toLowerCase();
+    renderChatHistoryUI();
+  });
+}
+
+// ==========================================
+// HÀNG "ĐỔI GIAO DIỆN" TRONG THANH BÊN
+// ==========================================
+function initSidebarThemeToggle() {
+  const btn = document.getElementById('side-theme-toggle');
+  const pill = document.getElementById('theme-toggle-btn');
+  if (!btn || !pill) return;
+
+  btn.addEventListener('click', () => pill.click());
 }
 
 // ==========================================
@@ -357,36 +380,32 @@ function renderChatHistoryUI() {
   const container = document.getElementById('chat-history-list');
   if (!container) return;
 
-  if (consumerChatSessions.length === 0) {
+  const visibleSessions = historySearchQuery
+    ? consumerChatSessions.filter(s => (s.title || '').toLowerCase().includes(historySearchQuery))
+    : consumerChatSessions;
+
+  if (visibleSessions.length === 0) {
+    const message = historySearchQuery
+      ? `Không tìm thấy cuộc trò chuyện nào khớp “${historySearchQuery}”.`
+      : 'Chưa có cuộc trò chuyện nào.';
     container.innerHTML = `
-      <div id="history-empty-state" class="sk-card sk-edge sk-edge-soft sk-dash sk-fill-none text-center py-8 px-4 border border-dashed border-amber-200 dark:border-amber-500/20 bg-amber-50/20">
-        <p class="text-[11px] text-amber-600 italic">Chưa có cuộc trò chuyện cũ.</p>
+      <div id="history-empty-state" class="px-3 py-6">
+        <p class="text-[11.5px] text-paper-inksoft/70 dark:text-stone-500">${message}</p>
       </div>`;
     return;
   }
 
   container.innerHTML = '';
-  consumerChatSessions.forEach((session, index) => {
+  visibleSessions.forEach((session) => {
     const isActive = session.id === activeSessionId;
     const pill = document.createElement('div');
 
-    pill.className = `group sk-edge sk-lift ${index % 2 === 0 ? 'sk-card' : 'sk-card-alt sk-edge-alt'} flex items-center justify-between p-3.5 border transition-all duration-200 cursor-pointer text-xs font-medium history-item-appear ${
-      isActive
-      ? 'border-brand-electric/50 bg-brand-electric/5 text-brand-electric dark:bg-brand-electric/10'
-      : 'border-amber-200/70 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-950/10 text-amber-800 dark:text-amber-300 hover:bg-amber-100/60 dark:hover:bg-amber-900/20'
-    }`;
-
-    const mascotFile = session.mascot || 'mascot.png';
-    const iconImageHtml = `<img src="img/${mascotFile}" alt="Mascot" class="w-6 h-6 object-contain rounded-md shadow-sm bg-white" onerror="this.src='img/mascot.png'">`;
+    pill.className = `side-chat history-item-appear${isActive ? ' is-active' : ''}`;
+    pill.title = session.title;
 
     pill.innerHTML = `
-      <div class="flex items-center space-x-2.5 truncate w-[90%]">
-        <span class="shrink-0 flex items-center">${iconImageHtml}</span>
-        <div class="truncate flex flex-col text-left">
-          <span class="truncate font-semibold text-amber-950 dark:text-amber-100">${session.title}</span>
-          <span class="text-[10px] text-amber-600/80 dark:text-amber-400/60 mt-0.5">${session.timestamp} • Điện Máy Xanh</span>
-        </div>
-      </div>`;
+      <i class="fa-regular fa-comment" aria-hidden="true"></i>
+      <span>${session.title}</span>`;
 
     pill.addEventListener('click', () => {
       activeSessionId = session.id;
@@ -789,23 +808,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) form.addEventListener('submit', handleFormSubmit);
 
   initCollapsibleSidebarLogic();
+  initHistorySearch();
+  initSidebarThemeToggle();
   injectJiggleStyles();
-
-  const allElements = document.getElementsByTagName('*');
-  for (let el of allElements) {
-    if (el.textContent.trim().startsWith('Dữ liệu bảo mật') && el.children.length === 0) {
-      el.style.textAlign = 'left';
-      el.style.display = 'block';
-      if (el.parentElement) {
-        el.parentElement.style.display = 'flex';
-        el.parentElement.style.flexDirection = 'column';
-        el.parentElement.style.alignItems = 'flex-start';
-        el.parentElement.style.textAlign = 'left';
-        el.parentElement.style.paddingLeft = '0';
-        el.parentElement.style.marginLeft = '0';
-      }
-    }
-  }
 
   createNewChatSession();
 });

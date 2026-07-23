@@ -441,6 +441,290 @@ header.sk-rule::after {
   box-shadow: none;
 }
 
+/* ================================================================================= */
+/* THANH BÊN TỐI GIẢN: nền phẳng, hàng điều hướng bo góc nhẹ, không khung viền       */
+/* ================================================================================= */
+.sidebar-panel {
+  background: #faf4e4;
+  border-right: 1px solid rgba(88, 56, 20, 0.1);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.dark .sidebar-panel {
+  background: #141009;
+  border-right-color: rgba(201, 162, 39, 0.12);
+}
+
+/* Nhãn nhóm ("Công cụ", "Lịch sử trò chuyện") */
+.side-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(107, 86, 55, 0.75);
+}
+.dark .side-label { color: rgba(201, 162, 39, 0.55); }
+
+/* Đường kẻ mảnh ngăn hai nhóm */
+.side-divider {
+  flex-shrink: 0;
+  height: 1px;
+  margin: 14px 12px;
+  background: rgba(88, 56, 20, 0.1);
+}
+.dark .side-divider { background: rgba(201, 162, 39, 0.14); }
+
+/* Hàng điều hướng: biểu tượng + nhãn, nền chỉ hiện khi hover hoặc đang chọn */
+.side-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  line-height: 1.2;
+  text-align: left;
+  color: #6b5637;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.side-item i {
+  width: 17px;
+  font-size: 14px;
+  text-align: center;
+  opacity: 0.7;
+}
+.side-item > span:first-of-type { flex: 1; }
+.side-item:hover { background: rgba(88, 56, 20, 0.055); color: #3a2a18; }
+.side-item.is-active {
+  background: rgba(88, 56, 20, 0.075);
+  color: #3a2a18;
+  font-weight: 600;
+}
+.side-item.is-active i { opacity: 1; color: #8a4a1c; }
+
+.dark .side-item { color: #b8a67f; }
+.dark .side-item:hover { background: rgba(201, 162, 39, 0.08); color: #f1e7ce; }
+.dark .side-item.is-active { background: rgba(201, 162, 39, 0.1); color: #f1e7ce; }
+.dark .side-item.is-active i { color: #c9a227; }
+
+/* Nhãn "Mới" đặt cuối hàng điều hướng */
+.side-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #8a4a1c;
+  background: rgba(179, 134, 44, 0.14);
+}
+.dark .side-badge { color: #e6c76a; background: rgba(201, 162, 39, 0.16); }
+
+/* Nút biểu tượng nhỏ đặt cạnh nhãn nhóm */
+.side-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  font-size: 11px;
+  color: rgba(107, 86, 55, 0.7);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.side-icon-btn:hover { background: rgba(88, 56, 20, 0.07); color: #3a2a18; }
+.dark .side-icon-btn { color: rgba(201, 162, 39, 0.6); }
+.dark .side-icon-btn:hover { background: rgba(201, 162, 39, 0.1); color: #f1e7ce; }
+
+/* Thẻ tài khoản khách hàng ở chân thanh bên */
+.side-account-wrap { border-top: 1px solid rgba(88, 56, 20, 0.1); }
+.dark .side-account-wrap { border-top-color: rgba(201, 162, 39, 0.14); }
+
+.side-account {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+.side-account:hover { background: rgba(88, 56, 20, 0.055); }
+.dark .side-account:hover { background: rgba(201, 162, 39, 0.08); }
+
+.side-account-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #fffdf5;
+  box-shadow: 0 1px 3px rgba(58, 42, 24, 0.16);
+  flex-shrink: 0;
+}
+.dark .side-account-avatar { background: #241c11; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); }
+
+.side-account-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.side-account-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #3a2a18;
+}
+.dark .side-account-name { color: #f1e7ce; }
+
+.side-account-plan {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #8a4a1c;
+  background: rgba(179, 134, 44, 0.14);
+}
+.dark .side-account-plan { color: #e6c76a; background: rgba(201, 162, 39, 0.16); }
+
+.side-account-mail {
+  font-size: 11px;
+  color: rgba(107, 86, 55, 0.8);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dark .side-account-mail { color: rgba(184, 166, 127, 0.75); }
+
+/* Hàng lịch sử trò chuyện — cùng ngôn ngữ với hàng điều hướng */
+.side-chat {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #6b5637;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.side-chat i {
+  width: 16px;
+  font-size: 13px;
+  text-align: center;
+  opacity: 0.65;
+  flex-shrink: 0;
+}
+.side-chat span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.side-chat:hover { background: rgba(88, 56, 20, 0.055); color: #3a2a18; }
+.side-chat.is-active { background: rgba(88, 56, 20, 0.075); color: #3a2a18; font-weight: 600; }
+.side-chat.is-active i { opacity: 1; color: #8a4a1c; }
+.dark .side-chat { color: #b8a67f; }
+.dark .side-chat:hover { background: rgba(201, 162, 39, 0.08); color: #f1e7ce; }
+.dark .side-chat.is-active { background: rgba(201, 162, 39, 0.1); color: #f1e7ce; }
+.dark .side-chat.is-active i { color: #c9a227; }
+
+/* ================================================================================= */
+/* Ô TÌM KIẾM LỊCH SỬ TRÊN HEADER: dải bo tròn bán trong suốt, chỉ một kính lúp      */
+/* ================================================================================= */
+.sk-search {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: rgba(255, 253, 245, 0.45);
+  border: 1px solid rgba(88, 56, 20, 0.13);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.sk-search:hover { border-color: rgba(88, 56, 20, 0.22); }
+.sk-search:focus-within {
+  background: rgba(255, 253, 245, 0.72);
+  border-color: rgba(179, 134, 44, 0.5);
+  box-shadow: 0 0 0 3px rgba(179, 134, 44, 0.1);
+}
+
+.sk-search-icon {
+  font-size: 12.5px;
+  color: rgba(107, 86, 55, 0.6);
+  margin-right: 10px;
+  transition: color 0.2s ease;
+}
+.sk-search:focus-within .sk-search-icon { color: #8a4a1c; }
+
+.sk-search-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #3a2a18;
+}
+.sk-search-input::placeholder { color: rgba(107, 86, 55, 0.55); }
+.sk-search-input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+.dark .sk-search {
+  background: rgba(255, 245, 220, 0.05);
+  border-color: rgba(201, 162, 39, 0.16);
+}
+.dark .sk-search:hover { border-color: rgba(201, 162, 39, 0.28); }
+.dark .sk-search:focus-within {
+  background: rgba(255, 245, 220, 0.08);
+  border-color: rgba(201, 162, 39, 0.45);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.1);
+}
+.dark .sk-search-icon { color: rgba(201, 162, 39, 0.55); }
+.dark .sk-search:focus-within .sk-search-icon { color: #e6c76a; }
+.dark .sk-search-input { color: #f1e7ce; }
+.dark .sk-search-input::placeholder { color: rgba(184, 166, 127, 0.55); }
+
+/* ================================================================================= */
+/* NÚT GỬI: chỉ một mũi tên mảnh trong khối tròn                                     */
+/* ================================================================================= */
+.sk-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  color: #fbf5e6;
+  background: linear-gradient(180deg, #b8712f 0%, #8a4a1c 100%);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(138, 74, 28, 0.28);
+  transition: box-shadow 0.18s ease, filter 0.18s ease, transform 0.12s ease;
+}
+.sk-send svg { width: 18px; height: 18px; }
+.sk-send:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 4px 14px rgba(138, 74, 28, 0.38);
+}
+.sk-send:active { transform: scale(0.94); }
+.sk-send:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(179, 134, 44, 0.35);
+}
+.dark .sk-send { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45); }
+.dark .sk-send:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55); }
+
 /* --------------------------------------------------------------------------- */
 /* 3. NÚT CHUYỂN GIAO DIỆN SÁNG/TỐI — viên thuốc nhỏ, chỉ hai biểu tượng       */
 /* --------------------------------------------------------------------------- */
