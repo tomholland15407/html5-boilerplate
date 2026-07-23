@@ -121,18 +121,21 @@ async def chat(req: Request) -> StreamingResponse:
         t_understand = time.perf_counter() - t0
 
         # Which product this turn is about, and whether it is a different one
-        # from the turn before. On a change prepare() has already started a
-        # fresh session for it, and the browser opens a chat of its own bound
-        # to the id below — so the previous subject keeps its own thread.
-        # Read off the session rather than this turn's understanding: small
-        # talk leaves the subject alone, and its stray cues ("xin chào" folds
-        # onto chảo) must not read as a change of subject.
+        # from the turn before. On a change the conversation so far has been
+        # parked under previous_session_id and this session id now belongs to
+        # the new subject, so a client that ignores all of this still stays on
+        # the subject the shopper just raised; one that reads it opens a chat
+        # for the new subject and repoints the old chat at the parked id.
+        # Read the group off the session rather than this turn's understanding:
+        # small talk leaves the subject alone, and its stray cues ("xin chào"
+        # folds onto chảo) must not read as a change of subject.
         group = session.understanding.group if session.understanding else None
         yield sse("topic", {
             "session_id": session.id,
             "group": group,
             "label": GROUP_LABELS.get(group) if group else None,
-            "changed": session.id != sid,
+            "changed": bool(session.archived_id),
+            "previous_session_id": session.archived_id,
         })
 
         if early is not None:

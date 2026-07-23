@@ -170,12 +170,14 @@
    * Lift a turn into a chat of its own.
    *
    * The message was typed into the conversation about phones, but the server
-   * has just said it is about laptops and has opened a session for it. Take the
-   * message back out of the old chat — it belongs to the new subject — and
-   * replay it into a fresh one bound to the new session.
+   * has just said it is about laptops. The session id in hand now belongs to
+   * the new subject and the previous conversation has been parked under
+   * previous_session_id, so the old chat is repointed there and keeps its
+   * history, while the message moves into a fresh chat on the current id.
    */
   function startDedicatedChat(userText, topic) {
     const from = activeChat();
+    if (from && topic.previous_session_id) from.backendId = topic.previous_session_id;
     if (from && from.messages && from.messages.length) {
       const last = from.messages[from.messages.length - 1];
       if (last.role === 'user' && last.content === userText) from.messages.pop();

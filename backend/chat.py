@@ -88,6 +88,10 @@ class Session:
     pending_slot: str | None = None
     last_products: list[Product] = field(default_factory=list)
     turns: int = 0
+    # Set for the one turn on which the subject changed: where the previous
+    # conversation was parked, so the browser can keep pointing its old chat
+    # at it. Cleared at the start of every turn.
+    archived_id: str | None = None
 
 
 @dataclass
@@ -294,12 +298,34 @@ class ChatEngine:
     def reset(self, sid: str) -> None:
         self.sessions.pop(sid, None)
 
-    def _fork(self) -> Session:
-        """A clean session for a product unrelated to the one in progress."""
-        new_id = uuid.uuid4().hex
-        s = Session(id=new_id)
-        self.sessions[new_id] = s
-        return s
+    def _archive(self, live: Session) -> Session:
+        """Park the conversation so far elsewhere and clear the live session.
+
+        The subject the shopper has just raised keeps the session id the client
+        is already using, and it is the *previous* subject that moves. Doing it
+        the other way round — handing the new subject a new id and hoping the
+        client follows — stranded any client that did not: it went on answering
+        the new subject's questions into the old subject's session, so asking
+        about điều hòa and then naming a budget came back with refrigerators.
+        A client that ignores the change now simply stays on the new subject.
+        """
+        parked = Session(
+            id=uuid.uuid4().hex,
+            understanding=live.understanding,
+            asked=set(live.asked),
+            pending_slot=live.pending_slot,
+            last_products=list(live.last_products),
+            turns=live.turns,
+        )
+        self.sessions[parked.id] = parked
+
+        live.understanding = None
+        live.asked = set()
+        live.pending_slot = None
+        live.last_products = []
+        live.turns = 0
+        live.archived_id = parked.id
+        return parked
 
     def prepare(self, sid: str, text: str) -> tuple[Session, Understanding, Reply | None]:
         """Everything up to (but not including) generation.
@@ -308,6 +334,7 @@ class ChatEngine:
         and questions — so the server can answer those in milliseconds.
         """
         s = self.session(sid)
+        s.archived_id = None
         prior = s.understanding
 
         # While a question is open, a reply the current category can explain is
@@ -336,15 +363,16 @@ class ChatEngine:
                 chips=STARTER_CHIPS if u.intent in
                 (Intent.GREETING, Intent.OFF_TOPIC) else [])
 
-        # A different product is a different conversation, so it gets its own
-        # session rather than overwriting the one in progress. The previous one
-        # is left exactly as it stood — its budget, its history, its open
-        # question — and can be returned to; this one starts clean instead of
-        # half-inheriting the last, which is how "laptop, dưới 15 triệu, tủ
-        # lạnh" came to answer the fridge with no questions at all. The server
-        # hands the new id to the browser, which opens a chat dedicated to it.
+        # A different product is a different conversation, so the one in
+        # progress is parked rather than overwritten: it keeps its budget, its
+        # history and its open question, and can be returned to. This turn
+        # starts clean instead of half-inheriting the last, which is how
+        # "laptop, dưới 15 triệu, tủ lạnh" came to answer the fridge with no
+        # questions at all. The server passes both ids to the browser, which
+        # opens a chat for the new subject and repoints the old chat at where
+        # its conversation was parked.
         if prior and prior.group and u.group and u.group != prior.group:
-            s = self._fork()
+            self._archive(s)
             prior = None
 
         s.turns += 1

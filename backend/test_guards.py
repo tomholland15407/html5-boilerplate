@@ -288,25 +288,35 @@ if DB.exists():
     _, u, _ = engine.prepare("t-switch2", "tủ lạnh")
     check("phone specs do not follow to a fridge", u.feature_filters, [])
 
-    # A new subject gets a session of its own, and the one it interrupted is
-    # left exactly as it stood — that is what lets the browser put the two in
-    # separate chats and let the shopper move between them.
+    # A new subject parks the conversation it interrupted and keeps the id the
+    # client is already using. Which way round this goes is the whole point: a
+    # client that ignores the change must stay on the subject just raised, not
+    # be left answering its questions into the previous subject's session —
+    # that is what made "điều hòa" then a budget come back with refrigerators.
     engine.reset("t-fork")
     engine.prepare("t-fork", "điện thoại")
     engine.prepare("t-fork", "dưới 8 triệu")
-    forked, _, reply = engine.prepare("t-fork", "laptop")
-    check("a new subject forks the session", forked.id != "t-fork", True)
-    check("the fork starts with nothing asked", forked.asked, set())
-    check("and is about the new category", forked.understanding.group, "laptop")
-    check("the fork is asked its own first question", reply.kind, "question")
+    live, _, reply = engine.prepare("t-fork", "laptop")
+    check("the new subject keeps the client's id", live.id, "t-fork")
+    check("the previous subject is parked", bool(live.archived_id), True)
+    check("the live session starts with nothing asked", live.asked, set())
+    check("and is about the new category", live.understanding.group, "laptop")
+    check("and is asked its own first question", reply.kind, "question")
+    parked_id = live.archived_id
 
-    kept = engine.session("t-fork")
-    check("the interrupted session keeps its category", kept.understanding.group, "phone")
-    check("and its budget", kept.understanding.price.max, 8 * M)
-    check("and what it had already asked", kept.asked, {"budget"})
-    # Continuing the old chat picks up where it left off, not where the fork went.
-    _, u, _ = engine.prepare("t-fork", "Pin trâu")
-    check("the old chat resumes on its own subject", u.group, "phone")
+    parked = engine.session(parked_id)
+    check("the parked session keeps its category", parked.understanding.group, "phone")
+    check("and its budget", parked.understanding.price.max, 8 * M)
+    check("and what it had already asked", parked.asked, {"budget"})
+
+    # The failure this guards: a client that never reads the change at all.
+    _, u, _ = engine.prepare("t-fork", "dưới 20 triệu")
+    check("ignoring the change stays on the new subject", u.group, "laptop")
+    check("the flag is only set on the turn it changed", live.archived_id, None)
+
+    # And the parked conversation still resumes correctly when returned to.
+    _, u, _ = engine.prepare(parked_id, "Pin trâu")
+    check("the parked chat resumes on its own subject", u.group, "phone")
     check("with its budget intact", u.price.max, 8 * M)
 
     # "Camera đẹp" answers "what matters most in a phone?" and contains a
