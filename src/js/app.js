@@ -238,7 +238,7 @@ function triggerMascotJiggle() {
 }
 
 window.handleBuyProduct = function() {
-  window.appendAssistantMessage('<p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-circle-check mr-1.5"></i>Dạ tuyệt vời, hệ thống Điện Máy Xanh đã ghi nhận yêu cầu đặt mua sản phẩm của anh/chị! Nhân viên tổng đài sẽ liên hệ hỗ trợ mình sau ít phút ạ.</p>');
+  window.appendAssistantMessage('<p class="text-sm text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-circle-check mr-1.5"></i>Dạ tuyệt vời, hệ thống Điện Máy Xanh đã ghi nhận yêu cầu đặt mua sản phẩm của anh/chị! Nhân viên tổng đài sẽ liên hệ hỗ trợ mình sau ít phút ạ.</p>');
   triggerMascotJiggle();
 
   // KÍCH HOẠT HIỆU ỨNG DI CHUYỂN BẬT NHẢY MẠNH BẠO CHO HEADER MASCOT
@@ -721,24 +721,24 @@ function dispatchLogicEngine(text) {
       <div class="sk-edge sk-lift sk-fill-amber ${idx % 2 === 0 ? 'sk-card' : 'sk-card-alt sk-edge-alt'} bg-amber-50/60 dark:bg-amber-950/20 p-4 border border-amber-200/80 dark:border-amber-500/20 flex flex-col justify-between space-y-3.5 shadow-sm transition-all hover:shadow-md hover:border-amber-400/80">
         <div>
           <div class="flex items-center justify-between">
-            <span class="sk-badge sk-edge sk-edge-soft sk-edge-single sk-fill-accent px-2.5 py-0.5 text-[10px] font-bold bg-amber-200/50 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">Đề xuất ${idx + 1}</span>
-            ${hasZeroInstallment ? `<span class="sk-badge sk-edge sk-edge-soft sk-edge-single sk-fill-none px-2.5 py-0.5 text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5"><i class="fa-solid fa-bolt text-[8px]"></i> Trả góp 0%</span>` : ''}
+            <span class="sk-badge sk-edge sk-edge-soft sk-edge-single sk-fill-accent px-2.5 py-0.5 text-[10px] bg-amber-200/50 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">Đề xuất ${idx + 1}</span>
+            ${hasZeroInstallment ? `<span class="sk-badge sk-edge sk-edge-soft sk-edge-single sk-fill-none px-2.5 py-0.5 text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5"><i class="fa-solid fa-bolt text-[8px]"></i> Trả góp 0%</span>` : ''}
           </div>
-          <h3 class="font-bold text-[12.5px] text-paper-ink dark:text-white mt-2 line-clamp-2 h-9 leading-snug">${product.name}</h3>
-          <div class="text-[15px] font-extrabold text-[#8a4a1c] dark:text-brand-electric mt-1.5">${formatVND(product.price)}</div>
+          <h3 class="text-[12.5px] text-black dark:text-white mt-2 line-clamp-2 h-9 leading-snug">${product.name}</h3>
+          <div class="text-[15px] text-[#8a4a1c] dark:text-brand-electric mt-1.5">${formatVND(product.price)}</div>
 
           <ul class="sk-panel sk-edge sk-edge-soft sk-edge-single sk-fill-paper-2 text-[11px] text-paper-inksoft dark:text-stone-400 mt-2.5 space-y-1 bg-paper-50/60 dark:bg-black/20 p-3 border border-amber-100 dark:border-brand-border/30">
             ${specsHtml}
           </ul>
 
-          <p class="text-[11px] text-amber-700 dark:text-amber-400 font-semibold mt-2.5 flex items-start"><i class="fa-solid fa-gift mr-1.5 mt-0.5 text-xs shrink-0"></i><span>Quà tặng: ${promotionGift}</span></p>
+          <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-2.5 flex items-start"><i class="fa-solid fa-gift mr-1.5 mt-0.5 text-xs shrink-0"></i><span>Quà tặng: ${promotionGift}</span></p>
         </div>
 
         <div class="sk-panel sk-edge sk-edge-soft sk-edge-single sk-fill-paper-2 bg-white dark:bg-amber-900/20 p-3 text-[11px] text-amber-900 dark:text-amber-400 border border-amber-200/60 leading-relaxed">
-          <strong>Điểm đánh đổi (Trade-off):</strong> ${tradeOffAnalysis}
+          <strong class="text-inherit">Điểm đánh đổi (Trade-off):</strong> ${tradeOffAnalysis}
         </div>
 
-        <button class="sk-pill sk-edge sk-edge-strong sk-lift w-full custom-btn-select text-xs py-2.5 font-bold transition-all shadow-sm">Đặt Mua Ngay</button>
+        <button class="sk-pill sk-edge sk-edge-strong sk-lift w-full custom-btn-select text-xs py-2.5 transition-all shadow-sm">Đặt Mua Ngay</button>
       </div>`;
   });
 

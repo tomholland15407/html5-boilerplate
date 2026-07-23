@@ -552,16 +552,17 @@ header.sk-rule::after {
 }
 .side-item > span:first-of-type { flex: 1; }
 .side-item:hover { background: rgba(88, 56, 20, 0.055); color: #3a2a18; }
+/* Mục đang mở: không tô đậm nữa mà đẩy mực xuống đen kịt (xem khối "MỰC ĐEN
+   KỊCH TRẦN" ở cuối tệp) — vẫn nổi hơn các mục còn lại nhưng nhẹ mắt hơn. */
 .side-item.is-active {
   background: rgba(88, 56, 20, 0.075);
-  color: #3a2a18;
-  font-weight: 600;
+  color: #000;
 }
 .side-item.is-active i { opacity: 1; color: #8a4a1c; }
 
 .dark .side-item { color: #b8a67f; }
 .dark .side-item:hover { background: rgba(201, 162, 39, 0.08); color: #f1e7ce; }
-.dark .side-item.is-active { background: rgba(201, 162, 39, 0.1); color: #f1e7ce; }
+.dark .side-item.is-active { background: rgba(201, 162, 39, 0.1); color: #fff; }
 .dark .side-item.is-active i { color: #c9a227; }
 
 /* Nhãn "Mới" đặt cuối hàng điều hướng */
@@ -569,7 +570,6 @@ header.sk-rule::after {
   padding: 2px 8px;
   border-radius: 999px;
   font-size: 10px;
-  font-weight: 600;
   letter-spacing: 0.02em;
   color: #8a4a1c;
   background: rgba(179, 134, 44, 0.14);
@@ -630,6 +630,8 @@ header.sk-rule::after {
   gap: 2px;
   min-width: 0;
 }
+/* Tên tài khoản là MỘT trong hai chỗ duy nhất còn được in đậm trên toàn trang
+   (chỗ còn lại là chữ ký BuddyBlue). Mọi nét đậm khác đã đổi thành mực đen kịt. */
 .side-account-name {
   display: flex;
   align-items: center;
@@ -640,11 +642,12 @@ header.sk-rule::after {
 }
 .dark .side-account-name { color: #f1e7ce; }
 
+/* Nhãn "Free" nằm lọt trong tên tài khoản nên phải tự gỡ nét đậm thừa hưởng. */
 .side-account-plan {
   padding: 1px 8px;
   border-radius: 999px;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 400;
   color: #8a4a1c;
   background: rgba(179, 134, 44, 0.14);
 }
@@ -693,11 +696,11 @@ header.sk-rule::after {
   white-space: nowrap;
 }
 .side-chat:hover { background: rgba(88, 56, 20, 0.055); color: #3a2a18; }
-.side-chat.is-active { background: rgba(88, 56, 20, 0.075); color: #3a2a18; font-weight: 600; }
+.side-chat.is-active { background: rgba(88, 56, 20, 0.075); color: #000; }
 .side-chat.is-active i { opacity: 1; color: #8a4a1c; }
 .dark .side-chat { color: #b8a67f; }
 .dark .side-chat:hover { background: rgba(201, 162, 39, 0.08); color: #f1e7ce; }
-.dark .side-chat.is-active { background: rgba(201, 162, 39, 0.1); color: #f1e7ce; }
+.dark .side-chat.is-active { background: rgba(201, 162, 39, 0.1); color: #fff; }
 .dark .side-chat.is-active i { color: #c9a227; }
 
 /* ================================================================================= */
@@ -1068,4 +1071,26 @@ header.sk-rule::after {
   color: #7cc2f0;
   text-shadow: 0 0 12px rgba(124, 194, 240, 0.4);
   background-image: linear-gradient(to right, rgba(124, 194, 240, 0) 2%, rgba(124, 194, 240, 0.6) 14%, rgba(124, 194, 240, 0.85) 50%, rgba(124, 194, 240, 0.5) 88%, rgba(124, 194, 240, 0) 99%);
+}
+
+/* --------------------------------------------------------------------------- */
+/* MỰC ĐEN KỊCH TRẦN THAY CHO NÉT ĐẬM                                           */
+/*                                                                              */
+/* Cả giao diện chỉ còn hai chỗ được in đậm: chữ ký BuddyBlue và tên tài khoản  */
+/* "Customer" ở góc dưới bên trái. Mọi chỗ khác muốn nhấn mạnh thì đẩy mực tới  */
+/* mức tối đa — đen tuyệt đối ở nền sáng, trắng tuyệt đối ở nền tối — chứ không */
+/* tăng độ dày nét nữa.                                                         */
+/*                                                                              */
+/* Thẻ <strong>/<b> mặc định của trình duyệt là đậm, nên phải gỡ ở đây một lần  */
+/* cho tất cả. Bọc trong :where() để độ ưu tiên bằng 0: bất kỳ lớp nào đặt lên  */
+/* thẻ (font-bold của BuddyBlue, hay text-inherit để giữ màu nhấn) đều thắng    */
+/* mà không cần !important.                                                     */
+/* --------------------------------------------------------------------------- */
+:where(strong, b) {
+  font-weight: 400;
+  color: #000;
+}
+
+:where(.dark strong, .dark b) {
+  color: #fff;
 }
