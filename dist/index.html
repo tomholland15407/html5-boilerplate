@@ -256,17 +256,20 @@
       <!-- Ô NHẬP LIỆU GỬI TIN NHẮN (INPUT BAR) -->
       <footer class="p-4 bg-transparent shrink-0 transition-colors duration-300 relative z-10">
 
-        <!-- Gợi ý nhanh: xếp thành vòng cung cầu vồng ngay trên ô nhập liệu -->
-        <div class="sk-suggest-arc">
-          <button onclick="window.fillQuickPrompt('Mua đh pana dưới 15 củ cho phòng ngủ')" class="sk-suggest-pill">
-            "Mua đh pana dưới 15 củ"
-          </button>
-          <button onclick="window.fillQuickPrompt('Tìm tủ lạnh tầm 10tr cho nhà 4 người')" class="sk-suggest-pill">
-            "Tủ lạnh tầm 10tr cho 4 người"
-          </button>
-          <button onclick="window.fillQuickPrompt('Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học')" class="sk-suggest-pill">
-            "Laptop mỏng nhẹ ~15tr"
-          </button>
+        <!-- Gợi ý nhanh: 5 ô hiển thị xếp thành vòng cung cầu vồng trên ô nhập liệu.
+             Nội dung do initSuggestionCarousel() trong app.js luân phiên thay,
+             5 câu dưới đây là trạng thái ban đầu (và là bản dự phòng nếu tắt JS). -->
+        <div class="sk-suggest-arc" id="suggest-arc">
+          <button class="sk-suggest-pill" data-prompt="Mua đh pana dưới 15 củ cho phòng ngủ"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Đh Panasonic dưới 15 củ"</button>
+          <button class="sk-suggest-pill" data-prompt="Tìm tủ lạnh tầm 10tr cho nhà 4 người"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Tủ lạnh 10tr cho 4 người"</button>
+          <button class="sk-suggest-pill" data-prompt="Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Laptop mỏng nhẹ ~15tr"</button>
+          <button class="sk-suggest-pill" data-prompt="Tư vấn máy lạnh cho phòng khách rộng 20m²"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Máy lạnh phòng khách 20m²"</button>
+          <button class="sk-suggest-pill" data-prompt="Tìm laptop gaming đồ họa tầm 25tr"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Laptop gaming ~25tr"</button>
         </div>
 
         <form id="chat-form" class="sk-edge sk-edge-strong sk-input-shell relative flex items-center">

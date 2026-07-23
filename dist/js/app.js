@@ -798,6 +798,67 @@ window.resetConversation = function() {
   }
 };
 
+// ==========================================
+// BĂNG CHUYỀN GỢI Ý NHANH
+// 10 câu gợi ý luân phiên qua 5 ô hiển thị của vòng cung cầu vồng. Mỗi câu đều
+// chứa từ khoá mà parseUserIntent() đã nhận diện sẵn (máy lạnh/điều hòa/đh, tủ
+// lạnh, laptop, hãng, phòng ngủ/phòng khách, sinh viên, gaming, mức giá) nên
+// không cần thêm luồng trả lời mới.
+// ==========================================
+const QUICK_PROMPT_POOL = [
+  { label: '"Đh Panasonic dưới 15 củ"',     prompt: 'Mua đh pana dưới 15 củ cho phòng ngủ' },
+  { label: '"Tủ lạnh 10tr cho 4 người"',    prompt: 'Tìm tủ lạnh tầm 10tr cho nhà 4 người' },
+  { label: '"Laptop mỏng nhẹ ~15tr"',       prompt: 'Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học' },
+  { label: '"Máy lạnh phòng khách 20m²"',   prompt: 'Tư vấn máy lạnh cho phòng khách rộng 20m²' },
+  { label: '"Laptop gaming ~25tr"',         prompt: 'Tìm laptop gaming đồ họa tầm 25tr' },
+  { label: '"Tủ lạnh Samsung 3 người"',     prompt: 'Tủ lạnh Samsung tiết kiệm điện cho gia đình 3 người' },
+  { label: '"Đh inverter dưới 10tr"',       prompt: 'Máy lạnh inverter giá dưới 10tr cho phòng ngủ nhỏ' },
+  { label: '"Tủ lạnh nhỏ cho sinh viên"',   prompt: 'Tủ lạnh nhỏ cho sinh viên ở trọ một mình' },
+  { label: '"Laptop văn phòng ~12tr"',      prompt: 'Laptop Asus văn phòng mỏng nhẹ tầm 12tr' },
+  { label: '"Điều hòa LG cho phòng ngủ"',   prompt: 'Điều hòa LG cho phòng ngủ dưới 15m²' }
+];
+
+const SUGGEST_SWAP_INTERVAL = 2600; // đổi 1 ô mỗi 2.6s → mỗi câu đứng trên màn ~13s
+
+function initSuggestionCarousel() {
+  const arc = document.getElementById('suggest-arc');
+  if (!arc) return;
+
+  const slots = Array.from(arc.querySelectorAll('.sk-suggest-pill'));
+  if (slots.length === 0) return;
+
+  // Người dùng đang chọn/di chuột vào một gợi ý thì đừng đổi chữ dưới tay họ
+  let paused = false;
+  arc.addEventListener('mouseenter', () => { paused = true; });
+  arc.addEventListener('mouseleave', () => { paused = false; });
+  arc.addEventListener('focusin', () => { paused = true; });
+  arc.addEventListener('focusout', () => { paused = false; });
+
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // Con trỏ chạy vòng quanh danh sách: mỗi lần chỉ thay MỘT ô, và luôn lấy câu
+  // kế tiếp trong danh sách nên 5 câu đang hiện không bao giờ trùng nhau.
+  let nextPrompt = slots.length % QUICK_PROMPT_POOL.length;
+  let slotCursor = 0;
+
+  setInterval(() => {
+    if (paused || document.hidden) return;
+
+    const slot = slots[slotCursor];
+    const item = QUICK_PROMPT_POOL[nextPrompt];
+
+    slot.classList.add('is-swapping');
+    setTimeout(() => {
+      slot.textContent = item.label;
+      slot.dataset.prompt = item.prompt;
+      slot.classList.remove('is-swapping');
+    }, 260); // khớp với thời lượng transition của .is-swapping
+
+    nextPrompt = (nextPrompt + 1) % QUICK_PROMPT_POOL.length;
+    slotCursor = (slotCursor + 1) % slots.length;
+  }, SUGGEST_SWAP_INTERVAL);
+}
+
 window.fillQuickPrompt = function(promptText) {
   const input = document.getElementById('user-input');
   if (input) {
@@ -814,6 +875,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCollapsibleSidebarLogic();
   initHistorySearch();
   initSidebarThemeToggle();
+  initSuggestionCarousel();
   injectJiggleStyles();
 
   createNewChatSession();

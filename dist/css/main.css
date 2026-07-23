@@ -860,9 +860,11 @@ header.sk-rule::after {
   gap: 10px;
   width: 100%;
   /* Thụt vào bằng bán kính bo góc của ô nhập liệu để hai viên ngoài cùng
-     thẳng hàng với hai đầu ô nhập, tạo vòng cung trải hết chiều ngang. */
-  padding: 4px 14px 0;
-  margin: 0 0 14px;
+     thẳng hàng với hai đầu ô nhập, tạo vòng cung trải hết chiều ngang.
+     Lề dưới đủ rộng để cả quầng sáng của hai viên thấp nhất cũng không
+     chạm vào mép trên ô nhập liệu. */
+  padding: 6px 14px 0;
+  margin: 0 0 26px;
 }
 
 .sk-suggest-pill {
@@ -870,27 +872,33 @@ header.sk-rule::after {
   --tilt: 0deg;
   flex-shrink: 1;
   min-width: 0;
-  padding: 7px 16px;
+  padding: 6px 13px;
   border-radius: 999px;
   border: 1px solid transparent;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
-  transform: translateY(var(--lift)) rotate(var(--tilt));
-  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(var(--lift)) rotate(var(--tilt)) scale(var(--swap-s, 1));
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.26s ease;
   animation: sk-suggest-rainbow 14s linear infinite;
 }
 
 /* Vòng cung trải hết bề ngang: hai bên hạ thấp và nghiêng ra ngoài, giữa nhô lên.
-   Lệch pha 1/6 chu kỳ (không phải 1/3) nên ba viên luôn là ba dải màu KỀ NHAU
-   của cầu vồng — đọc như một dải cầu vồng chạy từ đầu này sang đầu kia. */
-.sk-suggest-pill:nth-child(1) { --lift: 11px; --tilt: -5deg; animation-delay: 0s; }
-.sk-suggest-pill:nth-child(2) { --lift: -5px; --tilt: 0deg;  animation-delay: -2.333s; }
-.sk-suggest-pill:nth-child(3) { --lift: 11px; --tilt: 5deg;  animation-delay: -4.666s; }
+   Lệch pha 1/8 chu kỳ nên năm viên luôn là năm dải màu KỀ NHAU của cầu vồng,
+   trải khoảng nửa quang phổ — đọc như một dải cầu vồng chạy từ đầu này sang
+   đầu kia chứ không phải năm màu rời rạc. */
+.sk-suggest-pill:nth-child(1) { --lift: 14px; --tilt: -7deg;   animation-delay: 0s; }
+.sk-suggest-pill:nth-child(2) { --lift: 3px;  --tilt: -3.5deg; animation-delay: -1.75s; }
+.sk-suggest-pill:nth-child(3) { --lift: -7px; --tilt: 0deg;    animation-delay: -3.5s; }
+.sk-suggest-pill:nth-child(4) { --lift: 3px;  --tilt: 3.5deg;  animation-delay: -5.25s; }
+.sk-suggest-pill:nth-child(5) { --lift: 14px; --tilt: 7deg;    animation-delay: -7s; }
+
+/* Khoảnh khắc đổi câu gợi ý: thu nhỏ + mờ đi rồi hiện lại với nội dung mới */
+.sk-suggest-pill.is-swapping { opacity: 0; --swap-s: 0.8; }
 
 .sk-suggest-pill:hover  { transform: translateY(calc(var(--lift) - 3px)) rotate(var(--tilt)) scale(1.04); }
 .sk-suggest-pill:active { transform: translateY(var(--lift)) rotate(var(--tilt)) scale(0.96); }
@@ -1002,20 +1010,32 @@ header.sk-rule::after {
   }
 }
 
-/* Màn hình hẹp: hạ độ cong và cho phép xuống dòng */
+/* Khung vừa: 5 viên bắt đầu bị cắt chữ nên giấu hai viên ngoài cùng, còn 3 */
+@media (max-width: 980px) {
+  .sk-suggest-pill:nth-child(1),
+  .sk-suggest-pill:nth-child(5) { display: none; }
+  .sk-suggest-pill:nth-child(2) { --lift: 10px; --tilt: -5deg; }
+  .sk-suggest-pill:nth-child(4) { --lift: 10px; --tilt: 5deg; }
+}
+
+/* Màn hình hẹp: bỏ vòng cung, cho phép xuống dòng */
 @media (max-width: 640px) {
-  .sk-suggest-arc { flex-wrap: wrap; justify-content: center; gap: 8px; padding: 2px 4px 0; }
-  .sk-suggest-pill { --lift: 0px; --tilt: 0deg; font-size: 11px; padding: 6px 13px; }
+  .sk-suggest-arc { flex-wrap: wrap; justify-content: center; gap: 8px; padding: 2px 4px 0; margin-bottom: 16px; }
+  .sk-suggest-pill { --lift: 0px; --tilt: 0deg; font-size: 11px; padding: 6px 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sk-suggest-pill { animation: none; }
   .sk-suggest-pill:nth-child(1) { background-color: hsl(26 78% 95.5%);  border-color: hsl(26 70% 74%);  color: hsl(26 55% 33%);  box-shadow: 0 6px 16px -6px hsl(26 70% 55% / 0.45); }
-  .sk-suggest-pill:nth-child(2) { background-color: hsl(158 52% 95%);   border-color: hsl(158 46% 68%); color: hsl(158 45% 25%); box-shadow: 0 6px 16px -6px hsl(158 46% 55% / 0.45); }
-  .sk-suggest-pill:nth-child(3) { background-color: hsl(226 58% 95.5%); border-color: hsl(226 52% 76%); color: hsl(226 48% 40%); box-shadow: 0 6px 16px -6px hsl(226 52% 55% / 0.45); }
+  .sk-suggest-pill:nth-child(2) { background-color: hsl(48 80% 94.5%);  border-color: hsl(48 70% 66%);  color: hsl(48 60% 26%);  box-shadow: 0 6px 16px -6px hsl(48 70% 55% / 0.45); }
+  .sk-suggest-pill:nth-child(3) { background-color: hsl(130 54% 95%);   border-color: hsl(130 47% 69%); color: hsl(130 45% 25%); box-shadow: 0 6px 16px -6px hsl(130 47% 55% / 0.45); }
+  .sk-suggest-pill:nth-child(4) { background-color: hsl(186 55% 95%);   border-color: hsl(186 48% 68%); color: hsl(186 48% 26%); box-shadow: 0 6px 16px -6px hsl(186 48% 55% / 0.45); }
+  .sk-suggest-pill:nth-child(5) { background-color: hsl(226 58% 95.5%); border-color: hsl(226 52% 76%); color: hsl(226 48% 40%); box-shadow: 0 6px 16px -6px hsl(226 52% 55% / 0.45); }
   .dark .sk-suggest-pill:nth-child(1) { background-color: hsl(26 48% 14% / 0.7);  border-color: hsl(26 70% 56% / 0.48);  color: hsl(26 78% 80%); }
-  .dark .sk-suggest-pill:nth-child(2) { background-color: hsl(158 48% 14% / 0.7); border-color: hsl(158 46% 56% / 0.48); color: hsl(158 78% 80%); }
-  .dark .sk-suggest-pill:nth-child(3) { background-color: hsl(226 48% 14% / 0.7); border-color: hsl(226 52% 56% / 0.48); color: hsl(226 78% 80%); }
+  .dark .sk-suggest-pill:nth-child(2) { background-color: hsl(48 48% 14% / 0.7);  border-color: hsl(48 70% 56% / 0.48);  color: hsl(48 78% 80%); }
+  .dark .sk-suggest-pill:nth-child(3) { background-color: hsl(130 48% 14% / 0.7); border-color: hsl(130 47% 56% / 0.48); color: hsl(130 78% 80%); }
+  .dark .sk-suggest-pill:nth-child(4) { background-color: hsl(186 48% 14% / 0.7); border-color: hsl(186 48% 56% / 0.48); color: hsl(186 78% 80%); }
+  .dark .sk-suggest-pill:nth-child(5) { background-color: hsl(226 48% 14% / 0.7); border-color: hsl(226 52% 56% / 0.48); color: hsl(226 78% 80%); }
 }
 
 /* --------------------------------------------------------------------------- */
