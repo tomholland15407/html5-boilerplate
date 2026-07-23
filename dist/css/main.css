@@ -1028,6 +1028,27 @@ header.sk-rule::after {
 }
 
 /* --------------------------------------------------------------------------- */
+/* TAN BIẾN KHI KHÁCH GỬI TIN NHẮN ĐẦU TIÊN                                     */
+/*                                                                              */
+/* Vòng cung chiếm cố định 100px ngay trên ô nhập liệu, che mất phần cuối cuộc  */
+/* trò chuyện. Nên ngay khi khách gõ câu đầu tiên, các viên bị hút về một điểm  */
+/* dưới ô nhập liệu rồi cả dải băng co lại còn 0 — khung chat lấy lại chỗ.      */
+/*                                                                              */
+/* Đường bay của từng viên do JS tính (dismissSuggestionArc trong app.js): viên */
+/* được chuyển sang position:fixed tại đúng chỗ đang đứng nên thoát khỏi        */
+/* overflow:hidden của khung, rồi transition tới tiêu điểm. CSS ở đây chỉ lo    */
+/* phần co khung và giấu hẳn khi bay xong.                                      */
+/* --------------------------------------------------------------------------- */
+.sk-suggest-arc.is-dismissing {
+  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              margin-bottom 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Đặt sau @media reduced-motion (nơi khung được gán display:flex) để chắc chắn
+   thắng — cùng độ ưu tiên thì luật viết sau thắng, và [hidden] còn cao hơn. */
+.sk-suggest-arc[hidden] { display: none; }
+
+/* --------------------------------------------------------------------------- */
 /* THƯƠNG HIỆU "BuddyBlue": chữ Blue viết bằng mực xanh                         */
 /* Xanh mực pha xám để không chọi với bảng màu giấy cổ ngả vàng; nét gạch chân  */
 /* mảnh vẽ tay ở dưới đúng tinh thần phác thảo của giao diện.                   */

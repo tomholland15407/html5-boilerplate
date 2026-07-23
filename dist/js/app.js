@@ -425,6 +425,9 @@ function restoreSessionMessages(session) {
   if (!chatBox) return;
 
   if (!session.messages || session.messages.length === 0) {
+    // Phiên còn trống thì dải gợi ý vẫn hữu ích, cho nó trở lại.
+    restoreSuggestionArc();
+
     chatBox.innerHTML = `
       <div class="flex items-start space-x-3.5 message-fade-in">
         <div class="mascot-avatar w-10 h-10 flex items-center justify-center shrink-0">
@@ -445,6 +448,9 @@ function restoreSessionMessages(session) {
     scrollChatToBottom();
     return;
   }
+
+  // Phiên đã có tin nhắn: gợi ý biến mất ngay, khỏi bay lượn lại từ đầu.
+  hideSuggestionArcNow();
 
   chatBox.innerHTML = '';
   session.messages.forEach(msg => {
@@ -537,6 +543,9 @@ function handleFormSubmit(event) {
   if (!val) return;
 
   if (!activeSessionId) createNewChatSession();
+
+  // Câu đầu tiên là lúc dải gợi ý rút lui, trả lại 100px cuối khung chat.
+  dismissSuggestionArc();
 
   appendUserMessage(val);
   input.value = '';
@@ -757,6 +766,9 @@ window.resetConversation = function() {
 
   const newestEmptySession = consumerChatSessions.find(session => !session.messages || session.messages.length === 0);
 
+  // Màn hình lại trống, nên dải gợi ý quay về giúp khách có chỗ bắt đầu.
+  restoreSuggestionArc();
+
   if (newestEmptySession) {
     activeSessionId = newestEmptySession.id;
     restoreSessionMessages(newestEmptySession);
@@ -873,6 +885,158 @@ function initSuggestionScrub() {
     if (frame) { cancelAnimationFrame(frame); }
     render();
   });
+}
+
+// ------------------------------------------------------------------
+// TAN BIẾN KHI KHÁCH GỬI TIN NHẮN ĐẦU TIÊN
+//
+// Dải gợi ý chiếm cố định 100px ngay trên ô nhập liệu — lúc chưa có gì để đọc
+// thì đẹp, nhưng khi cuộc trò chuyện dài ra thì nó che mất phần cuối. Nên câu
+// đầu tiên khách gửi cũng là lúc dải này rút lui: các viên đang bay bị hút về
+// một điểm ngay dưới ô nhập liệu, nhỏ dần rồi tắt, sau đó khung co lại còn 0
+// để khung chat lấy lại đúng 100px đó.
+//
+// Mẹo ở đây: trước khi bay, mỗi viên được chuyển sang position:fixed tại đúng
+// toạ độ đang đứng. Nhờ vậy viên thoát khỏi overflow:hidden của khung (không bị
+// cắt giữa đường) và cũng không còn dính vào layout, nên khung co lại bao nhiêu
+// cũng không xê dịch đường bay.
+// ------------------------------------------------------------------
+
+const SUGGEST_FLIGHT = 620;      // ms: thời gian một viên bay tới tiêu điểm
+const SUGGEST_FLIGHT_STAGGER = 45; // ms: viên bên trái đi trước, tạo vệt kéo
+let suggestArcDismissed = false;
+let suggestArcTimers = [];       // hẹn giờ của lần bay đang diễn ra, để còn huỷ
+
+function dismissSuggestionArc() {
+  if (suggestArcDismissed) return;
+  suggestArcDismissed = true;
+
+  const arc = document.getElementById('suggest-arc');
+  if (!arc || arc.hidden) return;
+
+  const reduceMotion = window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Giảm chuyển động: bỏ luôn, không bay lượn gì cả.
+  if (reduceMotion) {
+    arc.hidden = true;
+    return;
+  }
+
+  // Tiêu điểm: chính giữa ô nhập liệu, ngay mép trên — các viên chụm xuống như
+  // bị ô nhập liệu hút vào.
+  const form = document.getElementById('chat-form');
+  const arcRect = arc.getBoundingClientRect();
+  const formRect = form ? form.getBoundingClientRect() : null;
+  const focalX = formRect ? formRect.left + formRect.width / 2 : arcRect.left + arcRect.width / 2;
+  const focalY = formRect ? formRect.top : arcRect.bottom;
+
+  // Đo TRƯỚC khi đổi gì — getBoundingClientRect lúc này trả về vị trí thật của
+  // viên giữa chừng hoạt hình, đúng chỗ mắt khách đang thấy.
+  //
+  // Chỉ những viên ĐANG THẤY mới cần bay. Số còn lại đang "đỗ" ngoài mép phải
+  // với opacity 0, hoặc bị màn hình hẹp ẩn đi (display:none, kích thước bằng 0)
+  // — giữ chúng lại trong danh sách thì chúng chiếm mất các nhịp lệch pha đầu và
+  // những viên thấy được sẽ khởi hành trễ một cách vô cớ.
+  const flights = [];
+  arc.querySelectorAll('.sk-suggest-pill').forEach(pill => {
+    const rect = pill.getBoundingClientRect();
+    const opacity = parseFloat(window.getComputedStyle(pill).opacity) || 0;
+
+    if (rect.width > 0 && opacity >= 0.01) {
+      flights.push({ pill, rect, opacity });
+    } else {
+      pill.style.display = 'none';
+    }
+  });
+
+  // Viên bên trái khởi hành trước để cả dải chụm lại thành một vệt, thay vì mười
+  // viên cùng lao vào một điểm.
+  flights.sort((a, b) => a.rect.left - b.rect.left);
+
+  // Lượt 1 — đóng băng mọi viên tại chỗ: bỏ hoạt hình quỹ đạo, chuyển sang fixed
+  // theo đúng toạ độ vừa đo. Nhờ fixed, viên thoát khỏi overflow:hidden của khung
+  // nên không bị cắt giữa đường, và khung có co lại cũng không kéo theo nó.
+  flights.forEach(({ pill, rect, opacity }) => {
+    pill.style.animation = 'none';
+    pill.style.position = 'fixed';
+    pill.style.left = `${rect.left}px`;
+    pill.style.top = `${rect.top}px`;
+    pill.style.width = `${rect.width}px`;
+    pill.style.margin = '0';
+    pill.style.transform = 'none';
+    pill.style.opacity = String(opacity);
+    pill.style.pointerEvents = 'none';
+  });
+
+  // Khung cũng chốt chiều cao hiện tại làm mốc để lát nữa co về 0.
+  arc.style.height = `${arcRect.height}px`;
+
+  // Một lần đọc layout duy nhất, chốt toàn bộ trạng thái "đóng băng" ở trên làm
+  // mốc khởi hành. Thiếu nhịp này trình duyệt gộp luôn với trạng thái đích và
+  // các viên nhảy cóc tới tiêu điểm thay vì bay.
+  void arc.offsetWidth;
+
+  // Lượt 2 — thả cho bay.
+  flights.forEach(({ pill, rect }, i) => {
+    const dx = focalX - (rect.left + rect.width / 2);
+    const dy = focalY - (rect.top + rect.height / 2);
+    const delay = i * SUGGEST_FLIGHT_STAGGER;
+
+    pill.style.transition = `transform ${SUGGEST_FLIGHT}ms cubic-bezier(0.55, 0.06, 0.3, 1) ${delay}ms, `
+      + `opacity ${SUGGEST_FLIGHT}ms cubic-bezier(0.5, 0, 0.85, 0.4) ${delay}ms`;
+    pill.style.transform = `translate(${dx}px, ${dy}px) scale(0.24)`;
+    pill.style.opacity = '0';
+  });
+
+  const lastDelay = Math.max(0, flights.length - 1) * SUGGEST_FLIGHT_STAGGER;
+
+  // Khung co lại ngay sau khi các viên rời đi — viên đang fixed nên không hề bị
+  // ảnh hưởng, còn khung chat thì nở ra bù đúng chỗ trống.
+  arc.classList.add('is-dismissing');
+  suggestArcTimers.push(window.setTimeout(() => {
+    arc.style.height = '0px';
+    arc.style.marginBottom = '0px';
+  }, 180));
+
+  // Bay xong thì giấu hẳn khỏi cây layout (và khỏi bàn phím / trình đọc màn hình).
+  suggestArcTimers.push(window.setTimeout(() => {
+    arc.hidden = true;
+  }, SUGGEST_FLIGHT + lastDelay + 220));
+}
+
+// Phiên mới = quay lại màn hình trống, nên dải gợi ý cũng trở lại. Gỡ sạch style
+// nội tuyến đã gán lúc bay để CSS cầm lái quỹ đạo như ban đầu.
+function restoreSuggestionArc() {
+  const arc = document.getElementById('suggest-arc');
+  if (!arc) return;
+
+  // Khách bấm "phiên mới" ngay khi các viên còn đang bay: huỷ hẹn giờ của lần bay
+  // đó, nếu không cái lệnh `arc.hidden = true` cuối hành trình sẽ nổ sau lưng và
+  // giấu mất dải gợi ý vừa dựng lại.
+  suggestArcTimers.forEach(window.clearTimeout);
+  suggestArcTimers = [];
+
+  suggestArcDismissed = false;
+  arc.hidden = false;
+  arc.classList.remove('is-dismissing');
+  arc.style.height = '';
+  arc.style.marginBottom = '';
+
+  arc.querySelectorAll('.sk-suggest-pill').forEach(pill => {
+    pill.removeAttribute('style');
+  });
+}
+
+// Mở lại một phiên đã có nội dung: dải gợi ý phải biến mất ngay, không bay lượn
+// — cuộc trò chuyện đó đã qua giai đoạn cần gợi ý từ lâu rồi.
+function hideSuggestionArcNow() {
+  const arc = document.getElementById('suggest-arc');
+  if (!arc) return;
+
+  restoreSuggestionArc();   // xoá dấu vết lần bay trước
+  suggestArcDismissed = true;
+  arc.hidden = true;
 }
 
 window.fillQuickPrompt = function(promptText) {
