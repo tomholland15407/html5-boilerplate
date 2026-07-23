@@ -21,19 +21,35 @@ from taxonomy import GROUP_LABELS
 from vntext import format_vnd
 
 MAX_QUESTIONS = 3
-# Below this many candidates, ranking is trustworthy enough to just answer.
+# The brief asks for two to three clarifying questions when the shopper has not
+# said enough to recommend from. Two is the floor for a vague opening, three the
+# ceiling for any opening; both are enforced here rather than asked of a prompt.
+MIN_QUESTIONS = 2
+# Below this many candidates, ranking is trustworthy enough to just answer —
+# but only once the floor above has been met, or a shopper who says "tủ lạnh"
+# and names a budget gets an answer after a single question.
 ENOUGH_TO_ANSWER = 40
+# Three products is all a reply ever shows, so at or below this there is nothing
+# left for a question to narrow and asking one is just delay.
+NOTHING_LEFT_TO_NARROW = 3
 # A question must promise at least this much entropy to be worth a turn.
 MIN_GAIN = 0.45
-# Once the shopper has volunteered this many independent constraints they have
-# told us what they want; asking more reads as an interrogation. "Điện thoại pin
-# trâu dưới 8 củ" is category + slang + budget — answer it, do not ask brand.
+# Once the shopper has volunteered this many discriminating constraints they
+# have told us what they want; asking more reads as an interrogation. "Điện
+# thoại pin trâu dưới 8 củ" is slang + budget — answer it, do not ask brand.
 ENOUGH_CONSTRAINTS = 2
 
 # Entropy alone over-rewards questions with many possible answers: brand always
 # has more distinct values than budget, so it always won on raw information
 # gain. These priors encode which answer actually changes the recommendation.
-SLOT_PRIORITY = {"budget": 1.6, "usage": 1.3, "brand": 0.7}
+#
+# Brand's is low enough to look like a thumb on the scale, and it is. Six brands
+# carry ~1.8 nats where any three- or four-option question caps near 1.1, so a
+# mild prior still left brand winning every time — which is how "tủ lạnh, dưới
+# 12 triệu" came to be asked about brands rather than about how many people it
+# has to feed. Capacity is a requirement; a brand is a preference, and it should
+# only be asked once the requirements are known.
+SLOT_PRIORITY = {"budget": 1.6, "usage": 1.3, "brand": 0.45}
 
 
 @dataclass
@@ -145,9 +161,20 @@ def _usage_question(q: Query, asked: set[str]) -> Question | None:
 
 
 def count_constraints(q: Query) -> int:
-    """How much the shopper has actually pinned down."""
+    """How much the shopper has actually pinned down.
+
+    The category is deliberately *not* counted. Knowing "tủ lạnh" makes ranking
+    possible — it takes 13,754 rows down to 251 — but it does not make it good:
+    every fridge in the catalog still qualifies, and the three that come back
+    are chosen by popularity alone. Counting it meant a bare category plus one
+    answered question already looked like a fully specified request, so the
+    assistant asked exactly one question and never the two or three the brief
+    calls for.
+
+    What counts is what discriminates *within* a category: a budget, a stated
+    need, a brand.
+    """
     return sum((
-        bool(q.group),
         not q.price.is_empty(),
         bool(q.feature_filters or q.text_terms),
         bool(q.brands),
@@ -158,8 +185,11 @@ def decide(cat: Catalog, q: Query, *, asked: set[str], accept_any: bool = False,
            inferred_groups: list[str] | None = None) -> Decision:
     """Ask another question, or stop and recommend.
 
-    Questions exist to resolve genuine ambiguity, not to fill a quota. A vague
-    opening earns one or two; a specific request earns none.
+    Questions exist to resolve genuine ambiguity, not to fill a quota, so the
+    number asked falls out of how much the shopper has already said rather than
+    a counter: keep asking while fewer than ENOUGH_CONSTRAINTS discriminating
+    facts are known, stop at MAX_QUESTIONS regardless. A bare "tủ lạnh" earns
+    two or three; "điện thoại pin trâu dưới 8 củ" earns none.
     """
     n = cat.count(q)
 
@@ -179,7 +209,12 @@ def decide(cat: Catalog, q: Query, *, asked: set[str], accept_any: bool = False,
     given = count_constraints(q)
     if given >= ENOUGH_CONSTRAINTS:
         return Decision("answer", None, n, f"khách đã nêu {given} tiêu chí, trả lời luôn")
-    if n <= ENOUGH_TO_ANSWER:
+    if n <= NOTHING_LEFT_TO_NARROW:
+        return Decision("answer", None, n, f"chỉ còn {n} lựa chọn, không cần hỏi thêm")
+    # The small-candidate shortcut is what a specific shopper deserves, not a
+    # vague one: "tủ lạnh" + a budget can leave under forty rows while the
+    # shopper has still told us nothing about the fridge they want.
+    if len(asked) >= MIN_QUESTIONS and n <= ENOUGH_TO_ANSWER:
         return Decision("answer", None, n, f"chỉ còn {n} lựa chọn")
 
     candidates: list[Question] = []
@@ -204,6 +239,80 @@ def decide(cat: Catalog, q: Query, *, asked: set[str], accept_any: bool = False,
     return Decision("ask", best, n, f"còn {n} lựa chọn, hỏi thêm '{best.slot}'")
 
 
+# Sizing answers, per category: the shopper replies in square metres, household
+# size or inches, and each has to become a filter on a spec.
+#
+# This does not belong in the lexicon, which maps slang and deliberately deals
+# in no units at all; it is a sizing rule, so it lives next to the question that
+# asked for it. Each band is (quantity ceiling, feature min, feature max), and
+# the bands are checked in order. Thresholds are the ordinary Vietnamese retail
+# rules of thumb, checked against this catalog so that no band is empty.
+_SIZING: dict[str, tuple[str, tuple[tuple[float, float | None, float | None], ...]]] = {
+    # người in the house -> litres of fridge (32 / 82 / 154 products)
+    "fridge": ("capacity_l", ((2, None, 250), (4, 250, 450), (99, 400, None))),
+    # người -> kilos per wash (27 / 123 / 113)
+    "washer": ("wash_kg", ((2, None, 9), (4, 9, 12), (99, 11, None))),
+    # m² of room -> horsepower, the standard ~15m² per HP (129 / 129 / 99)
+    "ac": ("cooling_hp", ((15, None, 1.5), (25, 1.5, 2.5), (999, 2.0, None))),
+    # inches -> inches; the answer is already in the feature's own unit (55/142/110)
+    "tv": ("screen_inch", ((50, None, 50), (65, 55, 65), (999, 70, None))),
+}
+
+
+# The unit has to be on the page before a bare number can be read as a size:
+# "tủ lạnh 15 triệu" is a budget, not a household of fifteen.
+_SIZING_UNITS = {"fridge": r"nguoi", "washer": r"nguoi",
+                 "ac": r"m2|m²", "tv": r"inch"}
+
+
+def _sizing_band(group: str | None, lo: float | None,
+                 hi: float | None) -> list[tuple[str, str, float]]:
+    """Turn a quantity into filters on the category's sizing spec."""
+    spec = _SIZING.get(group or "")
+    if not spec or (lo is None and hi is None):
+        return []                      # "không rõ" — no number to size from
+    feat, bands = spec
+
+    # An upper bound picks the band it falls in; a bare "trên 5 người" has to
+    # land in the band *above* five, not the one that ends there.
+    if hi is not None:
+        band = next((b for b in bands if hi <= b[0]), bands[-1])
+    else:
+        band = next((b for b in bands if lo < b[0]), bands[-1])
+
+    _, fmin, fmax = band
+    out: list[tuple[str, str, float]] = []
+    if fmin is not None:
+        out.append((feat, ">=", float(fmin)))
+    if fmax is not None:
+        out.append((feat, "<=", float(fmax)))
+    return out
+
+
+def _sizing_filters(group: str | None, text: str) -> list[tuple[str, str, float]]:
+    """Read a sizing answer ("3–4 người", "phòng 20m2") into feature filters."""
+    from vntext import parse_quantity
+
+    return _sizing_band(group, *parse_quantity(text))
+
+
+def stated_sizing(group: str | None, text: str) -> list[tuple[str, str, float]]:
+    """Sizing the shopper gave unprompted: "tủ lạnh cho gia đình 4 người".
+
+    Asking "nhà bạn mấy người dùng ạ?" straight after they said four is the
+    kind of question that makes an assistant look like it is not listening, so
+    a size stated up front binds exactly as the answer to the question would.
+    """
+    import re
+
+    from vntext import normalize, parse_quantity
+
+    unit = _SIZING_UNITS.get(group or "")
+    if not unit or not re.search(unit, normalize(text)):
+        return []
+    return _sizing_band(group, *parse_quantity(text, use_cues=False))
+
+
 def apply_answer(slot: str, text: str, q: Query, cat: Catalog) -> None:
     """Fold a shopper's answer to a question back into the query in place."""
     from vntext import normalize, parse_price
@@ -219,3 +328,11 @@ def apply_answer(slot: str, text: str, q: Query, cat: Catalog) -> None:
                 if normalize(brand) in t:
                     q.brands = [brand]
                     break
+    elif slot == "usage":
+        # The phrase-shaped answers ("chơi game", "pin trâu") are slang and the
+        # lexicon has already resolved them by the time we get here. Only the
+        # ones written as a quantity are left for this to handle.
+        seen = {(f, op) for f, op, _ in q.feature_filters}
+        for feat, op, val in _sizing_filters(q.group, text):
+            if (feat, op) not in seen:
+                q.feature_filters.append((feat, op, val))

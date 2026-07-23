@@ -19,7 +19,8 @@ from enum import Enum
 
 from catalog import Query
 from lexicon import detect_group, infer_groups, match_rules, resolve
-from vntext import PriceConstraint, fold, normalize, parse_price
+from vntext import (PriceConstraint, fold, homograph_ok, normalize,
+                    parse_price)
 
 
 class Intent(str, Enum):
@@ -89,9 +90,46 @@ class Understanding:
                     or not self.price.is_empty())
 
 
+# Words that pad a pleasantry without asking for anything: forms of address,
+# sentence particles, and the assistant's own vocabulary for the customer. Used
+# only to decide whether a greeting is *nothing but* a greeting.
+#
+# Deliberately free of nouns. A request needs something to name — "đồ nhẹ" is a
+# request and "đồ" belongs here about as much as "laptop" does — so anything a
+# shopper could be asking *for* is left out, and a remainder made only of these
+# cannot be a request no matter how it is spelled.
+_FILLER = frozenset((
+    "a", "ah", "ak", "oi", "o", "u", "shop", "em", "anh", "chi", "ban",
+    "minh", "toi", "ad", "admin", "nhe", "nha", "nhi", "the", "vay", "ne",
+    "voi", "day", "di", "duoc", "khong", "co", "la", "cho", "hoi",
+))
+
+
 def _match_any(text: str, phrases: tuple[str, ...]) -> bool:
     return any(re.search(rf"(?<![a-z0-9]){re.escape(p)}(?![a-z0-9])", text)
                for p in phrases)
+
+
+def _matched(text: str, phrases: tuple[str, ...]) -> list[str]:
+    return [p for p in phrases
+            if re.search(rf"(?<![a-z0-9]){re.escape(p)}(?![a-z0-9])", text)]
+
+
+def _asks_for_something(text: str, matched: list[str]) -> bool:
+    """Is there a request left once the pleasantry itself is taken out?
+
+    Folding is what makes this necessary. "xin chào" contains "chao", which is
+    also chảo, a frying pan; "chào bạn" contains "ban", which is also bán, to
+    sell. A greeting was therefore supplying its own evidence that it was a
+    shopping request, and saying hello came back with three saucepans.
+
+    Longest phrases go first so removing "chao" from "xin chao" cannot strand a
+    bare "xin" — itself the folded form of "xịn", premium.
+    """
+    rest = text
+    for p in sorted(matched, key=len, reverse=True):
+        rest = re.sub(rf"(?<![a-z0-9]){re.escape(p)}(?![a-z0-9])", " ", rest)
+    return any(tok not in _FILLER for tok in re.split(r"[^a-z0-9]+", rest) if tok)
 
 
 class Understander:
@@ -122,15 +160,19 @@ class Understander:
             return Intent.UNCLEAR
 
         for intent, phrases in _PATTERNS:
-            if _match_any(t, phrases):
+            hits = _matched(t, phrases)
+            if hits:
                 # A greeting carrying a real request ("chào shop, cần laptop")
                 # is a product query with a polite opening, not small talk.
                 if intent in (Intent.GREETING, Intent.THANKS, Intent.BYE):
-                    # Only a *strong* signal overrides an explicit pleasantry.
-                    # Passing has_context here would let the short-fragment
-                    # refinement heuristic fire, and "cảm ơn nhé" mid-chat —
-                    # three words, plainly a thank-you — would run a search.
-                    if self._product_signal(text, has_context=False):
+                    # The request has to be somewhere other than the pleasantry
+                    # itself, or the greeting is only overriding itself. Only a
+                    # *strong* signal overrides it: passing has_context here
+                    # would let the short-fragment refinement heuristic fire,
+                    # and "cảm ơn nhé" mid-chat — three words, plainly a
+                    # thank-you — would run a search.
+                    if (_asks_for_something(t, hits)
+                            and self._product_signal(text, has_context=False)):
                         return Intent.PRODUCT
                 return intent
 
@@ -156,7 +198,13 @@ class Understander:
             return True
         if self._brand_re.search(folded):
             return True
-        if _match_any(folded, _SHOPPING_CUES):
+        # The loosest signal in the router, so the most in need of the
+        # homograph guard the other three already use: without it "bạn" reads
+        # as "bán" and every sentence addressed to the customer looks like a
+        # request to buy something.
+        if any(homograph_ok(c, raw)
+               and re.search(rf"(?<![a-z0-9]){re.escape(c)}(?![a-z0-9])", folded)
+               for c in _SHOPPING_CUES):
             return True
         # Mid-conversation, a bare fragment ("cái thứ 2", "rẻ hơn nữa") is a
         # refinement of the search already in progress.
@@ -165,11 +213,18 @@ class Understander:
     # -- understanding -----------------------------------------------------
 
     def understand(self, text: str, *, prior_group: str | None = None,
-                   has_context: bool = False) -> Understanding:
+                   has_context: bool = False,
+                   keep_group: str | None = None) -> Understanding:
         intent = self.route(text, has_context=has_context)
         u = Understanding(intent=intent, text=text)
 
         group, seen = detect_group(text)
+        if keep_group:
+            # The category is already settled and this turn answers a question
+            # about it. A category cue inside the answer describes what the
+            # shopper wants, not a different aisle: "camera đẹp" replying to
+            # "what matters most in a phone?" is not a request for cameras.
+            group = keep_group
         u.group = group or prior_group
         u.groups_seen = seen
         u.price = parse_price(text)
@@ -212,14 +267,47 @@ class Understander:
         )
 
 
+def _merge_price(prev: PriceConstraint, new: PriceConstraint) -> PriceConstraint:
+    """A stated range wins outright; a bare preference refines the one given.
+
+    "Giá rẻ" carries a tier and no numbers, and a tier alone is enough to make
+    is_empty() false — so answering the budget question with "4–16 triệu" and
+    then picking "Giá rẻ" replaced the range with nothing at all and the
+    shopper's own figures were gone. Cheap is a preference *within* a budget,
+    not a budget, so it layers on instead.
+    """
+    if new.min is not None or new.max is not None:
+        return new                       # explicit figures replace outright
+    if new.is_empty() and not new.prefer_value:
+        return prev                      # this turn said nothing about price
+    if prev.min is None and prev.max is None:
+        return new                       # nothing to refine
+    return PriceConstraint(
+        min=prev.min, max=prev.max,
+        tier=new.tier or prev.tier,
+        prefer_value=new.prefer_value or prev.prefer_value,
+        raw=prev.raw)
+
+
 def merge(prev: Understanding | None, new: Understanding) -> Understanding:
     """Carry forward what the shopper already told us.
 
     Each turn answers one question; the constraints from earlier turns must
-    survive it. Anything the new turn states explicitly wins, so "thôi cho rẻ
-    hơn" replaces the budget instead of stacking a second one on top.
+    survive it. Figures the new turn states explicitly win, so "thôi dưới 5
+    triệu" replaces the budget instead of stacking a second one on top, while a
+    bare preference like "rẻ hơn" refines the budget already given. Naming a
+    different category replaces everything.
     """
     if prev is None:
+        return new
+    if prev.group and new.group and new.group != prev.group:
+        # A different category is a different shopping task, and nothing the
+        # shopper said about the last one carries over. Keeping it meant "laptop
+        # dưới 15 triệu" followed by "tủ lạnh" searched fridges under 15 triệu —
+        # a budget never stated for fridges, which also made the request look
+        # specific enough to answer without asking anything. Worse, the specs
+        # came too: "điện thoại pin trâu" then "tủ lạnh" put a 6.000mAh battery
+        # filter on a fridge.
         return new
     merged = Understanding(
         intent=new.intent,
@@ -227,7 +315,7 @@ def merge(prev: Understanding | None, new: Understanding) -> Understanding:
         group=new.group or prev.group,
         groups_seen=new.groups_seen or prev.groups_seen,
         inferred_groups=new.inferred_groups or prev.inferred_groups,
-        price=new.price if not new.price.is_empty() else prev.price,
+        price=_merge_price(prev.price, new.price),
         brands=new.brands or prev.brands,
     )
     # Feature and text constraints accumulate — "pin trâu" then "camera xịn"

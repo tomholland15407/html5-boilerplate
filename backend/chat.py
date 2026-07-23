@@ -22,9 +22,10 @@ import time
 from dataclasses import dataclass, field
 
 from catalog import Catalog, Product, Query, SearchResult
+from lexicon import detect_group, match_rules
 from llm import LLM
 from nlu import Intent, Understander, Understanding, merge
-from policy import Decision, Question, apply_answer, decide
+from policy import Decision, Question, apply_answer, decide, stated_sizing
 from taxonomy import GROUP_LABELS
 from vntext import format_vnd
 
@@ -302,28 +303,66 @@ class ChatEngine:
         s.turns += 1
         prior = s.understanding
 
+        # While a question is open, a reply the current category can explain is
+        # an answer to it, even when it happens to contain a category cue.
+        keep = None
+        if s.pending_slot and prior and prior.group:
+            named, _ = detect_group(text)
+            if named and named != prior.group and match_rules(text, prior.group):
+                keep = prior.group
+
         u = self.understander.understand(
             text, prior_group=prior.group if prior else None,
-            has_context=prior is not None)
+            has_context=prior is not None, keep_group=keep)
+
+        if u.intent in SMALLTALK and u.intent != Intent.UNCLEAR:
+            # Answered before anything is allowed to touch the session. A
+            # pleasantry is not an answer to the open question, and its stray
+            # category cue is not a change of subject: folded, "xin chào" lands
+            # on chảo and "bạn là ai" contains "ban la", a clothes iron. Left
+            # any later, saying hello mid-conversation reset the questions
+            # already asked and consumed the one still waiting.
+            s.understanding = prior          # small talk must not clear context
+            return s, u, Reply(
+                kind="smalltalk", text=random.choice(SMALLTALK[u.intent]),
+                chips=STARTER_CHIPS if u.intent in
+                (Intent.GREETING, Intent.OFF_TOPIC) else [])
+
+        # The shopper moved to a different product. merge() drops the previous
+        # one's constraints; the questions already asked have to go with them,
+        # or the new category can never be asked about a budget again — which is
+        # how "laptop, dưới 15 triệu, tủ lạnh" answered the fridge with no
+        # questions at all.
+        if prior and prior.group and u.group and u.group != prior.group:
+            s.asked.clear()
+            s.pending_slot = None
 
         # A pending question is being answered: fold the answer in before
         # anything else, so "dưới 10 triệu" lands as a budget rather than a
         # fresh search.
         if s.pending_slot:
             q_prev = Understander.to_query(merge(prior, u))
+            n_before = len(q_prev.feature_filters)
             apply_answer(s.pending_slot, text, q_prev, self.cat)
-            u.price = q_prev.price if not u.price.is_empty() else u.price
+            if u.price.is_empty():
+                u.price = q_prev.price
             if q_prev.brands and not u.brands:
                 u.brands = q_prev.brands
+            # apply_answer appends filters of its own for the sizing answers —
+            # "3–4 người", "phòng 20m²" — which are numbers in a domain unit and
+            # so invisible to the lexicon. Without this they were computed and
+            # thrown away, and the question might as well not have been asked.
+            u.feature_filters += q_prev.feature_filters[n_before:]
             s.asked.add(s.pending_slot)
             s.pending_slot = None
 
-        if u.intent in SMALLTALK and u.intent != Intent.UNCLEAR:
-            s.understanding = prior          # small talk must not clear context
-            return s, u, Reply(
-                kind="smalltalk", text=random.choice(SMALLTALK[u.intent]),
-                chips=STARTER_CHIPS if u.intent in
-                (Intent.GREETING, Intent.OFF_TOPIC) else [])
+        # The same sizing, but volunteered rather than asked for: "tủ lạnh cho
+        # gia đình 4 người" already answers the question about household size.
+        known = {(f, op) for f, op, _ in u.feature_filters}
+        for c in stated_sizing(u.group, text):
+            if (c[0], c[1]) not in known:
+                u.feature_filters.append(c)
+                s.asked.add("usage")
 
         merged = merge(prior, u)
         s.understanding = merged

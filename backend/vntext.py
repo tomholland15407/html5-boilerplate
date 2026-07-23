@@ -116,7 +116,13 @@ AMBIGUOUS_FORMS: dict[str, tuple[str, ...]] = {
     "ui": ("ủi",),              # to iron, not the interjection "ui"
     "cam": ("cam",),            # orange, not "cảm" (feel)
     "may": ("máy",),            # machine, not "mày"/"may"
-    "hang": ("hãng",),          # brand, not "hàng"/"hạng"
+    # Brand and goods are both shopping senses; "hạng" (rank) and "hang" (cave)
+    # are not.
+    "hang": ("hãng", "hàng"),
+    # Sell, not "bạn" (you) — which is the word this assistant uses for the
+    # customer in every reply, so the folded form shows up constantly in
+    # ordinary conversation: "chào bạn" is a greeting, not an offer to sell.
+    "ban": ("bán",),
     "sac": ("sạc",),            # charge, not "sắc"
     "loai": ("loại",),
     "tam": ("tầm",),            # around/approx, not "tạm" (temporary)
@@ -203,6 +209,11 @@ MONEY_UNITS: dict[str, int] = {
 _UNIT_ALT = "|".join(sorted(MONEY_UNITS, key=len, reverse=True))
 _NUM = r"\d+(?:[.,]\d+)*"
 _RANGE_SEP = r"(?:\s*(?:-|–|—|~)\s*|\s+(?:den|toi|a|->)\s+)"
+# Currency marks sit between the two amounts of an already-formatted range
+# ("9.370.000₫ – 21.940.000₫" — the shape of our own budget chips) and would
+# otherwise stop the connector above from matching, so the range silently
+# collapsed to a single amount.
+_CURRENCY = re.compile(r"[₫]|(?<![a-z])vn[dđ](?![a-z])|(?<![a-z])dong(?![a-z])")
 
 # "tu 8 den 12 trieu" / "10-15 cu" — the first number carries no unit of its own
 # and inherits it from the second. Extremely common and easy to get wrong: match
@@ -374,7 +385,7 @@ def parse_price(text: str) -> PriceConstraint:
     # Two separate amounts joined by a connector: "tu 5 trieu den 10 trieu".
     if len(amounts) >= 2:
         lo, hi = amounts[0], amounts[1]
-        if re.fullmatch(_RANGE_SEP, t[lo[2]:hi[1]]):
+        if re.fullmatch(_RANGE_SEP, _CURRENCY.sub("", t[lo[2]:hi[1]])):
             pc.min, pc.max = sorted((lo[0], hi[0]))
             return pc
 
@@ -395,6 +406,45 @@ def parse_price(text: str) -> PriceConstraint:
         pc.min = int(value * 0.45)
 
     return pc
+
+
+_PLAIN_NUM_RE = re.compile(_NUM)
+
+
+def parse_quantity(text: str, *,
+                   use_cues: bool = True) -> tuple[float | None, float | None]:
+    """Read a plain, non-money numeric range: "15–25m²" -> (15.0, 25.0).
+
+    The clarifying questions ask for square metres, household size and screen
+    inches. parse_price cannot answer those — every one of those numbers sits
+    below its money floor, and reading "4 người" as four đồng would be worse
+    than reading nothing at all. The direction cues are shared with the money
+    parser, so "trên 5 người" and "trên 5 triệu" are read the same way.
+
+    Either side of the returned pair may be None for a one-sided bound. Pass
+    use_cues=False when the category name shares the sentence: "tủ lạnh" folds
+    to "tu lanh", and that "tu" is itself an "at least" cue, so a volunteered
+    "cho gia đình 4 người" would otherwise be read as five or more.
+    """
+    t = normalize(text)
+    nums = [(parse_decimal(m.group(0)), m.start(), m.end())
+            for m in _PLAIN_NUM_RE.finditer(t)]
+    nums = [(v, s, e) for v, s, e in nums if v is not None]
+    if not nums:
+        return None, None
+
+    # "1–2 người", "15–25m²" — an explicit span needs no cue interpretation.
+    if len(nums) >= 2 and re.fullmatch(_RANGE_SEP, t[nums[0][2]:nums[1][1]]):
+        lo, hi = sorted((nums[0][0], nums[1][0]))
+        return lo, hi
+
+    value, start, _end = nums[0]
+    cue = _nearest_cue(t[max(0, start - 24):start]) if use_cues else None
+    if cue == "max":
+        return None, value
+    if cue == "min":
+        return value, None
+    return value, value
 
 
 # --------------------------------------------------------------------------

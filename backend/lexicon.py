@@ -158,6 +158,20 @@ SLANG_RULES: list[Rule] = [
          (FeatPct("ram_gb", "high", .60), FeatPct("cpu_ghz", "high", .60),
           TextMatch(("rtx", "gtx", "geforce", "radeon rx", "arc a", "gaming"))),
          ("laptop", "pc", "phone")),
+    # The two remaining answers to "what do you use the laptop for?". Without
+    # these the question was decorative: it was asked, and the answer resolved
+    # to nothing at all, so the recommendation was identical either way.
+    Rule("học tập, văn phòng", ("hoc tap", "van phong", "di hoc", "hoc online",
+                                "lam viec", "office", "sinh vien dung", "soan thao"),
+         (FeatPct("weight_kg", "low", .60), Boost("rating", .5)),
+         ("laptop", "tablet", "pc")),
+    # RAM and storage are effectively constant across this catalog's laptops
+    # (16GB/512GB at every percentile up to p75), so a percentile cut on them
+    # would filter nothing. The discrete-GPU marker is the real discriminator.
+    Rule("đồ hoạ, dựng phim", ("do hoa", "dung phim", "edit video", "render",
+                               "thiet ke", "lam video", "dung video"),
+         (TextMatch(("rtx", "geforce", "radeon rx", "arc a")), Boost("rating", .5)),
+         ("laptop", "pc")),
     Rule("nhiều RAM", ("nhieu ram", "ram cao", "ram lon", "ram khoe"),
          (FeatPct("ram_gb", "high", .60),), _COMPUTE_GROUPS),
     Rule("bộ nhớ lớn", ("bo nho lon", "nhieu bo nho", "dung luong lon",
@@ -229,6 +243,25 @@ SLANG_RULES: list[Rule] = [
          ("audio", "phone", "tablet", "smarthome", "camera")),
     Rule("phòng rộng", ("phong rong", "phong lon", "phong to", "phong khach"),
          (FeatPct("cooling_hp", "high", .60),), ("ac",)),
+
+    # ---------------- what the speaker or headphones are for ----------------
+    # Same story as the laptop pair above: these are the four answers to the
+    # audio usage question, and every one of them resolved to nothing. The terms
+    # are taken from what this catalog's own spec text actually says, so none of
+    # them filters the whole category away.
+    Rule("nghe nhạc", ("nghe nhac", "nhac", "am nhac", "nghe nhac la chinh"),
+         (TextMatch(("hi-res", "hires", "bass", "am thanh vom", "dolby")),),
+         ("audio",)),
+    Rule("xem phim", ("xem phim", "coi phim", "phim anh", "giai tri"),
+         (TextMatch(("dolby", "surround", "am thanh vom", "home theater")),),
+         ("audio",)),
+    Rule("chơi game", ("choi game", "chien game", "gaming"),
+         (TextMatch(("gaming", "game", "do tre thap", "low latency")),),
+         ("audio",)),
+    Rule("gọi điện, họp", ("goi dien", "hop online", "hop truc tuyen", "hop hanh",
+                           "dam thoai", "nghe goi"),
+         (TextMatch(("micro", "mic", "anc", "chong on", "khu tieng on")),),
+         ("audio",)),
 
     # ---------------- charging ----------------
     Rule("sạc nhanh", ("sac nhanh", "sac sieu nhanh", "sac nhanh nhat",
