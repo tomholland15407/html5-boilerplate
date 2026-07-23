@@ -19,6 +19,7 @@ from __future__ import annotations
 import random
 import re
 import time
+import uuid
 from dataclasses import dataclass, field
 
 from catalog import Catalog, Product, Query, SearchResult
@@ -293,6 +294,13 @@ class ChatEngine:
     def reset(self, sid: str) -> None:
         self.sessions.pop(sid, None)
 
+    def _fork(self) -> Session:
+        """A clean session for a product unrelated to the one in progress."""
+        new_id = uuid.uuid4().hex
+        s = Session(id=new_id)
+        self.sessions[new_id] = s
+        return s
+
     def prepare(self, sid: str, text: str) -> tuple[Session, Understanding, Reply | None]:
         """Everything up to (but not including) generation.
 
@@ -300,7 +308,6 @@ class ChatEngine:
         and questions — so the server can answer those in milliseconds.
         """
         s = self.session(sid)
-        s.turns += 1
         prior = s.understanding
 
         # While a question is open, a reply the current category can explain is
@@ -322,20 +329,25 @@ class ChatEngine:
             # on chảo and "bạn là ai" contains "ban la", a clothes iron. Left
             # any later, saying hello mid-conversation reset the questions
             # already asked and consumed the one still waiting.
+            s.turns += 1
             s.understanding = prior          # small talk must not clear context
             return s, u, Reply(
                 kind="smalltalk", text=random.choice(SMALLTALK[u.intent]),
                 chips=STARTER_CHIPS if u.intent in
                 (Intent.GREETING, Intent.OFF_TOPIC) else [])
 
-        # The shopper moved to a different product. merge() drops the previous
-        # one's constraints; the questions already asked have to go with them,
-        # or the new category can never be asked about a budget again — which is
-        # how "laptop, dưới 15 triệu, tủ lạnh" answered the fridge with no
-        # questions at all.
+        # A different product is a different conversation, so it gets its own
+        # session rather than overwriting the one in progress. The previous one
+        # is left exactly as it stood — its budget, its history, its open
+        # question — and can be returned to; this one starts clean instead of
+        # half-inheriting the last, which is how "laptop, dưới 15 triệu, tủ
+        # lạnh" came to answer the fridge with no questions at all. The server
+        # hands the new id to the browser, which opens a chat dedicated to it.
         if prior and prior.group and u.group and u.group != prior.group:
-            s.asked.clear()
-            s.pending_slot = None
+            s = self._fork()
+            prior = None
+
+        s.turns += 1
 
         # A pending question is being answered: fold the answer in before
         # anything else, so "dưới 10 triệu" lands as a budget rather than a

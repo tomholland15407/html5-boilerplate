@@ -366,6 +366,19 @@ function createNewChatSession(initialTitle = "Cuộc trò chuyện mới") {
   return newSession;
 }
 
+// Cầu nối cho js/backend.js. File đó chạy trong IIFE riêng nên không nhìn thấy
+// hai biến `let` ở trên — mọi hàm trong file này là function declaration nên đã
+// nằm sẵn trên window, chỉ phần sổ sách phiên là cần chia sẻ. Trước đây
+// backend.js đọc window.activeSessionId (luôn undefined với `let`), nên mỗi tin
+// nhắn lại mở thêm một phiên mới trong thanh bên.
+window.dmxChat = {
+  get activeId() { return activeSessionId; },
+  set activeId(id) { activeSessionId = id; },
+  get sessions() { return consumerChatSessions; },
+  find(id) { return consumerChatSessions.find(item => item.id === id); },
+  active() { return consumerChatSessions.find(item => item.id === activeSessionId) || null; },
+};
+
 function updateActiveSessionTitle(newTitle, categoryCode) {
   if (!activeSessionId) return;
   const s = consumerChatSessions.find(item => item.id === activeSessionId);

@@ -10,6 +10,10 @@
  * so the product cards render almost immediately; the model's prose then streams
  * in above them. A 3.5 s answer reads as instant because the useful part was
  * never waiting on the model.
+ *
+ * One chat in the sidebar is one session on the server. When the shopper moves
+ * from phones to laptops the server says so, and the turn is lifted into a
+ * chat of its own rather than being appended to the wrong conversation.
  */
 (function () {
   'use strict';
@@ -17,10 +21,14 @@
   const API = window.CHAT_API_BASE || '';
   const SESSION_KEY = 'dmx-session-id';
 
-  let sessionId = sessionStorage.getItem(SESSION_KEY);
-  if (!sessionId) {
-    sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    sessionStorage.setItem(SESSION_KEY, sessionId);
+  const newSessionId = () =>
+    Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+  // Used only until app.js has a chat to hang a session on.
+  let fallbackSessionId = sessionStorage.getItem(SESSION_KEY);
+  if (!fallbackSessionId) {
+    fallbackSessionId = newSessionId();
+    sessionStorage.setItem(SESSION_KEY, fallbackSessionId);
   }
 
   const $ = (id) => document.getElementById(id);
@@ -32,19 +40,55 @@
   const vnd = (n) => (window.formatVND ? window.formatVND(n)
     : new Intl.NumberFormat('vi-VN').format(n || 0) + '₫');
 
+  // ------------------------------------------------------------- chat/session
+
+  const chatApi = () => window.dmxChat || null;
+  const activeChat = () => (chatApi() ? chatApi().active() : null);
+
+  // Each chat carries the id of the server session that holds its state, so
+  // clicking back into an older conversation resumes exactly where it stopped.
+  function sessionIdFor(chat) {
+    if (!chat) return fallbackSessionId;
+    if (!chat.backendId) chat.backendId = newSessionId();
+    return chat.backendId;
+  }
+
+  function titleFor(label) {
+    return label ? `Tư vấn ${label}` : null;
+  }
+
   // ---------------------------------------------------------------- rendering
 
-  function productCard(p, idx) {
+  const SPEC_LABEL = {
+    battery_mah: ['Pin', 'mAh'], ram_gb: ['RAM', 'GB'], storage_gb: ['Bộ nhớ', 'GB'],
+    screen_inch: ['Màn hình', '"'], capacity_l: ['Dung tích', ' lít'],
+    wash_kg: ['Khối lượng giặt', ' kg'], power_w: ['Công suất', 'W'],
+    weight_kg: ['Trọng lượng', ' kg'], cooling_hp: ['Công suất', ' HP'],
+    camera_mp: ['Camera', ' MP'], refresh_hz: ['Tần số quét', 'Hz'],
+    battery_hours: ['Thời lượng pin', ' giờ'], cpu_ghz: ['CPU', ' GHz'],
+    water_atm: ['Kháng nước', ' ATM']
+  };
+
+  /**
+   * The trade-off note the mock engine used to show, rebuilt from the rows the
+   * server actually returned. It only ever states where this product sits on
+   * price among the three on screen, which is read off the cards themselves —
+   * nothing here asserts a fact the catalog has not supplied.
+   */
+  function tradeOff(p, all) {
+    const prices = all.map((x) => x.price).filter((n) => n > 0);
+    if (prices.length < 2) return '';
+    const lo = Math.min(...prices);
+    const hi = Math.max(...prices);
+    if (hi === lo) return 'Ba mẫu cùng tầm giá, khác nhau chủ yếu ở thông số và thương hiệu.';
+    if (p.price === lo) return 'Rẻ nhất trong ba mẫu — đổi lại tính năng và cấu hình ở mức cơ bản hơn.';
+    if (p.price === hi) return 'Nhiều tính năng nhất nhóm này, bù lại chi phí ban đầu cao hơn hai mẫu còn lại.';
+    return 'Nằm giữa về giá — cân bằng giữa chi phí và tính năng.';
+  }
+
+  function productCard(p, idx, all) {
     const specs = Object.entries(p.features || {}).slice(0, 3).map(([k, v]) => {
-      const LABEL = {
-        battery_mah: ['Pin', 'mAh'], ram_gb: ['RAM', 'GB'], storage_gb: ['Bộ nhớ', 'GB'],
-        screen_inch: ['Màn hình', '"'], capacity_l: ['Dung tích', ' lít'],
-        wash_kg: ['Khối lượng giặt', ' kg'], power_w: ['Công suất', 'W'],
-        weight_kg: ['Trọng lượng', ' kg'], cooling_hp: ['Công suất', ' HP'],
-        camera_mp: ['Camera', ' MP'], refresh_hz: ['Tần số quét', 'Hz'],
-        battery_hours: ['Thời lượng pin', ' giờ'], cpu_ghz: ['CPU', ' GHz'],
-        water_atm: ['Kháng nước', ' ATM']
-      }[k];
+      const LABEL = SPEC_LABEL[k];
       if (!LABEL) return '';
       const shown = Number.isInteger(v) ? v : Math.round(v * 10) / 10;
       return `<li><i class="fa-solid fa-circle-check text-paper-400 mr-1.5"></i>${LABEL[0]}: <strong>${shown}${LABEL[1]}</strong></li>`;
@@ -65,6 +109,16 @@
     const img = p.image
       ? `<img src="${escapeHtml(p.image)}" alt="" loading="lazy" class="w-full h-28 object-contain mb-2" onerror="this.style.display='none'">` : '';
 
+    const note = tradeOff(p, all);
+    const noteHtml = note
+      ? `<div class="sk-panel sk-edge sk-edge-soft sk-edge-single sk-fill-paper-2 bg-white dark:bg-amber-900/20 p-3 text-[11px] text-amber-900 dark:text-amber-400 border border-amber-200/60 leading-relaxed">
+           <strong class="text-inherit">Điểm đánh đổi:</strong> ${escapeHtml(note)}
+         </div>` : '';
+
+    const detail = p.url
+      ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer"
+            class="block text-center text-[11px] text-paper-inksoft dark:text-stone-400 hover:text-paper-ink dark:hover:text-white underline underline-offset-2">Xem chi tiết</a>` : '';
+
     return `
       <div class="sk-edge sk-lift sk-fill-amber ${idx % 2 === 0 ? 'sk-card' : 'sk-card-alt sk-edge-alt'} bg-amber-50/60 dark:bg-amber-950/20 p-4 border border-amber-200/80 dark:border-amber-500/20 flex flex-col justify-between space-y-3 shadow-sm transition-all hover:shadow-md hover:border-amber-400/80">
         <div>
@@ -79,8 +133,11 @@
           <div class="mt-2.5">${reasons}</div>
           ${promo}
         </div>
-        <a href="${escapeHtml(p.url || '#')}" target="_blank" rel="noopener noreferrer"
-           class="sk-pill sk-edge sk-edge-strong sk-lift w-full custom-btn-select text-xs py-2.5 text-center transition-all shadow-sm">Xem chi tiết</a>
+        ${noteHtml}
+        <div class="space-y-2">
+          <button type="button" class="dmx-buy sk-pill sk-edge sk-edge-strong sk-lift w-full custom-btn-select text-xs py-2.5 text-center transition-all shadow-sm">Đặt Mua Ngay</button>
+          ${detail}
+        </div>
       </div>`;
   }
 
@@ -91,8 +148,13 @@
     ).join('') + `</div>`;
   }
 
-  // Chips act as if the shopper typed them.
   document.addEventListener('click', (e) => {
+    // The buy confirmation app.js already knows how to render.
+    if (e.target.closest('.dmx-buy')) {
+      if (window.handleBuyProduct) window.handleBuyProduct();
+      return;
+    }
+    // Chips act as if the shopper typed them.
     const btn = e.target.closest('.dmx-chip');
     if (!btn) return;
     const input = $('user-input');
@@ -104,42 +166,94 @@
 
   // ------------------------------------------------------------------ stream
 
+  /**
+   * Lift a turn into a chat of its own.
+   *
+   * The message was typed into the conversation about phones, but the server
+   * has just said it is about laptops and has opened a session for it. Take the
+   * message back out of the old chat — it belongs to the new subject — and
+   * replay it into a fresh one bound to the new session.
+   */
+  function startDedicatedChat(userText, topic) {
+    const from = activeChat();
+    if (from && from.messages && from.messages.length) {
+      const last = from.messages[from.messages.length - 1];
+      if (last.role === 'user' && last.content === userText) from.messages.pop();
+    }
+    if (window.removeTypingIndicator) window.removeTypingIndicator();
+    const box = $('chat-box');
+    if (box && box.lastElementChild) box.lastElementChild.remove();
+
+    const chat = window.createNewChatSession
+      ? window.createNewChatSession(titleFor(topic.label) || 'Cuộc trò chuyện mới')
+      : null;
+    if (chat) {
+      chat.backendId = topic.session_id;
+      chat.category = topic.group || null;
+      if (window.restoreSessionMessages) window.restoreSessionMessages(chat);
+      if (window.renderChatHistoryUI) window.renderChatHistoryUI();
+    }
+    if (window.hideSuggestionArcNow) window.hideSuggestionArcNow();
+    if (window.appendUserMessage) window.appendUserMessage(userText);
+    if (window.showTypingIndicator) window.showTypingIndicator();
+    return chat;
+  }
+
   async function streamChat(text) {
     const t0 = performance.now();
+    const startedIn = activeChat();
     let bubble = null;      // the assistant message element being written into
+    let slot = null;        // where that message lives in the chat's history
     let prose = '';
     let cardsHtml = '';
+    let chipsMarkup = '';
     let notesHtml = '';
 
-    // Create the bubble up front so tokens have somewhere to land.
-    if (window.appendAssistantMessage) {
+    const render = () =>
+      (prose ? `<p class="text-[13.5px] leading-relaxed mb-3 text-paper-ink dark:text-slate-200">${escapeHtml(prose)}</p>` : '')
+      + notesHtml + cardsHtml + chipsMarkup;
+
+    // Created on the first piece of content rather than up front, so a turn
+    // that turns out to belong to another subject can be moved before anything
+    // has been written into the wrong conversation.
+    const ensureBubble = () => {
+      if (bubble) return;
+      if (window.removeTypingIndicator) window.removeTypingIndicator();
+      if (!window.appendAssistantMessage) return;
       window.appendAssistantMessage('<span class="dmx-stream"></span>');
       const all = document.querySelectorAll('.dmx-stream');
       bubble = all[all.length - 1];
-    }
+      const chat = activeChat();
+      if (chat && chat.messages && chat.messages.length) {
+        slot = { chat: chat, index: chat.messages.length - 1 };
+      }
+    };
+
     const paint = () => {
+      ensureBubble();
       if (!bubble) return;
-      bubble.innerHTML =
-        `<p class="text-[13.5px] leading-relaxed mb-3 text-paper-ink dark:text-slate-200">${escapeHtml(prose)}</p>`
-        + notesHtml + cardsHtml;
+      bubble.innerHTML = render();
+      // Keep the stored copy in step, or reopening this chat later shows the
+      // placeholder the bubble started life as instead of the answer.
+      if (slot) slot.chat.messages[slot.index].content = render();
       if (window.scrollChatToBottom) window.scrollChatToBottom();
     };
+
+    const fail = (msg) => { prose = msg; paint(); };
 
     let res;
     try {
       res = await fetch(`${API}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, session_id: sessionId })
+        body: JSON.stringify({ message: text, session_id: sessionIdFor(startedIn) })
       });
     } catch (err) {
-      prose = 'Mình không kết nối được tới máy chủ. Bạn kiểm tra giúp backend đang chạy nhé.';
-      paint();
+      fail('Mình không kết nối được tới máy chủ. Bạn kiểm tra giúp backend đang chạy nhé.');
       return;
     }
     if (!res.ok || !res.body) {
-      prose = 'Máy chủ đang bận, bạn thử lại giúp mình nhé.';
-      paint();
+      fail('Máy chủ đang bận, bạn thử lại giúp mình nhé.');
       return;
     }
 
@@ -148,61 +262,93 @@
     let buf = '';
     let event = null;
 
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buf += decoder.decode(value, { stream: true });
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
 
-      // SSE frames are separated by a blank line.
-      let idx;
-      while ((idx = buf.indexOf('\n\n')) !== -1) {
-        const frame = buf.slice(0, idx);
-        buf = buf.slice(idx + 2);
-        for (const line of frame.split('\n')) {
-          if (line.startsWith('event: ')) { event = line.slice(7).trim(); continue; }
-          if (!line.startsWith('data: ')) continue;
-          let d;
-          try { d = JSON.parse(line.slice(6)); } catch (_) { continue; }
+        // SSE frames are separated by a blank line.
+        let idx;
+        while ((idx = buf.indexOf('\n\n')) !== -1) {
+          const frame = buf.slice(0, idx);
+          buf = buf.slice(idx + 2);
+          for (const line of frame.split('\n')) {
+            if (line.startsWith('event: ')) { event = line.slice(7).trim(); continue; }
+            if (!line.startsWith('data: ')) continue;
+            let d;
+            try { d = JSON.parse(line.slice(6)); } catch (_) { continue; }
 
-          if (event === 'products') {
-            cardsHtml = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-3">`
-              + (d.products || []).map(productCard).join('') + `</div>`;
-            if (d.notes && d.notes.length) {
-              notesHtml = `<div class="text-[11px] text-paper-inksoft dark:text-stone-400 mb-2">`
-                + d.notes.map((n) => `<div>· ${escapeHtml(n)}</div>`).join('') + `</div>`;
-            }
-            setDebug('rag-faq-status', `Khớp ${d.total_matched} sản phẩm`);
-            paint();
-          } else if (event === 'token') {
-            prose += d.text;
-            paint();
-          } else if (event === 'replace') {
-            // Server retracted its own text — a mid-sentence cut, or a figure
-            // that failed verification against the catalog rows.
-            prose = d.text;
-            paint();
-          } else if (event === 'chips') {
-            cardsHtml = chipsHtml(d.chips);
-            paint();
-          } else if (event === 'done') {
-            setDebug('latency-val', Math.round(d.ms || (performance.now() - t0)) + 'ms');
-            if (d.slang && d.slang.length) setDebug('slang-inspector', JSON.stringify(d.slang));
-            if (d.kind) setDebug('chat-stage', d.kind.toUpperCase());
-            if (d.debug && d.debug.candidates != null) {
-              setDebug('rag-faq-status', `Còn ${d.debug.candidates} lựa chọn`);
+            if (event === 'topic') {
+              // Arrives before any content, because the decision costs ~2 ms.
+              if (d.changed) {
+                startDedicatedChat(text, d);
+              } else {
+                const chat = activeChat();
+                if (chat) {
+                  if (d.session_id) chat.backendId = d.session_id;
+                  if (d.group) chat.category = d.group;
+                  const title = titleFor(d.label);
+                  if (title && chat.title !== title && window.updateActiveSessionTitle) {
+                    window.updateActiveSessionTitle(title, d.group);
+                  }
+                }
+              }
+              setDebug('active-category', d.label || 'Chưa xác định');
+            } else if (event === 'products') {
+              const list = d.products || [];
+              cardsHtml = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-3">`
+                + list.map((p, i) => productCard(p, i, list)).join('') + `</div>`;
+              if (d.notes && d.notes.length) {
+                notesHtml = `<div class="text-[11px] text-paper-inksoft dark:text-stone-400 mb-2">`
+                  + d.notes.map((n) => `<div>· ${escapeHtml(n)}</div>`).join('') + `</div>`;
+              }
+              setDebug('rag-faq-status', `Khớp ${d.total_matched} sản phẩm`);
+              setDebug('rag-catalog-status', `Tìm thấy ${list.length} mẫu`);
+              const withPromo = list.filter((p) => p.promotion).length;
+              setDebug('rag-promo-status', withPromo
+                ? `${withPromo}/${list.length} mẫu đang có khuyến mãi`
+                : 'Không có khuyến mãi kèm theo');
+              paint();
+            } else if (event === 'token') {
+              prose += d.text;
+              paint();
+            } else if (event === 'replace') {
+              // Server retracted its own text — a mid-sentence cut, or a figure
+              // that failed verification against the catalog rows.
+              prose = d.text;
+              paint();
+            } else if (event === 'chips') {
+              chipsMarkup = chipsHtml(d.chips);
+              paint();
+            } else if (event === 'done') {
+              setDebug('latency-val', Math.round(d.ms || (performance.now() - t0)) + 'ms');
+              if (d.slang && d.slang.length) setDebug('slang-inspector', JSON.stringify(d.slang));
+              if (d.kind) setDebug('chat-stage', d.kind.toUpperCase());
+              if (d.debug && d.debug.candidates != null) {
+                setDebug('rag-faq-status', `Còn ${d.debug.candidates} lựa chọn`);
+              }
             }
           }
         }
       }
+    } catch {
+      if (!prose && !cardsHtml) {
+        fail('Kết nối bị gián đoạn giữa chừng, bạn thử lại giúp mình nhé.');
+        return;
+      }
     }
     paint();
+    if (window.removeTypingIndicator) window.removeTypingIndicator();
   }
 
   // ------------------------------------------------------- global overrides
 
   window.dispatchLogicEngine = function (text) { streamChat(text); };
 
-  // Replaces app.js's version, which waited 1300 ms before dispatching.
+  // Replaces app.js's version, which waited 1300 ms before dispatching. The
+  // typing indicator stays: there is a real wait to cover now, about two
+  // seconds on a recommendation and nothing at all on a question.
   window.handleFormSubmit = function (event) {
     if (event && typeof event.preventDefault === 'function') event.preventDefault();
     const input = $('user-input');
@@ -210,11 +356,12 @@
     const val = input.value.trim();
     if (!val) return;
 
-    if (!window.activeSessionId && window.createNewChatSession) window.createNewChatSession();
+    if (!activeChat() && window.createNewChatSession) window.createNewChatSession();
     if (window.dismissSuggestionArc) window.dismissSuggestionArc();
     if (window.appendUserMessage) window.appendUserMessage(val);
     input.value = '';
     if (window.triggerMascotJiggle) window.triggerMascotJiggle();
+    if (window.showTypingIndicator) window.showTypingIndicator();
     streamChat(val);
   };
 

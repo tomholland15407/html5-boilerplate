@@ -288,6 +288,27 @@ if DB.exists():
     _, u, _ = engine.prepare("t-switch2", "tủ lạnh")
     check("phone specs do not follow to a fridge", u.feature_filters, [])
 
+    # A new subject gets a session of its own, and the one it interrupted is
+    # left exactly as it stood — that is what lets the browser put the two in
+    # separate chats and let the shopper move between them.
+    engine.reset("t-fork")
+    engine.prepare("t-fork", "điện thoại")
+    engine.prepare("t-fork", "dưới 8 triệu")
+    forked, _, reply = engine.prepare("t-fork", "laptop")
+    check("a new subject forks the session", forked.id != "t-fork", True)
+    check("the fork starts with nothing asked", forked.asked, set())
+    check("and is about the new category", forked.understanding.group, "laptop")
+    check("the fork is asked its own first question", reply.kind, "question")
+
+    kept = engine.session("t-fork")
+    check("the interrupted session keeps its category", kept.understanding.group, "phone")
+    check("and its budget", kept.understanding.price.max, 8 * M)
+    check("and what it had already asked", kept.asked, {"budget"})
+    # Continuing the old chat picks up where it left off, not where the fork went.
+    _, u, _ = engine.prepare("t-fork", "Pin trâu")
+    check("the old chat resumes on its own subject", u.group, "phone")
+    check("with its budget intact", u.price.max, 8 * M)
+
     # "Camera đẹp" answers "what matters most in a phone?" and contains a
     # category cue; it is phone slang, not a request to shop for cameras.
     engine.reset("t-cam")

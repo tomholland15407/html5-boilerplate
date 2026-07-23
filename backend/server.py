@@ -36,6 +36,7 @@ from chat import (ChatEngine, build_prompt, check_brands,        # noqa: E402
                   check_numbers, render_fallback, SYSTEM_PROMPT,
                   trim_to_sentence)
 from llm import LLM                                              # noqa: E402
+from taxonomy import GROUP_LABELS                                # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = os.environ.get("CATALOG_DB", str(ROOT / "data" / "catalog.db"))
@@ -118,6 +119,21 @@ async def chat(req: Request) -> StreamingResponse:
         session, u, early = await loop.run_in_executor(
             None, engine.prepare, sid, text)
         t_understand = time.perf_counter() - t0
+
+        # Which product this turn is about, and whether it is a different one
+        # from the turn before. On a change prepare() has already started a
+        # fresh session for it, and the browser opens a chat of its own bound
+        # to the id below — so the previous subject keeps its own thread.
+        # Read off the session rather than this turn's understanding: small
+        # talk leaves the subject alone, and its stray cues ("xin chào" folds
+        # onto chảo) must not read as a change of subject.
+        group = session.understanding.group if session.understanding else None
+        yield sse("topic", {
+            "session_id": session.id,
+            "group": group,
+            "label": GROUP_LABELS.get(group) if group else None,
+            "changed": session.id != sid,
+        })
 
         if early is not None:
             yield sse("token", {"text": early.text})
