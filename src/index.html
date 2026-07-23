@@ -9,7 +9,7 @@
   <!-- Google Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Tailwind CSS CDN với cấu hình màu sắc thương hiệu Điện Máy Xanh -->
@@ -42,7 +42,12 @@
             }
           },
           fontFamily: {
-            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+            // Chữ toàn trang. Gemini dùng Google Sans — font riêng của Google,
+            // không cấp phép nhúng — nên đây là bản thay gần nhất còn đủ dấu
+            // tiếng Việt. Đổi ở đúng một chỗ này là cả trang đổi theo, riêng
+            // BuddyBlue vẫn nguyên vì nó đi bằng `serif` bên dưới.
+            sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            // Chỉ dành cho chữ ký BuddyBlue (tiêu đề đầu trang + lời chào).
             serif: ['"Cormorant Garamond"', 'ui-serif', 'Georgia', 'serif'],
           }
         }
