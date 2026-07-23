@@ -1,0 +1,18 @@
+# Vercel serves dist/ and runs no build, so nothing else needs uploading.
+# The parts that stay on the laptop are listed explicitly rather than left to
+# .gitignore: the catalog is 80MB, and the backend only means anything next to
+# the Ollama instance it talks to.
+.venv
+node_modules
+data
+backend
+src
+test
+docs
+.github
+.idea
+run.sh
+tunnel.sh
+gulpfile.mjs
+package-lock.json
+*.xlsx
