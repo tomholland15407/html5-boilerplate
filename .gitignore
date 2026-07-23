@@ -1,5 +1,12 @@
 **/.DS_Store
 archive
+data/*.xlsx
+data/*.db
+data/*.db-wal
+data/*.db-shm
+.venv
+__pycache__
+*.pyc
 node_modules
 packages
 dist/package-lock.json
