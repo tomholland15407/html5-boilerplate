@@ -55,6 +55,14 @@ _PATTERNS: list[tuple[Intent, tuple[str, ...]]] = [
 # Topics that are plainly not shopping. Everything else that lacks a product
 # signal falls through to UNCLEAR and gets asked a question rather than refused —
 # "cần mua gì đó cho mẹ" is vague, not off-topic.
+# Both of these route to ACCEPT_ANY, but they do not mean the same thing.
+# "Tuỳ bạn" clicked under "what is your budget?" says the shopper has no budget
+# in mind — it answers that question and nothing else. These say stop asking
+# altogether and recommend something, whatever is still unknown.
+_DECIDE_FOR_ME = ("ban chon giup", "shop chon giup", "chon giup minh",
+                  "chon giup em", "chon ho minh", "ban quyet dinh",
+                  "ban chon di", "shop chon di", "goi y dai gi cung duoc")
+
 _OFF_TOPIC = (
     "thoi tiet", "bong da", "chinh tri", "bau cu", "chung khoan", "bitcoin",
     "ke chuyen", "chuyen cuoi", "lam tho", "bai tho", "dich giup", "viet code",
@@ -108,6 +116,15 @@ _FILLER = frozenset((
 def _match_any(text: str, phrases: tuple[str, ...]) -> bool:
     return any(re.search(rf"(?<![a-z0-9]){re.escape(p)}(?![a-z0-9])", text)
                for p in phrases)
+
+
+def wants_us_to_choose(text: str) -> bool:
+    """Did the shopper ask us to stop asking and just pick?
+
+    Distinct from answering one question with "no preference", which leaves the
+    remaining questions perfectly worth asking.
+    """
+    return _match_any(normalize(text), _DECIDE_FOR_ME)
 
 
 def _matched(text: str, phrases: tuple[str, ...]) -> list[str]:

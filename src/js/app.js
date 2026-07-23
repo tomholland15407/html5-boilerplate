@@ -1054,10 +1054,15 @@ function hideSuggestionArcNow() {
 
 window.fillQuickPrompt = function(promptText) {
   const input = document.getElementById('user-input');
-  if (input) {
-    input.value = promptText;
-    input.focus();
-  }
+  if (!input) return;
+  input.value = promptText;
+  input.focus();
+
+  // Gửi luôn, giống hệt các viên gợi ý trong tin nhắn của trợ lý. Trước đây
+  // hàm này chỉ đổ chữ vào ô nhập rồi dừng, nên bấm một viên trên vòng cung
+  // trông như không có gì xảy ra và người dùng phải tự bấm gửi.
+  const form = document.getElementById('chat-form');
+  if (form) form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 };
 
 // ĐỒNG BỘ KHỞI TẠO KHI TẢI TRANG HOÀN TẤT

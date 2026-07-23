@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 from catalog import Catalog, Product, Query, SearchResult
 from lexicon import detect_group, match_rules
 from llm import LLM
-from nlu import Intent, Understander, Understanding, merge
+from nlu import Intent, Understander, Understanding, merge, wants_us_to_choose
 from policy import Decision, Question, apply_answer, decide, stated_sizing
 from taxonomy import GROUP_LABELS
 from vntext import format_vnd
@@ -76,8 +76,12 @@ SMALLTALK = {
     ],
 }
 
-STARTER_CHIPS = ["Điện thoại pin trâu dưới 8 triệu", "Laptop sinh viên nhẹ",
-                 "Máy lạnh tiết kiệm điện", "Tủ lạnh cho gia đình 4 người"]
+# Openings, not finished requests. "Điện thoại pin trâu dưới 8 triệu" already
+# carries a need and a budget, so clicking it went straight to three products
+# and the assistant never appeared to ask anything. Each of these leaves at
+# least one thing still to establish, so the conversation starts by having one.
+STARTER_CHIPS = ["Điện thoại pin trâu", "Laptop cho sinh viên",
+                 "Máy lạnh tiết kiệm điện", "Tủ lạnh cho gia đình"]
 
 
 @dataclass
@@ -380,6 +384,7 @@ class ChatEngine:
         # A pending question is being answered: fold the answer in before
         # anything else, so "dưới 10 triệu" lands as a budget rather than a
         # fresh search.
+        answered_slot = s.pending_slot
         if s.pending_slot:
             q_prev = Understander.to_query(merge(prior, u))
             n_before = len(q_prev.feature_filters)
@@ -413,8 +418,15 @@ class ChatEngine:
                                     chips=STARTER_CHIPS)
 
         q = Understander.to_query(merged)
+        # "Tuỳ bạn" answering the budget question means the shopper has no
+        # budget in mind — not that they want the questions to stop. Read as
+        # the latter it ended the conversation on nothing at all: a bare "tủ
+        # lạnh" then "Tuỳ bạn" produced three fridges chosen on popularity
+        # alone. Asking us outright to pick still stops everything.
+        stop_asking = u.intent == Intent.ACCEPT_ANY and (
+            answered_slot is None or wants_us_to_choose(text))
         d: Decision = decide(self.cat, q, asked=s.asked,
-                             accept_any=(u.intent == Intent.ACCEPT_ANY),
+                             accept_any=stop_asking,
                              inferred_groups=merged.inferred_groups)
         if d.action == "ask" and d.question:
             s.pending_slot = d.question.slot

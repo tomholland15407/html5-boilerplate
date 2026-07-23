@@ -21,14 +21,6 @@ from taxonomy import GROUP_LABELS
 from vntext import format_vnd
 
 MAX_QUESTIONS = 3
-# The brief asks for two to three clarifying questions when the shopper has not
-# said enough to recommend from. Two is the floor for a vague opening, three the
-# ceiling for any opening; both are enforced here rather than asked of a prompt.
-MIN_QUESTIONS = 2
-# Below this many candidates, ranking is trustworthy enough to just answer —
-# but only once the floor above has been met, or a shopper who says "tủ lạnh"
-# and names a budget gets an answer after a single question.
-ENOUGH_TO_ANSWER = 40
 # Three products is all a reply ever shows, so at or below this there is nothing
 # left for a question to narrow and asking one is just delay.
 NOTHING_LEFT_TO_NARROW = 3
@@ -210,12 +202,10 @@ def decide(cat: Catalog, q: Query, *, asked: set[str], accept_any: bool = False,
     if given >= ENOUGH_CONSTRAINTS:
         return Decision("answer", None, n, f"khách đã nêu {given} tiêu chí, trả lời luôn")
     if n <= NOTHING_LEFT_TO_NARROW:
+        # Every match already fits on screen, so no answer could change which
+        # products come back. This is the one place a thin request is allowed
+        # through, because asking would be theatre.
         return Decision("answer", None, n, f"chỉ còn {n} lựa chọn, không cần hỏi thêm")
-    # The small-candidate shortcut is what a specific shopper deserves, not a
-    # vague one: "tủ lạnh" + a budget can leave under forty rows while the
-    # shopper has still told us nothing about the fridge they want.
-    if len(asked) >= MIN_QUESTIONS and n <= ENOUGH_TO_ANSWER:
-        return Decision("answer", None, n, f"chỉ còn {n} lựa chọn")
 
     candidates: list[Question] = []
     if "budget" not in asked and q.price.is_empty():

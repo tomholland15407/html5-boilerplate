@@ -269,26 +269,31 @@
              data-prompt là câu đầy đủ để parseUserIntent() bắt được từ khoá,
              còn nhãn hiển thị thì rút gọn cho gọn mắt. -->
         <div class="sk-suggest-arc" id="suggest-arc">
-          <button class="sk-suggest-pill" data-prompt="Mua đh pana dưới 15 củ cho phòng ngủ"
-                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Đh Panasonic dưới 15 củ"</button>
-          <button class="sk-suggest-pill" data-prompt="Tìm tủ lạnh tầm 10tr cho nhà 4 người"
-                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Tủ lạnh 10tr cho 4 người"</button>
-          <button class="sk-suggest-pill" data-prompt="Cần tìm máy laptop sinh viên tầm 15tr mỏng nhẹ để đi học"
-                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Laptop mỏng nhẹ ~15tr"</button>
-          <button class="sk-suggest-pill" data-prompt="Tư vấn máy lạnh cho phòng khách rộng 20m²"
-                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Máy lạnh phòng khách 20m²"</button>
-          <button class="sk-suggest-pill" data-prompt="Tìm laptop gaming đồ họa tầm 25tr"
-                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Laptop gaming ~25tr"</button>
-          <button class="sk-suggest-pill" data-prompt="Tủ lạnh Samsung tiết kiệm điện cho gia đình 3 người"
-                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Tủ lạnh Samsung 3 người"</button>
-          <button class="sk-suggest-pill" data-prompt="Máy lạnh inverter giá dưới 10tr cho phòng ngủ nhỏ"
-                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Đh inverter dưới 10tr"</button>
-          <button class="sk-suggest-pill" data-prompt="Tủ lạnh nhỏ cho sinh viên ở trọ một mình"
-                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Tủ lạnh nhỏ cho sinh viên"</button>
-          <button class="sk-suggest-pill" data-prompt="Laptop Asus văn phòng mỏng nhẹ tầm 12tr"
-                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Laptop văn phòng ~12tr"</button>
-          <button class="sk-suggest-pill" data-prompt="Điều hòa LG cho phòng ngủ dưới 15m²"
-                  onclick="window.fillQuickPrompt(this.dataset.prompt)">"Điều hòa LG cho phòng ngủ"</button>
+          <!-- Tên nhóm hàng, không phải câu hỏi trọn vẹn. Một câu đầy đủ như
+               "Tủ lạnh Samsung cho gia đình 3 người" đã nêu sẵn hai tiêu chí
+               nên bấm vào là ra luôn ba sản phẩm, không kịp hỏi gì. Ở dạng
+               ngắn, mỗi viên chỉ mở đầu câu chuyện — giống các gợi ý trong tin
+               nhắn của trợ lý. -->
+          <button class="sk-suggest-pill" data-prompt="Tủ lạnh"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">Tủ lạnh</button>
+          <button class="sk-suggest-pill" data-prompt="Điều hòa"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">Điều hòa</button>
+          <button class="sk-suggest-pill" data-prompt="Điện thoại"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">Điện thoại</button>
+          <button class="sk-suggest-pill" data-prompt="Laptop"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">Laptop</button>
+          <button class="sk-suggest-pill" data-prompt="Tivi"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">Tivi</button>
+          <button class="sk-suggest-pill" data-prompt="Máy giặt"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">Máy giặt</button>
+          <button class="sk-suggest-pill" data-prompt="Tai nghe"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">Tai nghe</button>
+          <button class="sk-suggest-pill" data-prompt="Nồi cơm điện"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">Nồi cơm điện</button>
+          <button class="sk-suggest-pill" data-prompt="Máy lọc nước"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">Máy lọc nước</button>
+          <button class="sk-suggest-pill" data-prompt="Máy hút bụi"
+                  onclick="window.fillQuickPrompt(this.dataset.prompt)">Máy hút bụi</button>
         </div>
 
         <form id="chat-form" class="sk-edge sk-edge-strong sk-input-shell relative flex items-center">

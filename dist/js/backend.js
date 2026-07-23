@@ -57,6 +57,28 @@
     return label ? `Tư vấn ${label}` : null;
   }
 
+  /**
+   * Take over a chat the shopper opened and never used, rather than stacking
+   * another one beside it. Starting a new chat, going back to an older one and
+   * then raising a different subject otherwise left the untouched chat sitting
+   * in the list for good while a third appeared above it.
+   */
+  function adoptEmptyChat(title) {
+    const api = chatApi();
+    if (!api) return null;
+    const list = api.sessions;
+    const idx = list.findIndex((c) => !c.messages || c.messages.length === 0);
+    if (idx === -1) return null;
+    const chat = list[idx];
+    chat.title = title || chat.title;
+    // Newest-first is how the list reads, and this one is now where the
+    // shopper is.
+    list.splice(idx, 1);
+    list.unshift(chat);
+    api.activeId = chat.id;
+    return chat;
+  }
+
   // ---------------------------------------------------------------- rendering
 
   const SPEC_LABEL = {
@@ -68,6 +90,42 @@
     battery_hours: ['Thời lượng pin', ' giờ'], cpu_ghz: ['CPU', ' GHz'],
     water_atm: ['Kháng nước', ' ATM']
   };
+
+  const MAX_PROMOS = 5;
+  // "Xem chi tiết" is the anchor text of a link that did not survive scraping.
+  // On its own it is not an offer, and glued to the end of one it is noise.
+  const PROMO_LINK = /\s*\(?\s*xem chi tiết(\s*tại đây)?\s*\)?\s*$/i;
+
+  /**
+   * Split the promotion blob into offers.
+   *
+   * The field is a semicolon-separated list that runs to twenty entries and
+   * 1,200 characters on the worst rows — as one paragraph it is a wall of text
+   * nobody reads, and it is most of what each card puts on the page.
+   */
+  function promoItems(text) {
+    const out = [];
+    for (const raw of String(text || '').split(';')) {
+      const s = raw.replace(PROMO_LINK, '').replace(/^[-•*\s]+/, '').trim();
+      if (!s || PROMO_LINK.test(s) || /^\(?\s*\)?$/.test(s)) continue;
+      if (out.indexOf(s) === -1) out.push(s);   // the same voucher repeats a lot
+    }
+    return out;
+  }
+
+  function promoHtml(text) {
+    const items = promoItems(text);
+    if (!items.length) return '';
+    const shown = items.slice(0, MAX_PROMOS);
+    const rest = items.length - shown.length;
+    const lis = shown.map((s) =>
+      `<li class="flex items-start"><i class="fa-solid fa-gift mr-1.5 mt-[3px] text-[9px] shrink-0"></i><span>${escapeHtml(s)}</span></li>`
+    ).join('');
+    const more = rest > 0
+      ? `<p class="text-[10px] text-paper-inksoft dark:text-stone-500 mt-1 pl-[18px]">+${rest} ưu đãi khác</p>`
+      : '';
+    return `<div class="mt-2.5"><ul class="text-[11px] text-amber-700 dark:text-amber-400 space-y-1 leading-snug">${lis}</ul>${more}</div>`;
+  }
 
   /**
    * The trade-off note the mock engine used to show, rebuilt from the rows the
@@ -103,8 +161,7 @@
     const reasons = (p.reasons || []).map((r) =>
       `<span class="inline-block text-[10px] px-2 py-0.5 mr-1 mb-1 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded">${escapeHtml(r)}</span>`).join('');
 
-    const promo = p.promotion
-      ? `<p class="text-[11px] text-amber-700 dark:text-amber-400 mt-2.5 flex items-start"><i class="fa-solid fa-gift mr-1.5 mt-0.5 text-xs shrink-0"></i><span>${escapeHtml(p.promotion)}</span></p>` : '';
+    const promo = promoHtml(p.promotion);
 
     const img = p.image
       ? `<img src="${escapeHtml(p.image)}" alt="" loading="lazy" class="w-full h-28 object-contain mb-2" onerror="this.style.display='none'">` : '';
@@ -148,12 +205,11 @@
     ).join('') + `</div>`;
   }
 
+  // No buy handler here on purpose. app.js already listens for clicks on
+  // .custom-btn-select, and the card reuses that class for the button's
+  // styling — a second listener on .dmx-buy meant one click rendered the
+  // confirmation twice. The class stays as a hook for tests.
   document.addEventListener('click', (e) => {
-    // The buy confirmation app.js already knows how to render.
-    if (e.target.closest('.dmx-buy')) {
-      if (window.handleBuyProduct) window.handleBuyProduct();
-      return;
-    }
     // Chips act as if the shopper typed them.
     const btn = e.target.closest('.dmx-chip');
     if (!btn) return;
@@ -186,9 +242,9 @@
     const box = $('chat-box');
     if (box && box.lastElementChild) box.lastElementChild.remove();
 
-    const chat = window.createNewChatSession
-      ? window.createNewChatSession(titleFor(topic.label) || 'Cuộc trò chuyện mới')
-      : null;
+    const title = titleFor(topic.label) || 'Cuộc trò chuyện mới';
+    const chat = adoptEmptyChat(title)
+      || (window.createNewChatSession ? window.createNewChatSession(title) : null);
     if (chat) {
       chat.backendId = topic.session_id;
       chat.category = topic.group || null;
@@ -208,12 +264,14 @@
     let slot = null;        // where that message lives in the chat's history
     let prose = '';
     let cardsHtml = '';
-    let chipsMarkup = '';
-    let notesHtml = '';
 
-    const render = () =>
-      (prose ? `<p class="text-[13.5px] leading-relaxed mb-3 text-paper-ink dark:text-slate-200">${escapeHtml(prose)}</p>` : '')
-      + notesHtml + cardsHtml + chipsMarkup;
+    // The bubble is laid out once with a slot for each kind of content, so a
+    // streamed token rewrites one sentence instead of the whole answer. It used
+    // to rebuild everything on every token: 67 reparses of the product grid,
+    // images and all, in a single reply.
+    const SHELL =
+      '<p class="dmx-prose text-[13.5px] leading-relaxed text-paper-ink dark:text-slate-200"></p>'
+      + '<div class="dmx-notes"></div><div class="dmx-cards"></div><div class="dmx-chips"></div>';
 
     // Created on the first piece of content rather than up front, so a turn
     // that turns out to belong to another subject can be moved before anything
@@ -222,7 +280,7 @@
       if (bubble) return;
       if (window.removeTypingIndicator) window.removeTypingIndicator();
       if (!window.appendAssistantMessage) return;
-      window.appendAssistantMessage('<span class="dmx-stream"></span>');
+      window.appendAssistantMessage(`<span class="dmx-stream">${SHELL}</span>`);
       const all = document.querySelectorAll('.dmx-stream');
       bubble = all[all.length - 1];
       const chat = activeChat();
@@ -231,17 +289,42 @@
       }
     };
 
-    const paint = () => {
-      ensureBubble();
-      if (!bubble) return;
-      bubble.innerHTML = render();
-      // Keep the stored copy in step, or reopening this chat later shows the
-      // placeholder the bubble started life as instead of the answer.
-      if (slot) slot.chat.messages[slot.index].content = render();
-      if (window.scrollChatToBottom) window.scrollChatToBottom();
+    // Follow the answer down only if the reader is already at the bottom.
+    // Forcing it on every token is what made scrolling up during a reply feel
+    // like the page was fighting back.
+    const NEAR_BOTTOM_PX = 60;
+    const follow = () => {
+      const box = $('chat-box');
+      if (!box) return;
+      if (box.scrollHeight - box.scrollTop - box.clientHeight <= NEAR_BOTTOM_PX) {
+        box.scrollTop = box.scrollHeight;
+      }
     };
 
-    const fail = (msg) => { prose = msg; paint(); };
+    const paintProse = () => {
+      ensureBubble();
+      const el = bubble && bubble.querySelector('.dmx-prose');
+      if (!el) return;
+      el.textContent = prose;               // no HTML parse, no re-created nodes
+      el.classList.toggle('mb-3', !!prose);
+      follow();
+    };
+
+    const paintBlock = (selector, html) => {
+      ensureBubble();
+      const el = bubble && bubble.querySelector(selector);
+      if (!el) return;
+      el.innerHTML = html;
+      follow();
+    };
+
+    // Kept in step once the turn is over, or reopening this chat later shows
+    // the empty shell the bubble started life as instead of the answer.
+    const store = () => {
+      if (slot && bubble) slot.chat.messages[slot.index].content = bubble.innerHTML;
+    };
+
+    const fail = (msg) => { prose = msg; paintProse(); store(); };
 
     let res;
     try {
@@ -302,8 +385,9 @@
               cardsHtml = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-3">`
                 + list.map((p, i) => productCard(p, i, list)).join('') + `</div>`;
               if (d.notes && d.notes.length) {
-                notesHtml = `<div class="text-[11px] text-paper-inksoft dark:text-stone-400 mb-2">`
-                  + d.notes.map((n) => `<div>· ${escapeHtml(n)}</div>`).join('') + `</div>`;
+                paintBlock('.dmx-notes',
+                  `<div class="text-[11px] text-paper-inksoft dark:text-stone-400 mb-2">`
+                  + d.notes.map((n) => `<div>· ${escapeHtml(n)}</div>`).join('') + `</div>`);
               }
               setDebug('rag-faq-status', `Khớp ${d.total_matched} sản phẩm`);
               setDebug('rag-catalog-status', `Tìm thấy ${list.length} mẫu`);
@@ -311,18 +395,17 @@
               setDebug('rag-promo-status', withPromo
                 ? `${withPromo}/${list.length} mẫu đang có khuyến mãi`
                 : 'Không có khuyến mãi kèm theo');
-              paint();
+              paintBlock('.dmx-cards', cardsHtml);
             } else if (event === 'token') {
               prose += d.text;
-              paint();
+              paintProse();
             } else if (event === 'replace') {
               // Server retracted its own text — a mid-sentence cut, or a figure
               // that failed verification against the catalog rows.
               prose = d.text;
-              paint();
+              paintProse();
             } else if (event === 'chips') {
-              chipsMarkup = chipsHtml(d.chips);
-              paint();
+              paintBlock('.dmx-chips', chipsHtml(d.chips));
             } else if (event === 'done') {
               setDebug('latency-val', Math.round(d.ms || (performance.now() - t0)) + 'ms');
               if (d.slang && d.slang.length) setDebug('slang-inspector', JSON.stringify(d.slang));
@@ -340,7 +423,8 @@
         return;
       }
     }
-    paint();
+    paintProse();
+    store();
     if (window.removeTypingIndicator) window.removeTypingIndicator();
   }
 

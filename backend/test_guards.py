@@ -16,8 +16,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from catalog import Catalog, Product, Query                     # noqa: E402
-from chat import (ChatEngine, check_brands, check_numbers,      # noqa: E402
-                  trim_to_sentence)
+from chat import (STARTER_CHIPS, ChatEngine, check_brands,       # noqa: E402
+                  check_numbers, trim_to_sentence)
 from lexicon import detect_group, infer_groups, match_rules     # noqa: E402
 from policy import (MAX_QUESTIONS, _sizing_filters,             # noqa: E402
                     count_constraints, stated_sizing)
@@ -271,6 +271,25 @@ if DB.exists():
     qs, _ = walk("t-vague", "can mua gi do cho me")
     check("a vague opening is still capped", len(qs) <= MAX_QUESTIONS, True)
     check("a vague opening is asked at least twice", len(qs) >= 2, True)
+
+    # The suggestions offered under the greeting are openings, not finished
+    # requests: clicking one used to go straight to three products.
+    for chip in STARTER_CHIPS:
+        qs, _ = walk(f"t-chip-{chip}", chip)
+        check(f"{chip!r} opens with a question", len(qs) >= 1, True)
+
+    # "Tuỳ bạn" answers the question in front of it and nothing more. Read as
+    # "stop asking", it ended a bare "tủ lạnh" on no clues whatsoever.
+    engine.reset("t-any")
+    engine.prepare("t-any", "tủ lạnh")
+    _, _, reply = engine.prepare("t-any", "Tuỳ bạn")
+    check("no preference is not a request to stop", reply.kind, "question")
+    check("and the slot is not asked twice", engine.session("t-any").asked, {"budget"})
+    # Asking us outright to pick still stops everything.
+    engine.reset("t-pick")
+    engine.prepare("t-pick", "tủ lạnh")
+    _, _, reply = engine.prepare("t-pick", "bạn chọn giúp mình")
+    check("asking us to pick stops the questions", reply, None)
 
     # Switching product is a new task: the previous one's answers must not
     # follow it. Carrying them made the new category look already specified,
