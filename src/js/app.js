@@ -277,8 +277,8 @@ function showTypingIndicator() {
   if (!chatBox) return;
   const html = `
     <div id="typing-indicator" class="flex items-start space-x-3.5 message-fade-in">
-      <div class="sk-avatar w-10 h-10 bg-white border border-paper-300 dark:border-brand-border flex items-center justify-center overflow-hidden shrink-0 shadow-md">
-        <img src="img/mascot.png" alt="..." class="w-full h-full object-contain p-0.5 animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
+      <div class="mascot-avatar w-10 h-10 flex items-center justify-center shrink-0">
+        <img src="img/mascot.png" alt="..." class="w-full h-full object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=Mascot'">
       </div>
       <div class="sk-bubble sk-edge sk-edge-strong sk-lift bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-500 px-4 py-3 border border-paper-300/70 dark:border-[#3a2f1c]/50">
         <div class="flex items-center space-x-1.5 py-1">
@@ -326,7 +326,7 @@ function appendAssistantMessage(htmlContent) {
   if (!chatBox) return;
   const html = `
     <div class="flex items-start space-x-3.5 message-fade-in">
-      <div class="sk-avatar w-10 h-10 bg-gradient-to-br from-white to-paper-100 border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(184,138,58,0.18)] overflow-hidden">
+      <div class="mascot-avatar w-10 h-10 flex items-center justify-center shrink-0">
         <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
       </div>
       <div class="space-y-1 max-w-[85%] w-full">
@@ -403,8 +403,12 @@ function renderChatHistoryUI() {
     pill.className = `side-chat history-item-appear${isActive ? ' is-active' : ''}`;
     pill.title = session.title;
 
+    // Linh vật ngẫu nhiên của phiên: ảnh trần, không đĩa nền hay khung viền,
+    // chỉ có quầng sáng để không chìm vào nền tối.
+    const mascotFile = session.mascot || 'mascot.png';
     pill.innerHTML = `
-      <i class="fa-regular fa-comment" aria-hidden="true"></i>
+      <img src="img/${mascotFile}" alt="" aria-hidden="true"
+           class="side-chat-mascot mascot-glow" onerror="this.src='img/mascot.png'">
       <span>${session.title}</span>`;
 
     pill.addEventListener('click', () => {
@@ -423,7 +427,7 @@ function restoreSessionMessages(session) {
   if (!session.messages || session.messages.length === 0) {
     chatBox.innerHTML = `
       <div class="flex items-start space-x-3.5 message-fade-in">
-        <div class="sk-avatar w-10 h-10 bg-gradient-to-br from-white to-paper-100 border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(184,138,58,0.18)] bg-white">
+        <div class="mascot-avatar w-10 h-10 flex items-center justify-center shrink-0">
           <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
         </div>
         <div class="space-y-1 max-w-[85%] w-full">
@@ -448,7 +452,7 @@ function restoreSessionMessages(session) {
       const html = `<div class="flex items-start space-x-3 justify-end message-fade-in"><div class="sk-bubble-user sk-edge sk-edge-strong sk-fill-brand sk-lift max-w-[80%] bg-gradient-to-r from-[#8a4a1c] to-[#c9862f] text-white px-5 py-3 text-[13.5px] shadow-sm">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     } else {
-      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="sk-avatar w-10 h-10 bg-white border border-white flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(184,138,58,0.18)] overflow-hidden"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain animate-mascot-idle"></div><div class="sk-bubble sk-edge sk-edge-strong sk-lift max-w-[85%] w-full bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 px-5 py-3.5 border border-paper-300/70 dark:border-[#3a2f1c]/50 text-[13.5px]">${msg.content}</div></div>`;
+      const html = `<div class="flex items-start space-x-3.5 message-fade-in"><div class="mascot-avatar w-10 h-10 flex items-center justify-center shrink-0"><img src="img/mascot.png" class="w-[85%] h-[85%] object-contain animate-mascot-idle"></div><div class="sk-bubble sk-edge sk-edge-strong sk-lift max-w-[85%] w-full bg-paper-50/70 dark:bg-[#1c150c]/60 text-paper-ink dark:text-slate-200 px-5 py-3.5 border border-paper-300/70 dark:border-[#3a2f1c]/50 text-[13.5px]">${msg.content}</div></div>`;
       chatBox.insertAdjacentHTML('beforeend', html);
     }
   });
@@ -768,7 +772,7 @@ window.resetConversation = function() {
     if (chatBox) {
       chatBox.innerHTML = `
         <div class="flex items-start space-x-3.5 message-fade-in">
-          <div class="sk-avatar w-10 h-10 bg-white border border-white flex items-center justify-center overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(184,138,58,0.18)]">
+          <div class="mascot-avatar w-10 h-10 flex items-center justify-center shrink-0">
             <img src="img/mascot.png" alt="Avatar" class="w-[85%] h-[85%] object-contain animate-mascot-idle" onerror="this.src='https://placehold.co/100x100?text=AI'">
           </div>
           <div class="space-y-1 max-w-[85%] w-full">
