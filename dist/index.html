@@ -338,7 +338,9 @@
     });
   </script>
 
-  <!-- Must load first: backend.js reads window.CHAT_API_BASE as it starts. -->
+  <!-- Must load first: backend.js reads window.CHAT_API_BASE as it starts.
+       api-base.js is rewritten by the Vercel build from CHAT_API_BASE. -->
+  <script src="js/api-base.js"></script>
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
   <script src="js/backend.js"></script>

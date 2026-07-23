@@ -1,25 +1,24 @@
 /**
- * Where the chat backend lives.
+ * Where the chat backend lives, in order of precedence:
  *
- * Empty means same origin, which is what ./run.sh gives you: FastAPI serves this
- * page and the API together on :8000, and nothing here needs setting.
+ *   1. ?api=https://…  on this visit, remembered afterwards
+ *   2. whatever a previous ?api= stored, unless the deployment has moved since
+ *   3. the address baked in at deploy time by js/api-base.js
+ *   4. same origin — which is ./run.sh, where FastAPI serves the page and the
+ *      API together and none of this applies
  *
- * It matters when the page is hosted somewhere the model is not — Vercel serving
- * this folder while Ollama and the 13,754-row catalog stay on a laptop behind a
- * tunnel. A quick tunnel hands out a new hostname every time it starts, so
- * rather than baking one in and redeploying, the base can be set from the link:
- *
- *     https://your-app.vercel.app/?api=https://xyz.trycloudflare.com
- *
- * It is remembered afterwards, so that link is only needed once per hostname.
- * Visiting with a bare ?api= forgets it again and goes back to same origin,
- * which is how you undo it on a machine you have been testing on.
+ * The stored value records which deployment default it was chosen against. If
+ * that default later changes — a new tunnel address shipped — the override is
+ * dropped rather than left to quietly point a browser at an address that has
+ * moved on. A bare ?api= clears it by hand.
  */
 (function () {
   'use strict';
 
-  var DEFAULT_BASE = '';          // same origin
+  var DEFAULT_BASE = typeof window.CHAT_API_DEFAULT === 'string'
+    ? window.CHAT_API_DEFAULT : '';
   var STORE_KEY = 'dmx-api-base';
+  var STORE_AGAINST = 'dmx-api-base-for';
 
   // Only ever used as the prefix of a fetch URL, but validate the shape anyway
   // rather than let anything with a colon in it through.
@@ -39,14 +38,22 @@
     } catch { /* private browsing, storage disabled — not worth failing over */ }
   }
 
-  var base = clean(read(STORE_KEY)) || DEFAULT_BASE;
+  var stored = clean(read(STORE_KEY));
+  if (stored && read(STORE_AGAINST) !== DEFAULT_BASE) {
+    // The deployment now points somewhere else; this override is stale.
+    write(STORE_KEY, null);
+    write(STORE_AGAINST, null);
+    stored = null;
+  }
+  var base = stored || DEFAULT_BASE;
 
   try {
     var params = new URLSearchParams(window.location.search);
     if (params.has('api')) {
       var asked = clean(params.get('api'));
       base = asked || DEFAULT_BASE;
-      write(STORE_KEY, asked);     // null clears it
+      write(STORE_KEY, asked);          // null clears it
+      write(STORE_AGAINST, asked ? DEFAULT_BASE : null);
     }
   } catch { /* no URLSearchParams: fall back to whatever was stored */ }
 
